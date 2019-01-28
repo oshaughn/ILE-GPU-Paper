@@ -1,12 +1,125 @@
 % $Id$
-\documentclass[onecolumn,prd,nofootinbib]{revtex4}
-\input{refsheetLinks.tex}
+\documentclass[twocolumn,prd,nofootinbib]{revtex4}
+
+
+\newcommand\ForInternalReference[1]{}
+%\newcommand\SkipForEarlyCirculation[1]{}
+\newcommand\SkipForEarlyCirculation[1]{#1}
+%\newcommand\SkipBoxing[1]{}
+\newcommand\SkipBoxing[1]{#1}
+\newcommand\SkipPP[1]{}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{dcolumn}
+\usepackage{bm}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{amsmath}
+%\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{multirow}
+%
+%
+\usepackage{times}
+%
+%
+%
+\newcommand\optional[1]{}
+
+%
+\newcommand\E[1]{\left\langle #1\right\rangle}
+\newcommand\qmstate[1]{\left|#1\right \rangle}
+\newcommand\qmstateKet[1]{\left\langle#1\right|}
+\newcommand\qmstateproduct[2]{\left\langle#1|#2\right\rangle}
+\newcommand\qmoperatorelement[3]{\left\langle#1\left|#2\right|#3\right\rangle}
+\newcommand\qmoperator[1]{{\bf #1}}
+%
+\newcommand\Y[1]{{{}_{#1}Y}}
+
+\newcommand\lnL{ \ln {\cal L}}
+\newcommand\lnLmarg{ \ln{\cal L}_{\rm marg}{}}
+\newcommand\unit[1]{{\rm #1}}
+
+\newcommand\rapidPEOrig{rapid\_pe1}
+\newcommand\ILE{ILE}
+\newcommand\editremark[1]{{\color{red} #1}}
+%
+%
+%
+\usepackage{color}
+\definecolor{amber}{rgb}{1.0, 0.75, 0.0}
+\definecolor{orange}{rgb}{1.0, 0.5, 0.0}
+\definecolor{amaranth}{rgb}{0.9, 0.17, 0.31}
+\def\fixme#1{\textcolor{red}{#1}}
+\newcommand{\Richard}[1]{ {\color{blue}{#1}}}
+\newcommand{\ros}[1]{ {\color{blue}{#1}}}
+%
+
+%
+
+%
+%
+%
+%
+\graphicspath{{./figures/}}
+\newcommand{\mc}{{\cal M}}
+\newcommand{\Ms}{M_{\odot}}
+\newcommand\LambdaTilde{\widetilde{\Lambda}}
+\newcommand\DeltaLambdaTilde{\delta \widetilde{\Lambda}}
+%
+\def\ltsima{$\; \buildrel < \over \sim \;$}
+\def\simlt{\lower.5ex\hbox{\ltsima}}
+\def\gtsima{$\; \buildrel > \over \sim \;$}
+\def\simgt{\lower.5ex\hbox{\gtsima}}
+
+\newcommand\prx{Phys.~Rev.~X}
+\def\aj{Astronomical Journal}                 %
+\def\apj{Astrophysical Journal}                %
+\def\apjl{Astrophysical Journal}             %
+\def\pasj{PASJ}
+\def\apjs{ApJS}              %
+\def\mnras{MNRAS}            %
+\def\prd{Phys.~Rev.~D}       %
+\def\prl{Phys.~Rev.~Lett}    %
+\def\cqg{Class.~Quant.~Grav.~}%
+\def\araa{ARA\&A}             %
+\def\nat{Nature}              %
+\def\aap{A\&A}                %
+\def\aapr{A\&A~Rev.~}    %
+\def\pasp{PASP}    %
+\def\sovast{Soviet Ast.}
+%
+%
+
+\newcommand{\IMRPD}{\textsc{IMRPhenomD}\xspace}
+\newcommand{\IMRPDT}{\textsc{IMRPhenomD\_NRTidal}\xspace}
+\newcommand{\IMRP}{\textsc{IMRPhenomPv2}\xspace}
+\newcommand{\SEOBP}{\textsc{SEOBNRv3}\xspace}
+\newcommand{\SEOBA}{\textsc{SEOBNRv4}\xspace}
+\newcommand{\SEOBAROM}{\textsc{SEOBNRv4\_ROM}\xspace}
+\newcommand{\NRSur}{NRSur7dq2\xspace}
+\newcommand{\TEOB}{SEOBNRv4T\xspace}
+\newcommand{\Resum}{TEOBResumS\xspace}
+\newcommand\RIFT{RIFT}
+\newcommand{\Taylor}{TaylorF2\xspace}
+\newcommand\PaperDetection{\underline{LVC-detect}\cite{DiscoveryPaper}}
+\newcommand\PaperPE{\underline{LVC-PE}\cite{PEPaper}}
+\newcommand\PaperTestGR{\underline{LVC-TestGR}\cite{TestingGRPaper}}
+\newcommand\PaperPENRMethods{\underline{PE+NR-Methods}\cite{gwastro-PENR-Methods-Lange}}
+\newcommand\PaperAstro{\underline{LVC-Astro}\cite{AstroPaper}}
+\newcommand\PaperBurst{\underline{LVC-Burst}\cite{BurstPaper}}
+\newcommand\PaperRates{\underline{LVC-Rates}\cite{RatesPaper}}
+\newcommand\PaperStochastic{\underline{LVC-Stochastic}}
+\newcommand\PaperSEOBNRvthree{\underline{LVC-SEOBNRv3}\cite{SEOBv3Paper}}
+
 \begin{document}
 
 \title{Accelerating parameter inference with graphics processing units}
 \author{D. Wysocki}
 \author{L. Fang}
 \author{R. O'Shaughnessy}
+\author(??Jake - if he does runs??}
 \begin{abstract}
 Gravitational wave Bayesian parameter inference involves repeated comparisons of GW data to generic candidate predictions.
 Even with algorithmically efficient methods like RIFT or reduced-order quadrature, the time needed to perform these
@@ -18,33 +131,264 @@ overall cost and latency.
 \maketitle
 
 \section{Introduction}
+The Advanced LIGO  \cite{2015CQGra..32g4001T}  and Virgo \cite{gw-detectors-Virgo-original-preferred}  ground-based gravitational wave (GW) detectors have
+identified several coalescing compact binaries
+\cite{DiscoveryPaper,LIGO-O1-BBH,2017PhRvL.118v1101A,LIGO-GW170814,LIGO-GW170608,LIGO-GW170817-bns}.  
+%
+The properties of the sources responsible have been inferred via Bayesian comparison of  each source with candidate
+gravitational ave signals
+\cite{DiscoveryPaper,LIGO-O1-BBH,2017PhRvL.118v1101A,LIGO-GW170814,LIGO-GW170608,LIGO-GW170817-bns}
+\editremark{citations: real events, also LI and RIFT} \cite{gwastro-PE-AlternativeArchitectures,gwastro-PENR-RIFT}.  
+Many more are expected as observatories reach design sensitivity \cite{2016LRR....19....1A}.  
+Both to handle the rapid pace of discovery and particularly to enable coordinated multimessenger followup, GW
+observatories should be able to reconstruct the full source parameters of coalescing binaries as fast as possible
+\cite{LIGO-whitepaper-2015} \editremark{update}.    
+However, particularly when using the best-available waveform models, these calculations can be very costly.  In
+practice, detailed inferences even using simplified waveforms take weeks for binary neutron stars, and can take months
+for costly time-domain effective-one-body models which incorporate the effects of precession.
+
+
+% BORROWED FROM ROM: edit
+Several strategies have been
+developed to reduce the 
+%overall computational cost and turnaround time of 
+computational cost of parameter estimation \cite{gwastro-pe-Brandon-STF2,gwastro-PE-AlternativeArchitectures,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,2016PhRvD..94d4031S,2017arXiv170302062V}.  
+% The computational cost of parameter estimation can be reduced 
+Approaches that have appeared in the literature include
+%by 
+generating the approximate solutions more quickly \cite{gwastro-mergers-PE-ReducedOrder-2013,2014PhRvX...4c1006F,2013PhRvD..87l2002S,2013PhRvD..87d4008C,gwastro-mergers-IMRPhenomP,gwastro-SpinTaylorF2-2013}; 
+%by 
+interpolating some combination
+of the waveform or likelihood \cite{gwastro-approx-ROMNR-Blackman2015,2013PhRvD..87d4008C,2013PhRvD..87l2002S,2014CQGra..31s5010P,2014PhRvD..90d4074S,gwastro-PE-AlternativeArchitectures,cole2014likelihood,2012MNRAS.421..169G};  or 
+%by 
+adopting a sparse representation to reduce the computational cost of data
+handling \cite{antil2013two,gwastro-mergers-PE-ReducedOrder-2013,2016PhRvD..94d4031S,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,gwastro-PE-AlternativeArchitectures}.   % 2014PhRvX...4c1006F,2013PhRvD..87l2002S,2013PhRvD..87d4008C
+ Some methods, however, achieve rapid turnaround through simplifying approximations.  
+%
+The RIFT strategy described in \editremark{citations - include ROM} eschews these simplifications, performing
+embarassingly-parallel inferences even for costly models.   However, the method as previously implemented still had a
+significant net  computational cost and noticable startup time, limiting its diverse potential applications.
+
+In this paper we describe a substantial improvement to the RIFT approach, enabled by translating its low-level
+algorithms to operate on graphics processing units (GPUs).
+
+
+This paper is organized as follows.
+In Section \ref{Methods}, we review the underlying marginalized likelihood calculations used by RIFT; their updated GPU
+implementation; and the operating settings which enable substantially increased performance.
+In Section \ref{sec:demo}, we quantify the improved performance of our  GPU-accelerated code, and its agreement with the
+original CPU-only version.
+
 
 \section{Methods}
 
-* Review ILE
+\subsection{Parameter inference with the RIFT likelihood}
+% From RIFT paper
+\ILE{}  -- a specific algorithm to ``integrate over extrinsic parameters'' -- provides a straightforward and efficient mechanism to compare any specific candidate gravitational wave source with
+real or synthetic data   \cite{gwastro-PE-AlternativeArchitectures,NRPaper,2017PhRvD..96j4041L,2017CQGra..34n4002O},
+by marginalizing the likelihood of the data over the seven coordinates characterizing the spacetime coordinates and
+orientation of the binary relative to the earth.  
+Specifically the likelihood of the data given gaussian noise has the form  (up to normalization)
+\begin{equation}
+\label{eq:lnL}
+\ln {\cal L}(\bm{\lambda} ;\theta )=-\frac{1}{2}\sum\limits_{k}\langle h_{k}(\bm{\lambda} ,\theta )-d_{k} |h_{k}(\bm{\lambda} ,\theta )-d_{k}\rangle _{k}-\langle d_{k}|d_{k}\rangle _{k},
+\end{equation}
+where $h_{k}$ are the predicted response of the k$^{th}$ detector due to a source with parameters ($\bm{\lambda}$, $\theta$) and
+$d_{k}$ are the detector data in each instrument k; $\bm{\lambda}$ denotes the combination of redshifted mass $M_{z}$ and the
+remaining parameters needed to uniquely specify the binary's dynamics; $\theta$ represents the
+seven extrinsic parameters (4 spacetime coordinates for the coalescence event and 3 Euler angles for the binary's
+orientation relative to the Earth); and $\langle a|b\rangle_{k}\equiv
+\int_{-\infty}^{\infty}2df\tilde{a}(f)^{*}\tilde{b}(f)/S_{h,k}(|f|)$ is an inner product implied by the k$^{th}$ detector's
+noise power spectrum $S_{h,k}(f)$. 
+%In all calculations, we adopt the fiducial O1 noise power spectra associated with data near GW150914 \cite{DiscoveryPaper}.
+In practice we adopt both  low- and high- frequency cutoffs $f_{\rm max},f_{\rm min}$ so all inner products are modified to
+\begin{equation}
+\label{eq:overlap}
+\langle a|b\rangle_{k}\equiv 2 \int_{|f|>f_{\rm min},|f|<f_{\rm max}}df\frac{[\tilde{a}(f)]^{*}\tilde{b}(f)}{S_{h,k}(|f|)}.
+\end{equation}
+The joint posterior probability of $\bm{\lambda} ,\theta$ follows from Bayes' theorem:
+\begin{equation}
+p_{\rm post}(\bm{\lambda} ,\theta)=\frac{ {\cal L}(\bm{\lambda} ,\theta)p(\theta)p(\bm{\lambda})}{\int d\bm{\lambda} d\theta {\cal L}(\bm{\lambda} ,\theta)p(\bm{\lambda})p(\theta)},
+\end{equation}
+where $p(\theta)$ and $p(\bm{\lambda})$ are priors on the (independent) variables $\theta ,\bm{\lambda}$. For each $\bm{\lambda}$, we evaluate the marginalized likelihood
+\begin{equation}
+ {\cal L}_{\rm marg}\equiv\int  {\cal L}(\bm{\lambda} ,\theta )p(\theta )d\theta
+\end{equation}
+via direct Monte Carlo integration, where $p(\theta)$ is uniform in 4-volume and source orientation.  
+The integral in time is performed at a low level, by direct quadrature. 
+For the remaining dimensions, to evaluate the likelihood in regions of high importance, we use an adaptive Monte Carlo as described in
+\cite{gwastro-PE-AlternativeArchitectures}.    As described in Pankow et al, this marginalized likelihood can be evaluated efficiently
+because, having generated the dynamics and outgoing radiation in all possible directions once and for all for fixed
+$\mathbf{\lambda}$, the likelihood can be evaluated as a function of $\theta$ at very low computational cost.
 
-* Rewrite in matrix form
 
-* GPU code
+% From ROM paper
+A dimensionless, complex gravitational-wave
+strain
+%% ~\footnote{\scott{\sout{We use a distance-independent dimensionless strain $R h/M$, where
+%% $R$ is the distance from the binary's center-of-mass
+%% and $M$ is the total mass. In this paper we choose units so that $c=G=1$.}
+%% [Remove this? I think it conflicts with other conventions/definitions 
+%% used throughout the paper.]}}
+\begin{align} \label{eq:strain}
+h(t,\vartheta,\phi;\lambda) =  h_+(t,\vartheta,\phi;\lambda) - 
+                                i h_\times (t,\vartheta,\phi;\lambda) \, ,
+\end{align}
+can be expressed in terms of its two fundamental polarizations $h_+$ and $h_\times$.
+Here, $t$ denotes time, $\vartheta$ and $\phi$ are the polar and azimuthal angles
+for the direction of gravitational wave propagation away from the source. 
+The complex gravitational-wave strain can be written in terms of
+spin-weighted spherical harmonics $\Y{-2}_{\ell m} \left(\vartheta, \phi \right)$ as 
+\begin{align} \label{eq:strain_mode}
+h(t,\vartheta,\phi;\lambda) = 
+\sum_{\ell=2}^{\infty} \sum_{m=-\ell}^{\ell} \frac{D_{\rm ref}}{D} h^{\ell m}(t;\lambda) \Y{-2}_{\ell m} \left(\vartheta, \phi \right) \, ,
+\end{align}
+where the sum includes all available harmonic modes $h^{\ell m}(t;\pmb{\lambda})$ made available by the model;  where
+$D_{\rm ref}$ is a fiducial reference distance; and where $D$, the luminosity distance to the  source, is one of the
+extrinsic parameters.  
 
-* Refactoring code to use the efficient GPU loops
+Following \citet{gwastro-PE-AlternativeArchitectures}, we substitute expression~\eqref{eq:strain_mode} 
+for $h_{\ell m}$ into the expression $h_k(t) =F_{+,k} h_+(t_k) +
+  F_{\times,k}h_\times(t_k)$ for the detector response $h_k$, 
+where $t_k=t_c - \vec{x}_k \cdot \hat{n}$ is the arrival time at the $k$th detector (at position $\vec{x}_k$)
+for a plane wave propagating along $\hat{n}$ \cite{gwastro-PE-AlternativeArchitectures}.
+We then substitute these expressions for $h_k$ into the likelihood function~\eqref{eq:loglikelihood}
+thereby generating~\cite{gwastro-PE-AlternativeArchitectures}
+\begin{widetext}
+\begin{align}
+\ln {\cal L}(\lambda, \theta) 
+&= (D_{\rm ref}/D) \text{Re} \sum_k \sum_{\ell m}(F_k \Y{-2}_{\ell m})^* Q_{k,lm}(\lambda,t_k)\nonumber \\
+&   -\frac{(D_{\rm ref}/D)^2}{4}\sum_k \sum_{\ell m \ell' m'}
+\left[
+{
+|F_k|^2 [\Y{-2}_{\ell m}]^*\Y{-2}_{\ell'm'} U_{k,\ell m,\ell' m'}(\lambda)
+}
+% \right. \nonumber \\ & \left.
+ {
++  \text{Re} \left( F_k^2 \Y{-2}_{\ell m} \Y{-2}_{\ell'm'} V_{k,\ell m,\ell'm'} \right)
+}
+\right]
+\label{eq:def:lnL:Decomposed}
+\end{align}
+\end{widetext}
+%% \noindent \scott{[FOR RICHARD: is eq 9/10 missing objects? Looks like $t_c$ an $F_k$ just appeared. On the other hand,
+%%     putting them into earlier equations will complicate the discussion and is awkward.]}  
+where 
+ where $F_k = F_{+,k} - i F_{\times,k}$ are the
+complex-valued detector
+response functions of the $k$th detector \cite{gwastro-PE-AlternativeArchitectures} and 
+the quantities $Q,U,V$ depend on $h$ and the data as
+\begin{subequations}
+%\label{eq:ComputeRhoViaInnerProductMatrix}
+\label{eq:QUV}
+\begin{align}
+Q_{k,\ell m}(\lambda,t_k) &\equiv \qmstateproduct{h_{\ell m}(\lambda,t_k)}{d}_k \nonumber\\
+&= 2 \int_{|f|>f_{\rm low}} \frac{df}{S_{n,k}(|f|)} e^{2\pi i f t_k} \tilde{h}_{\ell m}^*(\lambda;f) \tilde{d}(f)\ , \\
+{ U_{k,\ell m,\ell' m'}(\lambda)}& = \qmstateproduct{h_{\ell m}}{h_{\ell'm'}}_k\ , \\
+V_{k,\ell m,\ell' m'}(\lambda)& = \qmstateproduct{h_{\ell m}^*}{h_{\ell'm'}}_k  \ .
+\end{align}
+\end{subequations}
+Rewriting sums as matrix operations, the likelihood can be equivalently expressed as
+\begin{align}
+\ln {\cal L} &= \frac{D_{\rm ref}}{D} \text{Re}[ (F Y)^\dag Q]  \nonumber \\
+ & - \frac{D_{\rm ref}^2}{4 D^2} [ (FY)^\dag U FY + (FY)^TV FY]
+\label{eq:lnL:MatrixForm}
+\end{align}
+where $F,D$ are arrays over extrinsic parameters; $Q$ is an array over time and $(l,m)$; and $U,V$ ar matricies over
+$(l,m)$. 
 
-** discuss tradeoffs: how to balance overall runtime.  When the cost of the waveform integration matters.
 
-\section{Results}
+
+\subsection{Accelerated evaluation via efficient multiplication}
+%* GPU code
+%* Refactoring code to use the efficient GPU loops
+
+
+At a fixed set of intrinsic parameters $\lambda$, \ILE{} will repeatedly evaluate the time-marginalized likelihood 
+for each candiate Monte Carlo set of extrinsic parameters $\theta$:
+\begin{eqnarray}
+{\cal L}_{\rm margT} \equiv  \int {\cal L} \frac{dt}{T}
+\label{eq:lnL:tmarg}
+\end{eqnarray}
+where $T$ is a small coincidence window consistent with the cadidate event time; here and previously,
+$T=0.3\unit{sec}$.   To accelerate the code, after precomputing the inner products $U,V,Q$, we simply shift them to the
+graphics card, then carry out all calculations necessary to implement Eqs. (\ref{eq:lnL:MatrixForm}, \ref{eq:lnL:tmarg})
+on the GPU.  To enable this implementation with portable code, we use \texttt{cupy}, a drop-in-replacement for equivalent
+\texttt{numpy} code used for the CPU-based version of ILE.    For the most costly part of the calculation -- the inner
+products necessary to evaluate $Q_{lm}(t)$ -- we use a custom CUDA kernel.  
+%
+With these changes alone, the likelihoood evaluation is roughly $60\times$ faster on equivalent hardware.  
+After this update, likelihood evaluation costs are not the performance- or cost-limiting feature of RIFT-based source
+parameter inference.
+
+
+\subsection{Exploiting low-cost likelihoods}
+Previously, each instance of ILE examined one intrinsic point $\lambda$.  The overall cost of this ILE evaluation
+involved two parts: a startup cost, a setup cost, and a Monte Carlo integration cost.  The  startup cost $\tau_{start}$ is associated with code setup, followed by reading and Fourier-transforming the
+data.  The setup cost $\tau_{setup}$ arises from waveform generation, followed by the inner products $U,V,Q$.  Finally, the Monte Carlo
+cost $\tau_{mc}=N_{it} \tau_{it}$ increases linearly with the number of Monte Carlo iterations $N_{it}$. 
+The choice of one $\lambda$ for each instance of ILE was eue to the substantial time  $\tau_{MC}$, which vastly
+dominated the overall computational cost.   For example, for a typical analysis of a short signal, \editremark{numbers}
+
+
+With the new low-cost likelihood evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now are
+comparable or in excess of the Monte Carlo evaluation time.   For this reason, we reorganize the workflow, so each
+instance of ILE loops over
+$N_{eval}$ different choices for $\lambda$. 
+%
+Additionally, particularly for massive binary black holes, we adopt two additional performance improvements.  First and
+foremost, we lower the sampling rate, thus lowering the startup cost $\tau_{start}$ and particularly setup cost
+$\tau_{setup}$.  Previously and out of an abundance of caution, \ILE{} employed a sampling rate $1/\Delta t = 16384
+\unit{Hz}$ for all calculations, but terminated all inner products in Eq. (\ref{eq:overlap}) at roughly $f_{\rm
+  max}=2048\unit{Hz}$ or less.   Reducing the sampling rate by a factor $s$ decreases the  cost $\tau_{setup}$ by the
+same factor. 
+Also, to insure safe inner products over short data sets in the presence of very narrow spectral lines, we operated on a
+significantly-padded data buffer,
+using 
+``inverse spectrum truncation'' \editremark{citation}.  For binary black holes, the degree of padding was significantly
+in excess of the signal duration \editremark{numbers: say 64s for a BBH!}.  
+Instead and following LI, we adopt a much shorter inverse spectrum truncation length, a much shorter padding buffer, and
+a Tukey window applied to the data to remove discontinuities at the start and end of each segment.   
+Reducing the duration of data analyzed by a factor $s'$ will reduce the cost $\tau_{setup}$ by a factor $s'$.  
+%
+Combining these factors together, the overall computational cost of each marginalized likelihood
+evaluation is
+\begin{align}
+T_{ILE}/N_{\rm eval} = \tau_{start}/N_{\rm eval} + [ \tau_{setup}/ss' + N_{it} \tau_{it}]
+\end{align}
+\editremark{typical numbers in new configuration, using 16kHz, and also the $s,s'$ factors}
+
+
+
+\editremark{discussion}
+* discuss tradeoffs: how to balance overall runtime.  When the cost of the waveform integration matters.
+
+
+\section{Validation and Performance}
+\label{sec:demo}
 
 * Comparison: agreement.  Sky localization example
 
 * Benchmarking performance (new speed for BBHs; also show BNS with tides)
 
 
+\section{ Results (optional?)}
+
+* Add Jake as author.  Rerun all O2 BBHs with SEOBNRv3?
 
 \section{Conclusions}
 
 * Enable low-latency parameter inference in basically real time for GW candidate sources, even for relatively costly
 models with full physics
 
-* Highly portable, generalizable to other codes
+
+* Highly portable, generalizable to other codes: code will smoothly tranlate between GPU-only and CPU-only mode
+
+
+* Not done yet: expect to transform MC and inner products, so all calculations remain on board, with just intermittent
+control I/O from CPU
+
+
 
 \bibstyle{unsrt}
 \bibliography{paperexport}
