@@ -1,0 +1,51 @@
+% $Id$
+\documentclass[onecolumn,prd,nofootinbib]{revtex4}
+\input{refsheetLinks.tex}
+\begin{document}
+
+\title{Accelerating parameter inference with graphics processing units}
+\author{D. Wysocki}
+\author{L. Fang}
+\author{R. O'Shaughnessy}
+\begin{abstract}
+Gravitational wave Bayesian parameter inference involves repeated comparisons of GW data to generic candidate predictions.
+Even with algorithmically efficient methods like RIFT or reduced-order quadrature, the time needed to perform these
+calculations and overall computational cost can be significant compared to the minutes to hours needed to achieve the
+goals of low-latency multimessenger astronomy.  By translating some elements of the RIFT algorithm to operate on
+graphics processing units (GPU), we demonstrate substantial performance improvements, enabling dramatically reduced
+overall cost and latency. 
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+
+\section{Methods}
+
+* Review ILE
+
+* Rewrite in matrix form
+
+* GPU code
+
+* Refactoring code to use the efficient GPU loops
+
+** discuss tradeoffs: how to balance overall runtime.  When the cost of the waveform integration matters.
+
+\section{Results}
+
+* Comparison: agreement.  Sky localization example
+
+* Benchmarking performance (new speed for BBHs; also show BNS with tides)
+
+
+
+\section{Conclusions}
+
+* Enable low-latency parameter inference in basically real time for GW candidate sources, even for relatively costly
+models with full physics
+
+* Highly portable, generalizable to other codes
+
+\bibstyle{unsrt}
+\bibliography{paperexport}
+\end{document}
