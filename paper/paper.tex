@@ -113,13 +113,19 @@
 \newcommand\PaperStochastic{\underline{LVC-Stochastic}}
 \newcommand\PaperSEOBNRvthree{\underline{LVC-SEOBNRv3}\cite{SEOBv3Paper}}
 
+\def\RIT{Center for Computational Relativity and Gravitation, Rochester Institute of Technology, Rochester, New York 14623, USA}
+
 \begin{document}
 
 \title{Accelerating parameter inference with graphics processing units}
 \author{D. Wysocki}
+\affiliation{\RIT}
 \author{L. Fang}
+\affiliation{Brookhaven National Lab, Brookhaven NY}
 \author{R. O'Shaughnessy}
-\author(??Jake - if he does runs??}
+\affiliation{\RIT}
+\author{Jake - if he does runs}
+\affiliation{\RIT}
 \begin{abstract}
 Gravitational wave Bayesian parameter inference involves repeated comparisons of GW data to generic candidate predictions.
 Even with algorithmically efficient methods like RIFT or reduced-order quadrature, the time needed to perform these
@@ -318,8 +324,9 @@ on the GPU.  To enable this implementation with portable code, we use \texttt{cu
 products necessary to evaluate $Q_{lm}(t)$ -- we use a custom CUDA kernel.  
 %
 With these changes alone, the likelihoood evaluation is roughly $60\times$ faster on equivalent hardware.  
-After this update, likelihood evaluation costs are not the performance- or cost-limiting feature of RIFT-based source
-parameter inference.
+After this update, individual likelihood evaluation costs are not the performance- or cost-limiting feature of RIFT-based source
+parameter inference.  Instead, the overhead associated with the adaptive Monte Carlo and with the (CPU-based) inner
+product evaluations for $Q,U,V$ dominate our computational cost.
 
 
 \subsection{Exploiting low-cost likelihoods}
@@ -328,7 +335,9 @@ involved two parts: a startup cost, a setup cost, and a Monte Carlo integration 
 data.  The setup cost $\tau_{setup}$ arises from waveform generation, followed by the inner products $U,V,Q$.  Finally, the Monte Carlo
 cost $\tau_{mc}=N_{it} \tau_{it}$ increases linearly with the number of Monte Carlo iterations $N_{it}$. 
 The choice of one $\lambda$ for each instance of ILE was eue to the substantial time  $\tau_{MC}$, which vastly
-dominated the overall computational cost.   For example, for a typical analysis of a short signal, \editremark{numbers}
+dominated the overall computational cost.   For example, for a typical analysis of a short signal --  a typical binary
+black hole signal with $f_{\rm min}=20 \unit{Hz}$ and $m_1\simeq m_2\simeq 30 M_\odot$ --  this version
+\editremark{cost table}
 
 
 With the new low-cost likelihood evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now are
@@ -352,20 +361,44 @@ a Tukey window applied to the data to remove discontinuities at the start and en
 Reducing the duration of data analyzed by a factor $s'$ will reduce the cost $\tau_{setup}$ by a factor $s'$.  
 %
 Combining these factors together, the overall computational cost of each marginalized likelihood
-evaluation is
+evaluation $T_{ILE}/N_{eval}$  is
 \begin{align}
-T_{ILE}/N_{\rm eval} = \tau_{start}/N_{\rm eval} + [ \tau_{setup}/ss' + N_{it} \tau_{it}]
+T_{ILE}/N_{\rm eval} &= \tau_{start}/N_{\rm eval} + [ \tau_{setup}/ss' + N_{it} \tau_{it}] 
 \end{align}
-\editremark{typical numbers in new configuration, using 16kHz, and also the $s,s'$ factors}
+For a typical binary black hole signal with $f_{\rm min}=20 \unit{Hz}$ and $m_1\simeq m_2\simeq 30 M_\odot$, this
+version requires $\tau_{start} \simeq 12\unit{s}$, $\tau_{setup}/ss' \simeq XX$, and $N_{it}\tau_{\it} \simeq XX$
+\editremark{numbers}.
+Typically we target $N_{\rm eval} \simeq 20$ so that startup costs are not a significant contributor to the overall
+runtime.   In this configuration, the run time per marginalized likelihood is around $T_{ILE}/N_{\rm eval} \simeq 20
+\unit{s}$ for a binary black hole \editremark{checkme - old number}.  
 
 
+For low-latency analyses, we need to assess the overall wallclock time needed to perform an analysis, often with a
+restricted number $N_{GPU}$ of available GPU-enabled machines.   To  completely $N_{\rm net}$ likelihood evaluations
+with these resources requires
+\begin{align}
+T_{net} &= \frac{N_{\rm net}}{N_{\rm GPU} N_{\rm eval}} T_{ILE} \nonumber \\
+& \simeq
+  \frac{N_{net}}{N_{GPU}}\left[\tau_{start}/N_{\rm    eval} + [ \tau_{setup}/ss' + N_{it} \tau_{it}]  \right]
+\end{align}
+Typically we target $N_{\rm eval}  \lesssim 3\times 10^4, N_{\rm GPU} \simeq 100$, or roughly $300\times$ the cost per
+individual marginalized likelihood evaluation.  For the binary black hole configuration described above, marginalized
+likelihood evaluations will complete in about $100 \unit{minutes}$ \editremark{checkme}. This number can be reduced to
+tens of minutes with a modestly larger GPU pool.
+This discussion ignores the latency introduced by the  gaussian process interpolation stage at the end.  We will revisit
+accelerated GP interpolation in subsequent work.
 
-\editremark{discussion}
-* discuss tradeoffs: how to balance overall runtime.  When the cost of the waveform integration matters.
+The \ILE{} likelhood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
+time needed to evaluate  $\ln {\cal L}_{\rm marg}$ for extremely costly
+waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{setup}$.   \editremark{give examples}
 
 
 \section{Validation and Performance}
 \label{sec:demo}
+
+\begin{figure}
+
+\end{figure}
 
 * Comparison: agreement.  Sky localization example
 
@@ -389,7 +422,12 @@ models with full physics
 control I/O from CPU
 
 
+\begin{acknowledgements}
+RO'S is supported by NSF PHY-1707965 and PHY-1607520.
+DW thanks the RIT COS and CCRG for support, and  NSF-1707965.
+\end{acknowledgements}
 
-\bibstyle{unsrt}
+
+%\bibstyle{unsrt}
 \bibliography{paperexport}
 \end{document}
