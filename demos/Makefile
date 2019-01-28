@@ -30,5 +30,5 @@ test_workflow_batch_gpu: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze 5 --gridinit-args args_grid.txt --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 1024 --request-memory-ILE 1024  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze 5 --initial-grod overlap-grid-0.xml.gz  --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 1024 --request-memory-ILE 1024  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
 # --transfer-file-list file_names_transfer.txt
