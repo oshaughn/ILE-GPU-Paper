@@ -311,19 +311,19 @@ $(l,m)$.
 
 
 At a fixed set of intrinsic parameters $\lambda$, \ILE{} will repeatedly evaluate the time-marginalized likelihood 
-for each candiate Monte Carlo set of extrinsic parameters $\theta$:
+for each candidate Monte Carlo set of extrinsic parameters $\theta$:
 \begin{eqnarray}
 {\cal L}_{\rm margT} \equiv  \int {\cal L} \frac{dt}{T}
 \label{eq:lnL:tmarg}
 \end{eqnarray}
-where $T$ is a small coincidence window consistent with the cadidate event time; here and previously,
+where $T$ is a small coincidence window consistent with the candidate event time; here and previously,
 $T=0.3\unit{sec}$.   To accelerate the code, after precomputing the inner products $U,V,Q$, we simply shift them to the
 graphics card, then carry out all calculations necessary to implement Eqs. (\ref{eq:lnL:MatrixForm}, \ref{eq:lnL:tmarg})
 on the GPU.  To enable this implementation with portable code, we use \texttt{cupy}, a drop-in-replacement for equivalent
 \texttt{numpy} code used for the CPU-based version of ILE.    For the most costly part of the calculation -- the inner
 products necessary to evaluate $Q_{lm}(t)$ -- we use a custom CUDA kernel.  
 %
-With these changes alone, the likelihoood evaluation is roughly $60\times$ faster on equivalent hardware.  
+With these changes alone, the likelihood evaluation is roughly $60\times$ faster on equivalent hardware.  
 After this update, individual likelihood evaluation costs are not the performance- or cost-limiting feature of RIFT-based source
 parameter inference.  Instead, the overhead associated with the adaptive Monte Carlo and with the (CPU-based) inner
 product evaluations for $Q,U,V$ dominate our computational cost.
@@ -337,7 +337,10 @@ cost $\tau_{mc}=N_{it} \tau_{it}$ increases linearly with the number of Monte Ca
 The choice of one $\lambda$ for each instance of ILE was eue to the substantial time  $\tau_{MC}$, which vastly
 dominated the overall computational cost.   For example, for a typical analysis of a short signal --  a typical binary
 black hole signal with $f_{\rm min}=20 \unit{Hz}$ and $m_1\simeq m_2\simeq 30 M_\odot$ --  this version
-\editremark{cost table}
+\editremark{cost table}, based on the assumption that the MC terminates after $N_{\rm it}\simeq 10^6$ iterations.  
+By contrast, the marginalized likelihood described above  converges incredibly rapidly if the candidate model is
+inconsistent with a signal (or the absence thereof) in the data, with only $N_{it} \simeq O(10^4)$  evaluations needed to identify the marginalized
+likleihood.  
 
 
 With the new low-cost likelihood evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now are
@@ -388,9 +391,27 @@ tens of minutes with a modestly larger GPU pool.
 This discussion ignores the latency introduced by the  gaussian process interpolation stage at the end.  We will revisit
 accelerated GP interpolation in subsequent work.
 
+
 The \ILE{} likelhood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
 time needed to evaluate  $\ln {\cal L}_{\rm marg}$ for extremely costly
 waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{setup}$.   \editremark{give examples}
+
+
+
+\subsection{Tradeoff between Monte Carlo integration and accuracy}
+
+Each marginalized likelihood evaluation has a relative uncertainty of order  $1/\sqrt{n_{\rm eff}}$, where the number of
+effective samples $n_{\rm eff}=\epsilon N_{\rm it}$ increases linearly with the total number $N_{\rm it}$ of Monte Carlo
+evaluations performed by \ILE{}.  Therefore, to increase (decrease) our accuracy for each likelihood evaluation by a factor of $A$
+will require a factor $A^2$ more (fewer) iterations.   
+%
+We adopt a fixed threshold on $n_{\rm eff}$.  
+
+
+We do benefit slightly by re-using the adaptive Monte Carlo intergrator for each extrinsic point $\lambda$.  Since the
+integrator has already identified the likely range of sky locations and distances on the first iteration, each
+subsequent evaluation of the marginalized likelihood can converge marginally more quickly.
+
 
 
 \section{Validation and Performance}
