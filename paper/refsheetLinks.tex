@@ -1,0 +1,305 @@
+% $Id: refsheetLinks.tex,v 1.87 2018-01-20 22:12:41 oshaughn Exp $
+%
+%
+%  refsheetLinks.tex
+%
+%  Definitions to enable cross-linkages between reference sheets
+%
+%  USAGE AND WARNINGS
+%
+%   + Spaces
+%     spaces in URLs are common for me.  Unfortunately, these must be
+%     MANUALLY (for now) replaced with \%20 to spawn the correct
+%     *remote* link, but these same \%20's cause problems LOCALLY
+%
+%     ALTERNATIVELY, I can leave the space in...this works LOCALLY
+%     but not REMOTELY.
+%
+%    I have chosen to fix the remote link
+
+%\usepackage{tikz}      % useful figures -- but problems on laptop?
+\usepackage{verbatim}
+\usepackage{currfile}
+\usepackage{makeidx}   % indexes, implemented in common... see http://en.wikibooks.org/wiki/LaTeX/Indexing
+\makeindex
+%\let\LATEXindex\index % save old definition to prevent recursion
+%\renewcommand\index[1]{\LATEXindex{#1|docname{\jobname}}}
+%\newcommand\docname[2]{\refsheetLinkWithLabelInline{#1} p #2}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsxtra}
+\usepackage{graphicx}  % extend graphics
+\usepackage{tabularx}
+\usepackage{wrapfig}   % wrap text around figures, if desired
+\usepackage{hyperref}
+\usepackage{color}     % color text
+\usepackage[3D]{movie15}
+\usepackage[subsectionbib]{bibunits}
+\usepackage[nonstop]{feynmf}    % feynman diagrams; don't stop for
+                                % errors
+\usepackage{ifpdf}              % helpful!
+\ifpdf
+\usepackage[final]{pdfpages}    % see google for docs...not quite reliable, still using \includegraphics. see example.tex
+\fi
+
+% \usepackage{catchfile}
+% \newcommand{\getenv}[2][]{%
+%   \CatchFileEdef{\temp}{"|kpsewhich --var-value #2   "}{}%   | perl -pe 'chomp if eof'
+%   \if\relax\detokenize{#1}\relax\temp\else\let#1\temp\fi}
+% \getenv[\HOME]{HOME}
+
+\newcommand\localhost[0]{rstarke.redirectme.net/~oshaughn/PublicFiles}
+\newcommand\localbib[1]{rstarke.redirectme.net/~oshaughn/Bibliographies/#1.list}
+\newcommand\localfile[0]{\string~/unixhome/} % http://tex.stackexchange.com/questions/62010/can-i-access-system-environment-variables-from-latex-for-instance-home
+% \makeatletter
+% \g@addto@macro\HOME{/unixhome}
+% \makeatother
+% \newcommand\localfile[0]{\HOME}
+
+
+\newcommand\refinclude[1]{\input{\localfile/NotesAndReferences/ReferenceSheets/#1}}
+\newcommand\sampleinclude[1]{\input{\localfile/NotesAndReferences/SampleProblems/#1}}
+\newcommand\readinginclude[1]{\input{\localfile/NotesAndReferences/ReadingNotes/#1}}
+\newcommand\projectinclude[1]{\input{\localfile/Projects/#1}}
+\newcommand\proposalinclude[1]{\input{\localfile/Proposals/ProjectIdeas/#1}}
+\newcommand\packageinclude[1]{\input{\localfile/MathematicaPackages/#1}}
+
+
+% Bibliography
+\newcommand\bibLinkWithLabel[2]{\href{http://\localbib{#1}}{#2}}
+% Reference sheets
+\newcommand\refsheetWebLink[1]{\href{http://\localhost/ReferenceSheets/#1.pdf}{pdf}}
+\newcommand\refsheetDVILink[1]{\href{\localfile/NotesAndReferences/ReferenceSheets/#1.dvi}{#1}}
+\newcommand\refsheetDVILinkWithLabel[2]{\href{\localfile/NotesAndReferences/ReferenceSheets/#1.dvi}{#2}}
+\newcommand\refsheetLink[1]{(\refsheetDVILinkWithLabel{#1}{local dvi};\refsheetWebLink{#1})}
+\newcommand\refsheetLinkWithLabel[2]{(#2:\refsheetDVILinkWithLabel{#1}{local dvi}; \refsheetWebLink{#1})}
+\newcommand\refsheetLinkWithLabelInline[2]{#2(\refsheetDVILinkWithLabel{#1}{local dvi}; \refsheetWebLink{#1})}
+% Sample problems
+\newcommand\sampleWebLink[1]{\href{http://\localhost/SampleProblems/#1.pdf}{pdf}}
+\newcommand\sampleDVILink[1]{\href{\localfile/NotesAndReferences/SampleProblems/#1.dvi}{#1}}
+\newcommand\sampleDVILinkWithLabel[2]{\href{\localfile/NotesAndReferences/SampleProblems/#1.dvi}{#2}}
+\newcommand\sampleLink[1]{(\sampleDVILinkWithLabel{#1}{local dvi};\sampleWebLink{#1})}
+\newcommand\sampleLinkWithLabel[2]{(#2:\sampleDVILinkWithLabel{#1}{local dvi}; \sampleWebLink{#1})}
+\newcommand\sampleLinkWithLabelInline[2]{#2(\sampleDVILinkWithLabel{#1}{local dvi}; \sampleWebLink{#1})}
+% reading notes
+\newcommand\readingWebLink[1]{\href{http://\localhost/ReadingNotes/#1.pdf}{pdf}}
+\newcommand\readingDVILink[1]{\href{\localfile/NotesAndReferences/ReadingNotes/#1.dvi}{#1}}
+\newcommand\readingDVILinkWithLabel[2]{\href{\localfile/NotesAndReferences/ReadingNotes/#1.dvi}{#2}}
+\newcommand\readingLink[1]{(\readingDVILinkWithLabel{#1}{local dvi};\readingWebLink{#1})}
+\newcommand\readingLinkWithLabel[2]{(#2:\readingDVILinkWithLabel{#1}{local dvi}; \readingWebLink{#1})}
+\newcommand\readingLinkWithLabelInline[2]{#2(\readingDVILinkWithLabel{#1}{local dvi}; \readingWebLink{#1})}
+% referee (mostly for LIGO)
+\newcommand\refereeDVILink[1]{\href{\localfile/Personal/Referee/#1.dvi}{#1}}
+% Wiki
+\newcommand\localwiki[1]{\href{http://rstarke.redirectme.net/~oshaughn/Collaborate/index.php/#1}{#1}}
+\newcommand\localwikiAlt[2]{\href{http://rstarke.redirectme.net/~oshaughn/Collaborate/index.php/#1}{#2}}
+% Binder images
+\newcommand\binderImageRemoteLink[1]{\href{http://\localhost/BinderImages/#1}{remote}}
+\newcommand\binderImageLocalLink[1]{\href{\localfile/BinderImages/#1}{local}}
+\newcommand\binderImageLink[1]{(#1:\binderImageRemoteLink{#1},\binderImageLocalLink{#1})}
+\newcommand\binderImageLinkWithLabel[2]{(#2:\binderImageRemoteLink{#1},\binderImageLocalLink{#1})}
+\newcommand\binderImageLinkWithLabelInline[2]{\href{\localfile/BinderImages/#1}{#2}}
+% Project tex
+\newcommand\projectLinkWithLabelInline[2]{\href{\localfile/Projects/#1.dvi}{#2}}
+% Proposals
+\newcommand\proposalLinkWithLabelInline[2]{\href{\localfile/Proposals/#1.dvi}{#2}}
+% Proposals
+\newcommand\presentationLinkWithLabelInline[2]{\href{\localfile/Presentations/#1.dvi}{#2}}
+% Mathematica package
+\newcommand\packageLinkWithLabel[1]{\href{\localfile/MathematicaPackages/#1}{\texttt{#1}}
+(\href{http://\localhost//MathematicaPackages/#1}{remote})}
+% SIMILARLY WITH MATHEMATICA PACKAGES
+\newcommand\packageLinkWithLabelInline[2]{\href{\localfile/MathematicaPackages/#1}{\texttt{#2}}
+(\href{http://\localhost//MathematicaPackages/#1}{remote})}
+\newcommand\packageTestLinkWithLabelInline[2]{\href{\localfile/MathematicaPackages/#1/TestAndValidate/overview.dvi}{#2}}
+
+
+% Search engine links:
+\newcommand\searchWikipedia[1]{\href{http://en.wikipedia.org/wiki/Special:Search?search=#1}{wikipedia(#1)}}
+\newcommand\searchGoogle[1]{\href{http://www.google.com/search?q=#1}{google(#1)}}
+\newcommand\searchWikipediaWithLabel[2]{\href{http://en.wikipedia.org/wiki/Special:Search?search=#1}{#2}}
+
+% Standard LAL, LALAPPs links
+\newcommand\LALDocsMain{\href{http://www.lsc-group.phys.uwm.edu/lal/slug/nightly/doc/lsd-nightly.pdf}{LALDocs}}
+%\newcommand\LALappsDocsMain{\href{http://www.lsc-group.phys.uwm.edu/~saikat/doc/lalapps.pdf}{LALapps docs}}
+\newcommand\LALappsDocsMain{\href{http://www.lsc-group.phys.uwm.edu/lal/slug/nightly/doc/lalapps-nightly.pdf}{LALapps docs}}
+\newcommand\LALDocsSource[1]{\href{http://www.lsc-group.phys.uwm.edu/cgit/lalsuite/tree/#1}{#1}}
+\newcommand\LALDocsSourceInline[2]{\href{http://www.lsc-group.phys.uwm.edu/cgit/lalsuite/tree/#1}{{\tt #2}}}
+
+% BONUS TOOLS
+
+\newcommand\editremark[1]{{\color{red} #1}}
+\newcommand\TEXTsymbol[1]{}         % Unfortunate relic
+
+\newcommand\unit[1]{\, {\rm #1}}
+\newcommand\prx{PRX}
+\newcommand\aap{A\&A}
+\newcommand\apss{APSS}
+\newcommand\aaps{AAPS}
+\newcommand\apjs{ApJ S}
+\newcommand\apjl{ApJL}
+\newcommand\aj{AJ}
+%\newcommand\apjl{ApJL}
+\newcommand\mnras{MNRAS}
+\newcommand\pasp{PASP}
+\newcommand\araa{ARA\&A}
+%\newcommand\physrep{Phys. Rep.}
+\newcommand\aapr{AAPR}
+\newcommand\nar{NAR}  % New astronomy reviews
+%\newcommand\pasp{PASP}
+\newcommand\ndash{-}
+
+% EQUATION ARRAY TOOLS
+\newcommand\eqnbreak[1]{ \nonumber \\ &#1& }
+\newcommand\eqnbreakB[1]{ \right. \nonumber \\ &#1& \left .}
+\newcommand\eqnbreakBB[1]{ \right. \right. \nonumber \\ &#1& \left . \left.}
+\newcommand\alignbreak{\nonumber \\ &}
+
+
+% MECH TOOLS
+\newcommand\poissonbracket[2]{\{#1,#2\}}
+
+% STAT MECH TOOLS
+\newcommand\efermi{{\varepsilon_f}}
+
+% QM TOOLS
+\newcommand\qmstate[1]{\left|#1\right \rangle}
+\newcommand\qmstateKet[1]{\left\langle#1\right|}
+\newcommand\qmstateproduct[2]{\left\langle#1|#2\right\rangle}
+\newcommand\qmoperatorelement[3]{\left\langle#1\left|#2\right|#3\right\rangle}
+\newcommand\qmoperator[1]{{\bf #1}}
+
+
+
+% slash: http://groups.google.com.au/group/comp.text.tex/tree/browse_frm/month/1994-09/cce5bf986da7c54f?rnum=21&_done=%2Fgroup%2Fcomp.text.tex%2Fbrowse_frm%2Fmonth%2F1994-09%3F#doc_90361288b1f40d91
+\newcommand\dslash[1]{\rlap{\sl/}#1}
+
+% lagrangian density
+\newcommand\ld{{\cal L}}
+
+% NUCLEAR TOOLS
+\usepackage{isotope}   % isotope.sty \isotope{Ra}  \isotope[56]{Ni}  or \isotope[A][Z]{X}
+
+% SYMMETRY TOOLS
+\newcommand\Y[1]{{{}_{#1}Y}}
+
+% GR tools
+\newcommand\prederiv[2]{{}^{(#1)}#2}
+\newcommand\dualBack{*}
+\newcommand\dualForward{\star}
+\newcommand\avL{\left< {\cal L}_{(a} {\cal L}_{b)} \right>}
+\newcommand\WeylScalar{{\psi_4}}
+\newcommand\WeylScalarFourier{{\tilde{\psi}_4}}
+
+
+% MATH tools
+\newcommand\E[1]{\left<#1\right>}
+\newcommand\norm[1]{||#1||\,}
+\newcommand\probHypothesis{{\cal M}}
+\newcommand\probHypothesisSpecific[1]{{\cal #1}}
+\newcommand\chainRightStepRight[3]{#1_{#3}\stackrel{#2}{\rightarrow}}
+\newcommand\chainRight[3]{\stackrel{#2}{\rightarrow}%
+\chainRightStepRight{#1}{#2}{#3}\chainRightStepRight{#1}{#2}{#3-1}}
+\newcommand\longchainRight[4]{0\stackrel{#2}{\rightarrow}#1_{#4}\ldots%
+\chainRightStepRight{#1}{#2}{#3}\chainRightStepRight{#1}{#2}{#3-1}%
+\ldots\chainRightStepRight{#1}{#2}{0}0}
+
+% http://tex.stackexchange.com/questions/20609/strikeout-in-math-mode
+\newcommand\strikeoutMath[2][black]{\setbox0=\hbox{$#2$}%
+\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2} 
+
+\newcommand\chainLeftStepLeft[3]{#1^{#3}\stackrel{#2}{\leftarrow}}
+\newcommand\chainLeft[3]{\stackrel{#2}{\leftarrow}%
+\chainLeftStepLeft{#1}{#2}{#3}\chainLeftStepLeft{#1}{#2}{#3-1}}
+\newcommand\longchainLeft[4]{0\stackrel{#2}{\leftarrow}#1^{#4}\ldots%
+\chainLeftStepLeft{#1}{#2}{#3}\chainLeftStepLeft{#1}{#2}{#3-1}%
+\ldots\chainLeftStepLeft{#1}{#2}{0}0}
+
+
+\newcommand\chainPairRightStep[5]{\begin{array}{ll}%
+#1_{#5}&\stackrel{#4}{\rightarrow}  \\
+\downarrow #2 & \\
+#3_{#5}&\stackrel{#4}{\rightarrow}  
+\end{array}}
+\newcommand\chainPairRightArrows[1]{\begin{array}{l}%
+\stackrel{#1}{\rightarrow}  \\
+ \\
+\stackrel{#1}{\rightarrow}  
+\end{array}}
+
+\newcommand\chainPairLeftStep[5]{\begin{array}{ll}%
+\stackrel{#4}{\leftarrow}&#1^{#5}  \\
+& \downarrow #2  \\
+\stackrel{#4}{\leftarrow} & #3^{#5} 
+\end{array}}
+\newcommand\chainPairLeftArrows[1]{\begin{array}{l}%
+\stackrel{#1}{\leftarrow}  \\
+ \\
+\stackrel{#1}{\leftarrow}  
+\end{array}}
+
+
+\newcommand\Lie{{\pounds}}
+
+%% GW ASTRONOMY
+\newcommand\Hcomplex{{h_c}}  % hplus - i hcross
+\newcommand\rHcomplex{{H}}   % r(hplus - i hcross)
+\newcommand\snrsymbol{\rho}
+\newcommand\snrcut{\rho_c}
+\newcommand\Dh{{D_h}}
+\newcommand\Dv{{D_v}}
+\newcommand\mc{{{\cal M}_c}}
+
+%%% STYLE TOOLS
+
+\newcommand\chapter[1]{\newpage  \clearpage  \addcontentsline{toc}{section}{#1} \begin{center} {\bf \Large #1} \end{center}}
+
+%%% Hide unfinished text (or show, if I prefer)
+\newcommand\ForInternalReference[1]{#1}
+
+%% Shaded boxes : see 
+\usepackage{framed}
+\definecolor{shadecolor}{gray}{0.95}
+% \usepackage{shadbox}  % very crappy package -- doesn't work well with xdvi
+% \newcommand\regionWork[1]{\shadbox{10}{\framebox[0.9\columnwidth]{#1}}}
+
+
+\bibliographystyle{astroads}
+% Force a long bib, to insure link inclusion to journal articles
+
+% Header and footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\rfoot{Generated \today}
+\lfoot{Link to \hyperlink{toc}{TOC}}
+
+%%% INCLUDABLE HIERARHICAL INDEX TOOLS (truncate at fixed depth)
+%   Problem: Latex can't do more than 6 deep: http://www.tex.ac.uk/cgi-bin/texfaq2html?label=toodeep
+\newcounter{tabletopicsbelowDepth}
+\setcounter{tabletopicsbelowDepth}{0}
+\newenvironment{topicsbelowlist}{%
+\addtocounter{tabletopicsbelowDepth}{1}
+\ifnum\value{tabletopicsbelowDepth}<3
+ \begin{itemize}%
+\else
+ \begin{enumerate}%   Swapping the type of list allows deeper nesting
+\fi
+}{%
+\ifnum\value{tabletopicsbelowDepth}<3
+ \end{itemize}
+\else
+ \end{enumerate}
+\fi
+\addtocounter{tabletopicsbelowDepth}{-1}
+}
+
+
+\newenvironment{mathlist}{%
+\begin{list}{-}{
+\addtolength{\topsep}{-0.8\baselineskip}
+\addtolength{\listparindent}{200.0pc}
+\addtolength{\itemsep}{0.3\baselineskip}
+\addtolength{\parsep}{-0.3\baselineskip}
+}}{%
+\end{list}
+}
