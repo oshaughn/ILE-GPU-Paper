@@ -94,10 +94,10 @@ START_BNS=999999768
 STOP_BNS=1000000024
 
 mdc_bns.xml.gz:
-	util_WriteInjectionFile.py  --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 45 --parameter fmin --parameter-value 20
+	util_WriteInjectionFile.py  --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 45 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
 
 bns.cache: mdc_bns.xml.gz
-	util_WriteFrameAndCacheFromXML.sh mdc.xml.gz 0 bns ${APPROX}
+	util_WriteFrameAndCacheFromXML.sh mdc_bns.xml.gz 0 bns ${APPROX}
 
 snr_bns_table.dat: bns_noise.cache HLV-aLIGO_PSD.xml.gz
 	util_FrameZeroNoiseSNR.py --cache bns_noise.cache --psd-file H1=HLV-aLIGO_PSD.xml.gz  --psd-file L1=HLV-aLIGO_PSD.xml.gz  > snr_table.dat
