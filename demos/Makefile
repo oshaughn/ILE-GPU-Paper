@@ -14,6 +14,7 @@ CIP_MEM=2048
 
 EVENT_TIME=1000000014.236547946
 APPROX=SEOBNRv4
+APPROX_BNS=TaylorT4
 
 
 ###
@@ -104,12 +105,12 @@ snr_bns_table.dat: bns.cache HLV-aLIGO_PSD.xml.gz
 
 
 DMAX_BNS=500
-STANDARD_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid-bns.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/bns.cache --fmin-template 10.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX_BNS}  --psd-file H1=${PWD}/HLV-aLIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-aLIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
+STANDARD_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid-bns.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/bns.cache --fmin-template 10.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX_BNS} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX_BNS}  --psd-file H1=${PWD}/HLV-aLIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-aLIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
 
 test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
 #	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
-	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap
+	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap --downselect-parameter m2 --downselect-parameter-range [1,2]
 	(cd $@; echo X --mc-range '[1.196,1.198]'     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
@@ -122,7 +123,7 @@ test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
 #	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
-	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap
+	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]
 	(cd $@; echo X --mc-range '[1.196,1.198]'     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
