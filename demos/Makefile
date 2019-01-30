@@ -94,7 +94,7 @@ START_BNS=999999768
 STOP_BNS=1000000024
 
 mdc_bns.xml.gz:
-	util_WriteInjectionFile.py  --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 45 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
+	util_WriteInjectionFile.py  --fname mdc_bns --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 45 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
 
 bns.cache: mdc_bns.xml.gz
 	util_WriteFrameAndCacheFromXML.sh mdc_bns.xml.gz 0 bns ${APPROX}
