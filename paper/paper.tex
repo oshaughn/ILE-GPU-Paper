@@ -350,16 +350,38 @@ inconsistent with a signal (or the absence thereof) in the data, with only $N_{i
 
 
 \begin{table}
-\begin{tabular}{lrr|cccc|r}
-Version & srate & modes & $\tau_{start}$ & $\tau_{setup}$ & $\tau_{ad}$ & $\tau_{it}$ & $\frac{T_{ILE}}{N_{eval}}$\\  %\hline 
-  &  & Hz & sec & sec & & $10^{-6} $sec & sec\\ \hline 
-CPU & 16384 & $(2,\pm 2) $ & 20 & & & &  \editremark{900}  \\ 
+\begin{tabular}{lrr|ccccc|r}
+Version & srate & modes & $\tau_{start}$ & $\tau_{setup}$ & $\tau_{ad}$ & $\tau_{it,like}$ &$\tau_{it,rest}$ & $\frac{T_{ILE}}{N_{eval}}$\\  %\hline 
+  &  & Hz & sec & sec & & $\mu$sec & $\mu$sec\\ \hline 
+CPU & 16384 & $(2,\pm 2) $ & 20 & && & &  \editremark{900}  \\ 
        & 4096 & $(2,\pm 2) $ &   20 \\ \hline
 % LIGO-WA: 
 %  - old compute node: one marginalized likelihood in 2 minutes (!), 2x8
 GPU (a) & 16384 & $(2,\pm 2) $  & 20  & &   \\
             & 4096 &$(2,\pm 2) $  &  20 &\\
-% LIGO-CIT, pcdev13
+%% % LIGo CIT, pcdev13, 16 kHz : basically indistinguishable from cost at 4kHz
+%%       1    0.027    0.027  560.572  560.572 integrate_likelihood_extrinsic_batchmode:8(<module>)
+%%        20    0.082    0.004  552.004   27.600 integrate_likelihood_extrinsic_batchmode:690(analyze_event)
+%%        20   76.306    3.815  503.342   25.167 mcsampler.py:327(integrate)
+%%      2345   57.019    0.024  241.951    0.103 mcsampler.py:198(draw)
+%%     25785    0.135    0.000   99.535    0.004 shape_base.py:286(hstack)
+%%     26561   99.102    0.004   99.102    0.004 {numpy.concatenate}
+%%     21981    0.933    0.000   87.819    0.004 function_base.py:2063(__call__)
+%%     21981   34.750    0.002   86.887    0.004 function_base.py:2154(_vectorize_call)
+%%      2345    1.391    0.001   86.327    0.037 integrate_likelihood_extrinsic_batchmode:810(likelihood_function)
+%%      2345    0.007    0.000   46.648    0.020 __init__.py:630(asnumpy)
+%%      2345   46.557    0.020   46.640    0.020 {method 'get' of 'cupy.core.core.ndarray' objects}
+%%        20    0.179    0.009   43.145    2.157 factored_likelihood.py:92(PrecomputeLikelihoodTerms)
+%%        20    0.174    0.009   37.498    1.875 lalsimutils.py:2582(hlmoft_SEOB_dict)
+%%        20    0.099    0.005   37.324    1.866 lalsimutils.py:2743(complex_hoft)
+%%        20   37.220    1.861   37.220    1.861 {lalsimulation._lalsimulation.SimInspiralChooseTDWaveform}
+%%    444365    0.761    0.000   35.303    0.000 polyint.py:62(__call__)
+%%      2345    5.260    0.002   33.956    0.014 factored_likelihood.py:1676(DiscreteFactoredLogLikelihoodViaArrayVectorNoLoop)
+%%       407    0.005    0.000   28.757    0.071 odepack.py:28(odeint)
+%%       407    1.327    0.003   28.740    0.071 {scipy.integrate._odepack.odeint}
+%%    444365    2.644    0.000   26.423    0.000 interpolate.py:657(_evaluate)
+%% 117270874   22.569    0.000   22.569    0.000 mcsampler.py:685(uniform_samp)
+% LIGO-CIT, pcdev13, 4kHz
 %  - 20 iterations, about 450  to 500 sec to eval (i.e., about 25 sec per lnL)
 %  -  precompute: can time manually
 %   -  Overlap stages: PrecomputeLIkelihood + waveform, about 4
@@ -383,10 +405,10 @@ GPU (a) & 16384 & $(2,\pm 2) $  & 20  & &   \\
    %%     20    0.048    0.002   24.454    1.223 lalsimutils.py:2582(hlmoft_SEOB_dict)
    %%     20    0.030    0.002   24.406    1.220 lalsimutils.py:2743(complex_hoft)
    %%     20   24.373    1.219   24.373    1.219 {lalsimulation._lalsimulation.SimInspiralChooseTDWaveform}
-GPU (b) & 16384 & & 20 \\
-       & 4096 & & 20 & $\simeq 1$ &   & 0.75  & 25\\ \hline
-GPU (b) & 16384 & $m=\pm 2, \pm 1$ &  \\
-       & 4096 & $m=\pm 2, \pm 1$ \\
+GPU (b) & 16384 & & 20  & 1.8 & 1 & 0.85& 12 &28\\
+       & 4096 & & 20 & $1.2 $ &  1  & 0.75 &  & 25\\ \hline
+GPU (b) & 16384 & $\pm 2, \pm 1$ &  \\
+       & 4096 & $\pm 2, \pm 1$ \\
 \end{tabular}
 % Compute node at LIGO-WA
 \caption{\label{tab:CostBreakdown}Evaluation costs on default hardware, for a two-mode system $(l,m)=(2,\pm 2)$.  Scenario (a) is a compute node on LIGO-WA; scenario (b) is more modern hardware. }
@@ -394,15 +416,17 @@ GPU (b) & 16384 & $m=\pm 2, \pm 1$ &  \\
 
 
 With the new low-cost likelihood evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now can be
-comparable or in excess of the total time used to evaluate the likelihood.   For this reason, we reorganize the workflow, so each
+comparable or in excess of the total time used to evaluate the likelihood.   In fact, the total time per Monte Carlo
+evaluation $\tau_{it}=\tau_{manage}+\tau_{eval}$  spent in general-purpose overhead $\tau_{manage}$ will be much larger than the time $\tau_{eval}$ spent
+carrying out scientific calculations by evaluationg the likelihood.  For these reasons, we reorganize the workflow, so each
 instance of ILE loops over
 $N_{eval}$ different choices for $\lambda$. 
 %
-Additionally, particularly for massive binary black holes, we adopt two additional performance improvements.  First and
+Additionally, particularly for massive binary black holes, we investigate two additional performance improvements.  First and
 foremost, we lower the sampling rate, thus lowering the startup cost $\tau_{start}$ and particularly setup cost
 $\tau_{setup}$.  Previously and out of an abundance of caution, \ILE{} employed a sampling rate $1/\Delta t = 16384
 \unit{Hz}$ for all calculations, but terminated all inner products in Eq. (\ref{eq:overlap}) at roughly $f_{\rm
-  max}=2048\unit{Hz}$ or less.   Reducing the sampling rate by a factor $s$ decreases the  cost of all operations with
+  max}=2048\unit{Hz}$ or less.   Reducing the sampling rate by a factor $s$ will the  cost of all operations with
 timeseries -- they are shorter.  Depending on the relative cost of overhead versus array operations,  $\tau_{setup}$
 \emph{and} the cost per evaluation $\tau_{eval}$ decrease modestly because of this effect.  
 Also, to insure safe inner products over short data sets in the presence of very narrow spectral lines, we operated on a
@@ -440,7 +464,9 @@ Typically we target $N_{\rm eval} \simeq 20$ so that startup and other one-time 
 runtime.   In this configuration, the run time per marginalized likelihood is around $T_{ILE}/N_{\rm eval} \simeq 25
 \unit{s}$ for a binary black hole \editremark{checkme - old number}.    Of this $25 \unit{s}$, only roughly
 $1.5\unit{s}$ corresponds to evaluating the likleihood, implying the cost $\tau_{it} \simeq 1.5/N_{\rm it} \simeq
-7.5\times 10^{-7}$..
+7.5\times 10^{-7}$.
+Likewise, because overhead dominates over array manipulations, an analysis with  $16\unit{kHz}$ timeseries requires only
+marginally more time than the corresponding $4\unit{kHz}$ analysis.
 
 
 For low-latency analyses, we need to assess the overall wallclock time needed to perform an analysis, often with a
@@ -468,7 +494,8 @@ accelerated GP interpolation in subsequent work.
 The \ILE{} likelhood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
 time needed to evaluate  $\ln {\cal L}_{\rm marg}$ for extremely costly
 waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{setup}$.   That said, the tests described
-above used relatively costly waveform generation with $h_{lm}(t)$ allocation requiring $\tau_{wf} \simeq 1 \unit{s}$.
+above used relatively costly waveform generation with $h_{lm}(t)$ allocation requiring $\tau_{wf} \simeq 1.2 \unit{s}$
+at 4kHz and $1.9\unit{s}$ at 16 kHz.
 
 
 \editremark{Highly heterogeneous GPU environment - very different performance depending on available resources}
