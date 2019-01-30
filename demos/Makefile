@@ -94,15 +94,16 @@ START_BNS=999999768
 STOP_BNS=1000000024
 
 mdc_bns.xml.gz:
-	util_WriteInjectionFile.py  --fname mdc_bns --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 45 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
+	util_WriteInjectionFile.py  --fname mdc_bns --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 100 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
 
 bns.cache: mdc_bns.xml.gz
 	util_WriteFrameAndCacheFromXML.sh mdc_bns.xml.gz 0 bns ${APPROX}
 
-snr_bns_table.dat: bns_noise.cache HLV-aLIGO_PSD.xml.gz
-	util_FrameZeroNoiseSNR.py --cache bns_noise.cache --psd-file H1=HLV-aLIGO_PSD.xml.gz  --psd-file L1=HLV-aLIGO_PSD.xml.gz  > snr_table.dat
+snr_bns_table.dat: bns.cache HLV-aLIGO_PSD.xml.gz
+	util_FrameZeroNoiseSNR.py --cache bns.cache --psd-file H1=HLV-aLIGO_PSD.xml.gz  --psd-file L1=HLV-aLIGO_PSD.xml.gz  > $@
 
 
+DMAX_BNS=500
 STANDARD_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid-bns.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/bns.cache --fmin-template 10.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX_BNS}  --psd-file H1=${PWD}/HLV-aLIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-aLIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
 
 test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
