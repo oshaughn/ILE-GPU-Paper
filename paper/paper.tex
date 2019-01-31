@@ -144,7 +144,7 @@ identified several coalescing compact binaries
 \cite{DiscoveryPaper,LIGO-O1-BBH,2017PhRvL.118v1101A,LIGO-GW170814,LIGO-GW170608,LIGO-GW170817-bns}.  
 %
 The properties of the sources responsible have been inferred via Bayesian comparison of  each source with candidate
-gravitational ave signals
+gravitational wave signals
 \cite{DiscoveryPaper,LIGO-O1-BBH,2017PhRvL.118v1101A,LIGO-GW170814,LIGO-GW170608,LIGO-GW170817-bns}
 \editremark{citations: real events, also LI and RIFT} \cite{gwastro-PE-AlternativeArchitectures,gwastro-PENR-RIFT}.  
 Many more are expected as observatories reach design sensitivity \cite{2016LRR....19....1A}.  
@@ -160,7 +160,7 @@ for costly time-domain effective-one-body models which incorporate the effects o
 Several strategies have been
 developed to reduce the 
 %overall computational cost and turnaround time of 
-computational cost of parameter estimation \cite{gwastro-pe-Brandon-STF2,gwastro-PE-AlternativeArchitectures,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,2016PhRvD..94d4031S,2017arXiv170302062V}.  
+computational cost of parameter estimation \cite{gwastro-pe-Brandon-STF2,gwastro-PE-AlternativeArchitectures,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,2016PhRvD..94d4031S,2017CQGra..34k5006V}.  
 % The computational cost of parameter estimation can be reduced 
 Approaches that have appeared in the literature include
 %by 
@@ -174,8 +174,8 @@ handling \cite{antil2013two,gwastro-mergers-PE-ReducedOrder-2013,2016PhRvD..94d4
  Some methods, however, achieve rapid turnaround through simplifying approximations.  
 %
 The RIFT strategy described in \editremark{citations - include ROM} eschews these simplifications, performing
-embarassingly-parallel inferences even for costly models.   However, the method as previously implemented still had a
-significant net  computational cost and noticable startup time, limiting its diverse potential applications.
+embarrassingly-parallel inferences even for costly models.   However, the method as previously implemented still had a
+significant net  computational cost and noticeable startup time, limiting its diverse potential applications.
 
 In this paper we describe a substantial improvement to the RIFT approach, enabled by translating its low-level
 algorithms to operate on graphics processing units (GPUs).
@@ -302,7 +302,7 @@ Rewriting sums as matrix operations, the likelihood can be equivalently expresse
  & - \frac{D_{\rm ref}^2}{4 D^2} [ (FY)^\dag U FY + (FY)^TV FY]
 \label{eq:lnL:MatrixForm}
 \end{align}
-where $F,D$ are arrays over extrinsic parameters; $Q$ is an array over time and $(l,m)$; and $U,V$ ar matricies over
+where $F,D$ are arrays over extrinsic parameters; $Q$ is an array over time and $(l,m)$; and $U,V$ are matrices over
 $(l,m)$. 
 
 
@@ -342,7 +342,7 @@ will require a factor $A^2$ more (fewer) iterations.
 We adopt a fixed threshold on $n_{\rm eff}$.  
 
 
-We do benefit slightly by re-using the adaptive Monte Carlo intergrator for each extrinsic point $\lambda$.  Since the
+We do benefit slightly by re-using the adaptive Monte Carlo integrator for each extrinsic point $\lambda$.  Since the
 integrator has already identified the likely range of sky locations and distances on the first iteration, each
 subsequent evaluation of the marginalized likelihood can converge marginally more quickly.
 
@@ -354,13 +354,19 @@ subsequent evaluation of the marginalized likelihood can converge marginally mor
 We illustrate the code using two synthetic signals: a binary black hole with masses $m_{1,2}=35,30 M_\odot$ and a binary
 neutron star with masses $1.4 M_\odot$ and $1.35 M_\odot$.
 We generate  synthetic data for a two-detector LIGO configuration, assuming operation at  initial (BBH) or advanced (BNS) design  sensitivity.
-Both signals are chosen to have peak SNR $\simeq 14$ and are generated with SEOBNRv4.    We perform a multi-stage iterative RIFT analysis of these signal with the
+Both signals are generated with SEOBNRv4.    We perform a multi-stage iterative RIFT analysis of these signal with the
 time-domain SEOBNRv4 (BBH) or TaylorT4 (BNS) approximation, under the simplifying assumption that both objects are point particles with zero
 spin.  We repeat this analysis on heterogeneous LVC collaboration computing resources, to assess our variable
 performance across architectures.  Notably, we investigate the following GPU options: (a) GTX 1050 Ti at LIGO-CIT,
 available in large numbers; (b) V100, available on selected high-performance machines; (c) and
 GTX 1050 at LIGO-LHO.    Unless otherwise noted in the text, we will discuss code configurations using CPU-only and GPU (b) using
-$4096\unit{Hz}$ sampling and only the  $\ell=2, m=\pm 2$ modes.
+$4096\unit{Hz}$ sampling and only the  $\ell=2, m=\pm 2$ modes.  We also conservatively report computational cost for
+parameters $\lambda$ which are close to or within the posterior and therefore, due to their consistency with the data,
+have the best-determined extrinsic parameters and thus converge the most slowly.
+
+\editremark{report on distance to each signal, and in particular $d_{\rm max}$ as that might impact performance too}
+chosen to have peak SNR $\simeq 14$ and 
+
 
 \subsection{Massive compact binary black holes}
 Previously, each instance of ILE examined one intrinsic point $\lambda$.  The overall cost of this ILE evaluation
@@ -371,7 +377,7 @@ cost $\tau_{mc}=N_{ad} \tau_{ad}+N_{it}\tau_{eval}$ increases with the number of
 and the number of times $N_{ad}$ the sampling prior used in adaptive Monte Carlo is regenerated, in proportion to their
 cost.   In the standard configuration, the adaptive sampling prior is regenerated every $n_{\rm chunk}$ iterations (i.e,
  $N_{ad} \simeq N_{it}/n_{chunk}$), regenerating a sampling prior in two sky location parameters and distance.  
-The choice of one $\lambda$ for each instance of ILE was eue to the substantial time  $\tau_{MC}$, which vastly
+The choice of one $\lambda$ for each instance of ILE was due to the substantial time  $\tau_{MC}$, which vastly
 dominated the overall computational cost.   For example, for a typical analysis of a short signal --  a typical binary
 black hole signal with $f_{\rm min}=20 \unit{Hz}$ and $m_1\simeq m_2\simeq 30 M_\odot$ --  this version has
 cost elements as shown in Table \ref{tab:CostBreakdown}, based on the assumption that the MC terminates after $N_{\rm it}\simeq 2\times 10^6$ iterations using
@@ -466,7 +472,7 @@ GPU (c) & 16384 & $\pm 2 $  & 20  & & & 18& &160 &  \\
 % Compute node at LIGO-WA
 \caption{\label{tab:CostBreakdown}\textbf{Profiling performance: Binary black holes}: Evaluation costs for the
   marginalized likelihood on default
-  hardware, for a two-mode system $(l,m)=\pm 2$ analysing $T=8\unit{s}$ of data with a massive binary black hole
+  hardware, for a two-mode system $(l,m)=\pm 2$ analyzing $T=8\unit{s}$ of data with a massive binary black hole
   $m_1=35 M_\odot,M_2=30 M_\odot$.  The last column indicates peak GPU utilization.}
 \end{table*}
 
@@ -474,7 +480,7 @@ GPU (c) & 16384 & $\pm 2 $  & 20  & & & 18& &160 &  \\
 With the new low-cost ${\cal L}_{\rm margT}$ evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now can be
 comparable or in excess of the total time used to evaluate the marginalized likelihood ${\cal L}_{marg}$.   In fact, the total time per Monte Carlo
 evaluation $\tau_{it}=\tau_{manage}+\tau_{eval}$  spent in general-purpose overhead $\tau_{manage}$ will be much larger than the time $\tau_{eval}$ spent
-carrying out scientific calculations by evaluationg the likelihood.  For these reasons, we reorganize the workflow, so each
+carrying out scientific calculations by evaluating the likelihood.  For these reasons, we reorganize the workflow, so each
 instance of ILE loops over
 $N_{eval}$ different choices for $\lambda$. 
 %
@@ -519,7 +525,7 @@ T_{ILE,mod}/N_{\rm eval} &= \frac{\tau_{start} + \tau_{ad}N_{it}/n_{\rm chunk}}{
 Typically we target $N_{\rm eval} \simeq 20$ so that startup and other one-time costs  are not a significant contributor to the overall
 runtime.   In this configuration, the run time per marginalized likelihood is around $T_{ILE}/N_{\rm eval} \simeq 25
 \unit{s}$ for a binary black hole.    Of this $25 \unit{s}$, only roughly
-$1.5\unit{s}$ corresponds to evaluating the likleihood, implying the cost $\tau_{it} \simeq 1.5/N_{\rm it} \simeq
+$1.5\unit{s}$ corresponds to evaluating the likelihood, implying the cost $\tau_{it} \simeq 1.5/N_{\rm it} \simeq
 7.5\times 10^{-7}$.
 Likewise, because overhead dominates over array manipulations, an analysis with  $16\unit{kHz}$ timeseries requires only
 marginally more time than the corresponding $4\unit{kHz}$ analysis.
@@ -549,13 +555,13 @@ This discussion ignores the latency introduced by the  gaussian process interpol
 accelerated GP interpolation in subsequent work.
 
 
-The \ILE{} likelhood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
+The \ILE{} likelihood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
 time needed to evaluate  $\ln {\cal L}_{\rm marg}$ for extremely costly
 waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{setup}$.   That said, the tests described
 above used relatively costly waveform generation with $h_{lm}(t)$ allocation requiring $\tau_{wf} \simeq 1.2 \unit{s}$
 at 4kHz and $1.9\unit{s}$ at 16 kHz.
 
-The \ILE{} likelhood $\ln {\cal L}_{\rm margT}$ involves sums over modes, with the most expensive likelihood and setup operations (involving $Q$) growing linearly with
+The \ILE{} likelihood $\ln {\cal L}_{\rm margT}$ involves sums over modes, with the most expensive likelihood and setup operations (involving $Q$) growing linearly with
 the number of modes used.  This increased cost is most apparent in Table \ref{tab:CostBreakdown} when comparing the
 columns corresponding  $\tau_{it,like}$ for GPU (b) between the $\pm 2$ and $(\pm 2,\pm 1)$ rows.  The cost of
 evaluating $\ln {\cal L}_{\rm margT}$   with 4 modes is roughly twice that of runs with two modes, as expected. 
@@ -576,6 +582,8 @@ $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline
 %   (11261 - 10974)/20/100. = 0.14 sec for 16 kHz
 CPU & 16384 & $\pm 2,\pm 1 $ & 35 & 26 & 0.14  & 680  & & 590    \\ 
        & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  & \\ \hline
+GPU (a) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&&   \\
+       & 4096 & $ \pm 2, \pm 1 $        &  35  & &&&& 360 \\ \hline
 %   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
 %   (226.489 - 17)/20/100  : 0.1 sec for 4kHz
 %   (165 - 29.  )/20/100   : looks odd for 16 kHz
@@ -584,7 +592,7 @@ GPU (b) & 16384 & $\pm 2, \pm 1$   & 35 & 26 & 0.07 &  2.4 & &35 &  \\
 \end{tabular}
 \caption{\label{tab:CostBreakdown:BNS}\textbf{Profiling performance: Binary neutron stars}: Evaluation costs for the
   marginalized likelihood on default
-  hardware,  analysing $T=8\unit{s}$ of data with a binary neutron stars
+  hardware,  analyzing $T=8\unit{s}$ of data with a binary neutron stars
   $m_1=1.4 M_\odot,M_2=1.35 M_\odot$, with convergence threshold $n_{\rm eff} > 50$.
 }
 \end{table*}
@@ -597,7 +605,7 @@ cost $\tau_{it}$ consistent BBH analyses,  likelihood evaluations for BNS are of
 
 Low-mass compact binaries like binary neutron stars have much longer inspiral times from the same starting frequency of
 $20\unit{Hz}$: roughly $160 \unit{s}$.   Nominally, the manipulation of a corresponding power-of-two duration data ($256\unit{s}$) involves
-$32\times$ more costly fourier transforms and time integrations than the BBH analysis described above.  
+$32\times$ more costly Fourier transforms and time integrations than the BBH analysis described above.  
 %  a = np.zeros(16384*256,dtype=np.complex64); a.nbytes/1024/1024
 [An array of $256\unit{s}$ of data at $16\unit{kHz}$ corresponds to  32 Mb.]  Comparing $\tau_{setup}$ appearing in Tables
  \ref{tab:CostBreakdown} and  \ref{tab:CostBreakdown:BNS}, we indeed find our BNS analysis requires  a factor of order   $32\times$
@@ -614,7 +622,8 @@ Because this improved performance relies on the sampler, not on our choice of ha
 improvement for all choices of GPU.
 
 
-\editremark{test on other hardware}
+\editremark{test on other hardware -- also problem, a lot of the speed improvement occurs because the initial grid is
+  crap/too wide}
 
 
 For the closed-form post-Newtonian approximation used in the study above, waveform costs are a modest contribution to
@@ -638,7 +647,7 @@ does not usually limit code performance.
 
 The overall code performance and thus latency can be further decreased substantially, notably by converting the Monte
 Carlo random number generation and inner products to GPU-based operations.  In such a configuration, the marginalized
-likeliood would carry out almost all calculations (except waveform generation) on a GPU, with minimal communication off
+likelihood would carry out almost all calculations (except waveform generation) on a GPU, with minimal communication off
 the board.  This configuration should further reduce the average time needed to compute $\ln {\cal L}_{\rm
   marg}(\lambda)$ for both binary black holes (which are Monte Carlo limited) and binary neutron stars (which are
 inner-product limited).   We anticipate a further factor of roughly 10 reduction in overall evaluation time can be
@@ -668,5 +677,5 @@ We thank the Computational Science Initiative at BNL for hosting GPU Hackathon 2
 
 
 %\bibstyle{unsrt}
-\bibliography{paperexport}
+\bibliography{paperexport,LIGO-publications}
 \end{document}
