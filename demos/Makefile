@@ -93,6 +93,7 @@ test_workflow_batch_gpu_lowlatency: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 # 256 sec, starting at event time minus about 256, plus 10
 START_BNS=999999768
 STOP_BNS=1000000024
+MC_RANGE_BNS='[1.1963,1.1972]' 
 
 mdc_bns.xml.gz:
 	util_WriteInjectionFile.py  --fname mdc_bns --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 100 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
@@ -111,7 +112,7 @@ test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
 #	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
 	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap --downselect-parameter m2 --downselect-parameter-range [1,2]
-	(cd $@; echo X --mc-range '[1.196,1.198]'     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
+	(cd $@; echo X --mc-range   ${MC_RANGE_BNS}  --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
@@ -124,7 +125,7 @@ test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
 #	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
 	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]
-	(cd $@; echo X --mc-range '[1.196,1.198]'     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
+	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
