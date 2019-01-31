@@ -448,10 +448,14 @@ GPU (a) & 16384 & $(2,\pm 2) $  & 20  & & && & 270 \\
    %%     20    0.048    0.002   24.454    1.223 lalsimutils.py:2582(hlmoft_SEOB_dict)
    %%     20    0.030    0.002   24.406    1.220 lalsimutils.py:2743(complex_hoft)
    %%     20   24.373    1.219   24.373    1.219 {lalsimulation._lalsimulation.SimInspiralChooseTDWaveform}
-GPU (b) & 16384 & $\pm 2$ & 20  & 1.8 & 1 & 0.85& 12 &28 & 15\\
-       & 4096 & $\pm 2$  & 20 & $1.2 $ &  1  & 0.75 &  & 25\\ \hline
+% ./parse_report.sh 20190130-profile_gpu_lowres_pcdev13.log_welford | more
+% ./parse_report.sh 20190130-profile_gpu_lowres_pcdev13.log_16kHz | more
+%   'residual' time: take mcsampler, subtract likleihood, divide by number of calls and number of evals per chunk
+GPU (b) & 16384 & $\pm 2$ & 20  & 1.8 & 1 & \editremark{0.85}& \editremark{6} &28 & 15\\
+       & 4096 & $\pm 2$  & 20 & $1.2 $ &  1  & \editremark{0.75} & \editremark{6}  & 25\\ \hline
 % ~/parse_report.sh profile_gpu_HM_lowres_pcdev13.log | more
-GPU (b) & 16384 & $\pm 2, \pm 1$ & 20  \\
+%   - extra eval cost: (mcsampler - likelihood)/20/n_eval_likelihood/10^4  
+GPU (b) & 16384 & $\pm 2, \pm 1$ & 20 & 1 && 4.2 & \editremark{1}  & 38  \\
        & 4096 & $\pm 2, \pm 1$ & 20 & 1&& 2.5  && 35 & \\ \hline
 %
 % LHO or LLO worker nodes
@@ -467,8 +471,8 @@ GPU (c) & 16384 & $\pm 2 $  & 20  & & & 18& &160 &  \\
 \end{table*}
 
 
-With the new low-cost likelihood evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now can be
-comparable or in excess of the total time used to evaluate the likelihood.   In fact, the total time per Monte Carlo
+With the new low-cost ${\cal L}_{\rm margT}$ evaluations, however, the startup and setup costs  $\tau_{start},\tau_{setup}$ now can be
+comparable or in excess of the total time used to evaluate the marginalized likelihood ${\cal L}_{marg}$.   In fact, the total time per Monte Carlo
 evaluation $\tau_{it}=\tau_{manage}+\tau_{eval}$  spent in general-purpose overhead $\tau_{manage}$ will be much larger than the time $\tau_{eval}$ spent
 carrying out scientific calculations by evaluationg the likelihood.  For these reasons, we reorganize the workflow, so each
 instance of ILE loops over
@@ -490,8 +494,8 @@ Instead and following LI, we adopt a much shorter inverse spectrum truncation le
 a Tukey window applied to the data to remove discontinuities at the start and end of each segment.   
 Reducing the duration of data analyzed by a factor $s'$ will reduce the cost $\tau_{setup}$ by a factor $s'$.  
 %
-Combining these factors together, the overall computational cost of each marginalized likelihood
-evaluation $T_{ILE}/N_{eval}$  is
+Combining these factors together, the overall computational cost  $T_{ILE}/N_{eval}$  of each marginalized likelihood
+evaluation is
 \begin{align}
 T_{ILE}/N_{\rm eval} &= \frac{\tau_{start}}{N_{\rm eval}} 
  + 
@@ -551,10 +555,10 @@ waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{se
 above used relatively costly waveform generation with $h_{lm}(t)$ allocation requiring $\tau_{wf} \simeq 1.2 \unit{s}$
 at 4kHz and $1.9\unit{s}$ at 16 kHz.
 
-The \ILE{} likelhood involves sums over modes, with the most expensive likelihood and setup operations (involving $Q$) growing linearly with
+The \ILE{} likelhood $\ln {\cal L}_{\rm margT}$ involves sums over modes, with the most expensive likelihood and setup operations (involving $Q$) growing linearly with
 the number of modes used.  This increased cost is most apparent in Table \ref{tab:CostBreakdown} when comparing the
-columns corresponding  $\tau_{it,like}$ for GPU (b) between the $\pm 2$ and $(\pm 2,\pm 1)$ rows.  The likelihood
-evaluation cost of runs with 4 modes is roughly twice that of runs with two modes, as expected. 
+columns corresponding  $\tau_{it,like}$ for GPU (b) between the $\pm 2$ and $(\pm 2,\pm 1)$ rows.  The cost of
+evaluating $\ln {\cal L}_{\rm margT}$   with 4 modes is roughly twice that of runs with two modes, as expected. 
 
 In a heterogeneous computing environment, code performance varies substantially with available resources, as seen by
 contrasting corresponding results for (a,b,c) in Table \ref{tab:CostBreakdown}.      For
@@ -567,10 +571,16 @@ the slowest hardware,  the overall runtime will be only a factor few smaller tha
 Version & srate & modes & $\tau_{start}$ & $\tau_{setup}$ & $\tau_{ad}$ & $\tau_{it,like}$ &$\tau_{it,rest}$ &
 $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline 
   &   Hz & m & sec & sec & & $\mu$sec & $\mu$sec  &sec  & use  \%\\ \hline 
-CPU & 16384 & $\pm 2,\pm 1 $ & 20 &  &&  & &    \\ 
-       & 4096 & $\pm 2, \pm 1$ & 20 & 1&&   &&  & \\ \hline
-GPU (b) & 16384 & $\pm 2, \pm 1$   & 20 & 26 & 2.4 && &35 &  \\
-       & 4096 & $ \pm 2, \pm 1 $        &   20  & 11.5 & 2.4 & & &24 & \\ \hline
+% ./parse_report.sh 20190130-profile_bns_nogpu_16kHz_pcdev13.log | more
+%   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
+%   (11261 - 10974)/20/100. = 0.14 sec for 16 kHz
+CPU & 16384 & $\pm 2,\pm 1 $ & 35 & 26 & 0.14  & 680  & & 590    \\ 
+       & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  & \\ \hline
+%   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
+%   (226.489 - 17)/20/100  : 0.1 sec for 4kHz
+%   (165 - 29.  )/20/100   : looks odd for 16 kHz
+GPU (b) & 16384 & $\pm 2, \pm 1$   & 35 & 26 & 0.07 &  2.4 & &35 &  \\
+       & 4096 & $ \pm 2, \pm 1 $        &  35  & 11.5 & 0.1 &  2.4  & &24 & \\ \hline
 \end{tabular}
 \caption{\label{tab:CostBreakdown:BNS}\textbf{Profiling performance: Binary neutron stars}: Evaluation costs for the
   marginalized likelihood on default
@@ -579,7 +589,7 @@ GPU (b) & 16384 & $\pm 2, \pm 1$   & 20 & 26 & 2.4 && &35 &  \\
 }
 \end{table*}
 
-Table \ref{tab:CostBreakdown: BNS} shows the corresponding performance breakdown for our fiducial binary neutron star,
+Table \ref{tab:CostBreakdown:BNS} shows the corresponding performance breakdown for our fiducial binary neutron star,
 which has signal SNR=32.  In this analysis, we have adopted the TaylorT4 model with $\ell=2$ and all $m=\pm 2,\pm 1$ modes as our
 fiducial analysis template.   Despite using more modes and longer signals, and despite an overall likelihood evaluation
 cost $\tau_{it}$ consistent BBH analyses,  likelihood evaluations for BNS are often
@@ -607,21 +617,45 @@ improvement for all choices of GPU.
 \editremark{test on other hardware}
 
 
+For the closed-form post-Newtonian approximation used in the study above, waveform costs are a modest contribution to
+overall runtime, contributing only 4.1 sec to $\tau_{setup}$ at 16 kHz.
+For other approximations not available in closed form, the waveform generation cost for binary neutron star inspirals
+can be much more substantial, particularly as $f_{\rm min}$ decreases below the 20\unit{Hz} used in this study.  
+
 \section{ Results (optional?)}
 
 * Add Jake as author.  Rerun all O2 BBHs with SEOBNRv3?
 
 \section{Conclusions}
+We have demonstrated that the marginalized likelihood $\ln {\cal L}_{\rm marg}(\lambda)$ appearing in the RIFT/rapidPE parameter
+inference calculation can be evaluated at fixed $\lambda$ in tens of seconds on average for
+both binary black holes and binary neutron stars.  This performance improvement could enable very low latency source
+parameter inference for compact binaries, which can be of use for targeting multimessenger followup observations via sky
+localization and  precise source characterization.     This prospect is particularly interesting because RIFT can
+often achieve this performance using computationally costly models for binary merger, as the waveform generation cost
+does not usually limit code performance.   
 
-* Enable low-latency parameter inference in basically real time for GW candidate sources, even for relatively costly
-models with full physics
+
+The overall code performance and thus latency can be further decreased substantially, notably by converting the Monte
+Carlo random number generation and inner products to GPU-based operations.  In such a configuration, the marginalized
+likeliood would carry out almost all calculations (except waveform generation) on a GPU, with minimal communication off
+the board.  This configuration should further reduce the average time needed to compute $\ln {\cal L}_{\rm
+  marg}(\lambda)$ for both binary black holes (which are Monte Carlo limited) and binary neutron stars (which are
+inner-product limited).   We anticipate a further factor of roughly 10 reduction in overall evaluation time can be
+achieved soon.  At that level of performance, a single 8-GPU machine with contemporary hardware could perform parameter inference less than 10
+minutes.    Since binary compact objects intersect our past light cone only once every roughly 15 minutes, accounting
+for all past history, such a configuration would be able to address low-latency parameter inference for the duration of
+2nd-generation ground-based observing.
+% based on Neval ~ 10^4
 
 
-* Highly portable, generalizable to other codes: code will smoothly tranlate between GPU-only and CPU-only mode
+The use of \texttt{cupy} enables our code to be highly portable across architectures and heterogeneous GPU environments,
+while transitioning smoothly between GPU and CPU mode.     The techniques we used here will be transported to other
+Bayesian inference modeling codes used to interpret GW observations.
+% Will swap version of code 
 
 
-* Not done yet: expect to transform MC and inner products, so all calculations remain on board, with just intermittent
-control I/O from CPU
+
 
 
 \begin{acknowledgements}
