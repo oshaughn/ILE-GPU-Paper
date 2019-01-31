@@ -129,6 +129,6 @@ test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz --ile-exe `which integrate_likelihood_extrinsic`   --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz --ile-exe `which integrate_likelihood_extrinsic_batchmode`   --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
 # --transfer-file-list file_names_transfer.txt
 
