@@ -110,8 +110,7 @@ STANDARD_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-g
 
 test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
-#	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
-	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap --downselect-parameter m2 --downselect-parameter-range [1,2]
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap --downselect-parameter m2 --downselect-parameter-range [1,2]
 	(cd $@; echo X --mc-range   ${MC_RANGE_BNS}  --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
@@ -123,8 +122,7 @@ test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 
 test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
-#	(cd $@; echo X  --parameter mc --parameter-range '[30,60]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_IT} --skip-overlap --fname overlap-grid-0 > args_grid.txt )
-	util_ManualOverlapGrid.py --parameter mc --parameter-range '[1.196,1.198]' --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter eta --parameter-range '[0.2,0.24999]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]
 	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
