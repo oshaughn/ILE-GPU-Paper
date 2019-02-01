@@ -114,7 +114,7 @@ test_workflow_nobatch_bns: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(cd $@; echo X --mc-range   ${MC_RANGE_BNS}  --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
-	(cd $@; echo X  --parameter mc --parameter delta_mc  --mc-range ${MC_RANGE_BNS} --plot-1d-extra --ci-list [0.9]  > args_plot.txt)
+	(cd $@; echo X  --parameter mc --parameter delta_mc  --mc-range ${MC_RANGE_BNS} --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
 	(cd $@;  create_event_parameter_pipeline_BasicIteration  --input-grid overlap-grid-0.xml.gz --ile-exe `which integrate_likelihood_extrinsic`   --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
 # --transfer-file-list file_names_transfer.txt
@@ -126,7 +126,21 @@ test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
-	(cd $@; echo X  --parameter mc --parameter delta_mc  --mc-range ${MC_RANGE_BNS}  --plot-1d-extra --ci-list [0.9]  > args_plot.txt)
+	(cd $@; echo X  --parameter mc --parameter delta_mc  --mc-range ${MC_RANGE_BNS}  --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
+#	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz --ile-exe `which integrate_likelihood_extrinsic_batchmode`   --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
+# --transfer-file-list file_names_transfer.txt
+
+
+
+# Key difference: ampO=0
+test_workflow_batch_bns_gpu_lowlatency_noHM: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
+	(mkdir $@; exit 0)
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --parameter ampO --parameter-value 0
+	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --chi-max 0.05 --cap-points 12000  --no-plots  > args_cip.txt)
+	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
+	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
+	(cd $@; echo X  --parameter mc --parameter delta_mc  --mc-range ${MC_RANGE_BNS}  --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
 	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz --ile-exe `which integrate_likelihood_extrinsic_batchmode`   --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ )
 # --transfer-file-list file_names_transfer.txt
