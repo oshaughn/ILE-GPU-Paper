@@ -93,7 +93,7 @@ test_workflow_batch_gpu_lowlatency: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 # 256 sec, starting at event time minus about 256, plus 10
 START_BNS=999999768
 STOP_BNS=1000000024
-MC_RANGE_BNS='[1.1963,1.1972]' 
+MC_RANGE_BNS='[1.1962,1.1970]' 
 
 mdc_bns.xml.gz:
 	util_WriteInjectionFile.py  --fname mdc_bns --parameter m1 --parameter-value 1.4 --parameter m2 --parameter-value 1.35 --fname mdc --approx ${APPROX} --parameter tref --parameter-value ${EVENT_TIME} --parameter dist --parameter-value 100 --parameter fmin --parameter-value 18 # make it slightly lower frequency to insure length adequate
