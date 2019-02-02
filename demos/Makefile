@@ -153,7 +153,8 @@ test_workflow_batch_bns_gpu_lowlatency_noHM: Makefile HLV-aLIGO_PSD.xml.gz bns.c
 
 
 # Key difference: ampO=0, + approx -> TaylorF2 + more parameters
-SPIN_ILE_OPTS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/zero_noise.cache --fmin-template 10.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant TaylorF2 --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX}  --psd-file H1=${PWD}/HLV-ILIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-ILIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
+APPROX_BNS_SPIN=TaylorF2
+STANDARD_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid-bns.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/bns.cache --fmin-template 23.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX_BNS_SPIN} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX_BNS}  --psd-file H1=${PWD}/HLV-aLIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-aLIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
 
 test_workflow_batch_bns_gpu_lowlatency_noHM_withspin: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
