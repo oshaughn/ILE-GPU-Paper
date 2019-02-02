@@ -140,7 +140,7 @@ test_workflow_batch_bns_gpu_lowlatency: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 # Key difference: ampO=0
 test_workflow_batch_bns_gpu_lowlatency_noHM: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
-	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --parameter ampO --parameter-value 0
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --grid-cartesian-npts ${NPTS_START} --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --amplitude-order 0
 	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET}  --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
@@ -155,8 +155,8 @@ test_workflow_batch_bns_gpu_lowlatency_noHM: Makefile HLV-aLIGO_PSD.xml.gz bns.c
 # Key difference: ampO=0
 test_workflow_batch_bns_gpu_lowlatency_noHM_withspin: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
-	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --parameter-range s1z [-0.05,0.05] --parameter-range s2z [-0.05,0.05] --grid-cartesian-npts 5000 --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --parameter ampO --parameter-value 0
-	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET}  --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --parameter s1z --parameter-range [-0.05,0.05] --parameter s2z --parameter-range [-0.05,0.05] --grid-cartesian-npts 5000 --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --amplitude-order 0 
+	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --chi-max 0.05 --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET}  --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
 	(cd $@; echo X  ${STANDARD_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter mc --parameter delta_mc  --parameter xi --mc-range ${MC_RANGE_BNS}  --composite-file all.net --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
