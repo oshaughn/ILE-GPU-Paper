@@ -153,15 +153,17 @@ test_workflow_batch_bns_gpu_lowlatency_noHM: Makefile HLV-aLIGO_PSD.xml.gz bns.c
 
 
 # Key difference: ampO=0, + approx -> TaylorF2 + more parameters
-# ... problem, TaylorF2 hitting random technical problems?
-APPROX_BNS_SPIN=SEOBNRv4
+# ... problem, TaylorF2 or ANY FD hitting random technical problems?
+#  ... problem: SEOBNRv4 time domain requires high sampling rate !
+APPROX_BNS_SPIN=SEOBNRv4_ROM
+SRATE_BNS=16384
 SPIN_ILE_OPTS_BNS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid-bns.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/bns.cache --fmin-template 23.0 --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX_BNS_SPIN} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX_BNS}  --psd-file H1=${PWD}/HLV-aLIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-aLIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
 
 test_workflow_nobatch_bns_noHM_withspin: Makefile HLV-aLIGO_PSD.xml.gz bns.cache
 	(mkdir $@; exit 0)
-	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --parameter s1z --parameter-range [-0.05,0.05] --parameter s2z --parameter-range [-0.05,0.05] --grid-cartesian-npts 5000 --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --amplitude-order 0  --approx ${APPROX_BNS_SPIN}
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --parameter s1z --parameter-range [-0.05,0.05] --parameter s2z --parameter-range [-0.05,0.05] --grid-cartesian-npts 5000 --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --amplitude-order 0  --approx TaylorT4  # approximant does not matter, and this causes problems
 	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --chi-max 0.05 --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET}  --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
-	(cd $@; echo X  ${SPIN_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
+	(cd $@; echo X  ${SPIN_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate ${SRATE_BNS} > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter mc --parameter delta_mc  --parameter xi --mc-range ${MC_RANGE_BNS}  --composite-file all.net --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
@@ -172,7 +174,7 @@ test_workflow_batch_bns_gpu_lowlatency_noHM_withspin: Makefile HLV-aLIGO_PSD.xml
 	(mkdir $@; exit 0)
 	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BNS} --parameter delta_mc --parameter-range '[0., 0.25]' --parameter s1z --parameter-range [-0.05,0.05] --parameter s2z --parameter-range [-0.05,0.05] --grid-cartesian-npts 5000 --skip-overlap  --downselect-parameter m2 --downselect-parameter-range [1,2]  --amplitude-order 0  --approx ${APPROX_BNS_SPIN}
 	(cd $@; echo X --mc-range ${MC_RANGE_BNS}    --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --chi-max 0.05 --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET}  --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
-	(cd $@; echo X  ${SPIN_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
+	(cd $@; echo X  ${SPIN_ILE_OPTS_BNS}  --data-start-time ${START_BNS} --data-end-time ${STOP_BNS} --inv-spec-trunc-time 0 --no-adapt-after-first --no-adapt-distance --srate ${SRATE_BNS} > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter mc --parameter delta_mc  --parameter xi --mc-range ${MC_RANGE_BNS}  --composite-file all.net --plot-1d-extra --ci-list [0.9] --truth-file ${PWD}/mdc_bns.xml.gz  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
