@@ -382,7 +382,9 @@ Similarly, to qualitatively reproduce the analysis of GW170817, our synthetic bi
 time-domain SEOBNRv4 (BBH) or TaylorT4 (BNS) approximation, under the simplifying assumption that both objects are point particles with zero
 spin.   For both sources, we adopt the fiducial distance prior $p(D_L) \propto D_L^2$,   selecting  a maximum distance
 roughly five times larger than the known source distance: 1Gpc for the binary black hole and 500 Mpc for the neutron star.
-
+For the binary black hole we generate the signal with $f_{\rm min}=8 \unit{Hz}$ and analyze the signal with  $f_{\rm
+  min}=10 \unit{Hz}$; for the binary neutron star, we generate the signal with $f_{\rm min}=20\unit{Hz}$ and anayze it
+with $f_{\rm min}=23\unit{Hz}$.
 
 \subsection{Massive compact binary black holes}
 Previously, each instance of ILE examined one intrinsic point $\lambda$.  The overall cost of this ILE evaluation
@@ -562,7 +564,7 @@ T_{net,mod} &= \frac{N_{\rm net}}{N_{\rm GPU} N_{\rm eval}} T_{ILE,mod} \nonumbe
 Typically we target $N_{\rm eval}  \lesssim 3\times 10^4, N_{\rm GPU} \simeq 100$, or roughly $300\times$ the cost per
 individual marginalized likelihood evaluation.  For the binary black hole configuration described above, marginalized
 likelihood evaluations will complete in about $100\; \unit{minutes}$ on a cluster of (b), or more realistically 200
-minutes on a cluster of (a). . This number can be reduced to
+minutes on a cluster of (a).  This number can be reduced to
 tens of minutes with a modestly larger GPU pool, or by  marginally more conservative convergence thresholds. on $N_{\rm
   eval}$ or $N_{it}$.  
 This discussion ignores the latency introduced by the  gaussian process interpolation stage at the end.  We will revisit
@@ -668,14 +670,14 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 %needed are consistent with the observations ... convergence can be faster as the signal amplitude decreases
 
 
-\subsection{Binary neutron star analysis}
+\subsection{Binary neutron star analysis : Assuming  zero spin}
 \label{sec:sub:BNSFull}
 
 \begin{figure*}
 % COMMAND
 % plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
 
-\caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis}: Results for marginal posterior distributions
+\caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
   value of the underlying marginalized likelihood evaluations.   The corresponding dotted curves show an analysis using
@@ -739,11 +741,32 @@ We can achieve comparable or smaller turnaround time for an otherwise identical 
 
 
 
+\subsection{Binary neutron star analysis : Assuming  nonprecessing spin}
+\label{sec:sub:BNS_spin}
+
 
 Binary neutron star models with more parameters like spin and tides require correspondingly larger numbers of points in the
   initial grid and per iteration.  Fortunately, the number of observationally significant and accessible dimensions is often
   substantially less than the a prior necessary dimensionality.  In practice,we use roughly $20\times$ more points per
-  iteration for precessing massive BBH systems ($d=8$) or for spinning binary neutron stars with tides ($d=6$).  
+  iteration for precessing massive BBH systems ($d=8$) or for spinning binary neutron stars with tides ($d=6$).    As a
+  result, we can still achieve relatively rapid turnaround on a high-dimensional binary neutron star analysis.
+
+As a concrete demonstration of a low-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
+neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins
+$\chi_{i,z}\in[-0.05,0.05]$.  
+Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite} does not include spin, we employ the \texttt{SEOBNRv4\_ROM} waveform approximation.
+%
+Figure \ref{fig:BNS:Spin} shows our results.
+\editremark{Key feature: runtime: LHO (GPU (c)), 40-ish GPU nodes.  Possibly also overlay SEOBNRv4 analysis as sanity check}
+
+\begin{figure*}
+% COMMAND
+% plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+
+\caption{\label{fig:BNS:Spin}\textbf{Demonstration of low-latency spinning analysis}:XXX
+}
+\end{figure*}
+
 
 \section{ Results (optional?)}
 
@@ -799,6 +822,11 @@ Bayesian inference modeling codes used to interpret GW observations.
 % Will swap version of code 
 
 
+\editremark{bonus mentions}: eccentricity
+
+Bonus code: lnLcut tapering, possibly neff tapering
+
+Puffball in DAG every few iterations, to insure stability around edges and not overcover the core
 
 
 
