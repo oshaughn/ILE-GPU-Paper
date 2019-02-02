@@ -672,41 +672,71 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \label{sec:sub:BNSFull}
 
 \begin{figure*}
+% COMMAND
+% plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+
 \caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
   value of the underlying marginalized likelihood evaluations.   The corresponding dotted curves show an analysis using
   only the $m=\pm 2$ modes \editremark{perform both} \emph{Left panel } Posterior distribution
   over  $\mc$ and
-  $\delta=(m_1-m_2)/M$.    \emph{Center panel}: Marginal 1d CDFs of $\mc$, showing convergence.
-\emph{Right panel}: Marginal 1d empirical CDF of $\ln{\cal L}_{\rm marg}$, showing that at late times the proposed
+  $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
+\emph{Bottom left}: Marginal 1d empirical CDF of $\ln{\cal L}_{\rm marg}$, showing that at late times the proposed
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$.
+\emph{Bottom right panel}: $\ln {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget early on, the Monte Carlo error is only shown for the last iteration.
 }
 \end{figure*}
 
+\begin{figure*}
+\caption{\label{fig:BNS:Comparison}\textbf{Comparison of GPU, CPU analysis}: \editremark{worthwhile}
+}
+\end{figure*}
+
+
+
+% 
+In our first test we compare two workflows, one with the original embarassingly-parallel RIFT code using $N_{\rm
+  eval}=1$ and one with the
+``batched'' GPU-accelerated code with $N_{\rm eval}=20$, analyzing data with $f_{\rm sample}=4096\unit{Hz}$.    
 % Code configuration
-In this example, we use $100$ initial points spread over the two mass dimensions, adding $20$ evaluations per
-iteration.  With one instance analyzing each 20 evaluations,  we use five cores in the first iteration, followed by one
-core for remaining iterations.  We choose this simple configuration to facilitate visualization.    The left and center panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
-from the first several RIFT iterations.  
+In this example, we use $100$ initial points spread over the two mass dimensions $\mc_z,\delta$, adding $20$ evaluations per
+iteration.   We
+choose this simple configuration to facilitate visualization.     The initial coarse grid covers a region $\mc_z\in[1.1962,1.1970] M_\odot$ and $\delta \in [0,0.25]$,  insuring the posterior was smaller than our initial
+coarse grid placement.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
+from the first several RIFT iterations, while the bottom panels show convergence diagnostics.
+Figure \ref{fig:BNS:Comparison} compares results from the GPU and CPU codes on \editremark{identical test points: the
+  initial grid}.\footnote{This comparison of $\ln {\cal L}_{\rm marg}$ is limited by Monte Carlo integration error and
+  is provided  as a pedagogically convenient sanity check.  When comparing 
+  $\ln {\cal L}_{\rm margT}$ results on identical data and parameters, the GPU and CPU implementations agree to
+  significantly higher precision.}  The two results agree.
+Because our analysis uses a post-Newtonian model to interpret a signal generated with SEOBNRv4, all results are offset
+slightly from the synthetic signal's parameters
+
+
+This specific workflow configuration  reduces overall core usage by maximizing GPU use per iteration: after the first
+iteration, only one GPU is active.   
+Specifically,  with the updated RIFT workflow used here, with one instance analyzing each 20 evaluations,  we use five
+core+GPU pairs in the
+first iteration, followed by one core+GPU for remaining iterations.
+By contrast, with the original CPU-only RIFT code analyzing each $\lambda$ in parallel, this process requires roughly 20 core-minutes
+per $\lambda$, using 100 cores in the first iteration and 20 cores in each
+subsequent evalution.   
+Note that  because   $N_{\rm eval}=20$ for the GPU is larger than the (hardware-and $f_{\rm sample}$ dependent)  speedup factor between the CPU and
+GPU implementation, the overall wallclock time needed for a end-to-end
+analysis analysis is larger for the GPU workflow.
+We can achieve comparable or smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
 
 
 
 
 
-* show convergence diagnostic of $\ln {\cal L}$ range over the data: can see few outliers.  Easy way to assess agreement
-and stability
-
-** can also do L2 difference between likelihoods estimated with different data
+\editremark{modify output size: want more than 3000 samples, probably want 10k to make sure we are stable and to
+  minimize MC error}
 
 
 
-
-
-
-* COST OF OVERALL ANALYSIS, AVERAGED OVER WHOLE: average cost of $\ln {\cal L}$ is
-4096 Hz is X.  First iteration averages about 30 minutes in this configuration, second and subsequent iterations require
-about 2 h.
 
 
 
