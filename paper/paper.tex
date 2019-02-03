@@ -3,10 +3,8 @@
 
 
 \newcommand\ForInternalReference[1]{}
-%\newcommand\SkipForEarlyCirculation[1]{}
-\newcommand\SkipForEarlyCirculation[1]{#1}
-%\newcommand\SkipBoxing[1]{}
-\newcommand\SkipBoxing[1]{#1}
+\newcommand\SkipForEarlyCirculation[1]{}
+%\newcommand\SkipForEarlyCirculation[1]{#1}
 \newcommand\SkipPP[1]{}
 \usepackage{verbatim}
 \usepackage{graphicx}
@@ -673,6 +671,52 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 %needed are consistent with the observations ... convergence can be faster as the signal amplitude decreases
 
 
+\subsection{Binary black hole analysis}
+\label{sec:sub:BBHFull}
+
+\begin{figure*}
+% COMMAND
+% plot_posterior_corner.py --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 2 --posterior-label 1 --use-legend
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_m1_m2.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_mc_cum.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_meanVar.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_converge.png}
+\caption{\label{fig:BBH:MultiIterate}\textbf{Convergence of BBH analysis: Zero spin}: Results for marginal posterior distributions
+  of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  value of the underlying marginalized likelihood evaluations.   The corresponding dotted curves show an analysis using
+  only the $m=\pm 2$ modes \editremark{perform both} \emph{Left panel } Posterior distribution
+  over  $\mc$ and
+  $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
+\emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
+first iteration the
+candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
+\emph{Bottom right panel}: $\ln {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget early on, the Monte Carlo error is only shown for the last iteration.
+}
+\end{figure*}
+
+
+Modest-amplitude short-duration binary black holes empirically constitute the most frequent detection candidates
+for current ground-based GW observatories \cite{LIGO-O2-Catalog}.    Because of their brevity and hence broad posterior,
+the RIFT code's interpolation-based method converges  rapidly.  Combined with the low cost of each iteration,
+these sources require an exceptionally low committment of resources and can be performed in extremely low latency, as
+desired.
+To demonstrate this, we use the GPU-accelerated code with $N_{\rm eval}=20$, analyzing data with $f_{\rm
+  sample}=4096\unit{Hz}$.    We use 100 points in the first iteration, in a coarse mass  grid with astrophysically significant
+scale, followed by 20 points in each subsequent iteration.  Figure \ref{fig:BBH:MultiIterate} shows our results.   The
+final posterior is already well-explored with the initial gridpoints, and converged by the second iteration.  
+Conversely, on average all iterations required roughly 45 seconds per $\lambda$ to evaluate their grid.  This
+configuration therefore converged within 30 minutes.    We can achieve  smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
+%
+While this low-dimensional problem does not capture all  fitting and automation challenges associated with high-dimensional
+ fully precessing binaries, it does capture the low cost and rapid response possible with RIFT.
+
+
+
+
+
+
 \subsection{Binary neutron star analysis : Assuming  zero spin}
 \label{sec:sub:BNSFull}
 
@@ -704,9 +748,10 @@ error budget early on, the Monte Carlo error is only shown for the last iteratio
 \end{figure*}
 
 
-
+Significant-amplitude  binary neutron star mergers are the most important scenario for rapid parameter inference, as low
+latency can enable multimessenger followup  \cite{LIGO-O2-Catalog}.    
 % 
-In our first test we compare two workflows, one with the original embarassingly-parallel RIFT code using $N_{\rm
+In our second test we compare two workflows, one with the original embarassingly-parallel RIFT code using $N_{\rm
   eval}=1$ and one with the
 ``batched'' GPU-accelerated code with $N_{\rm eval}=20$, analyzing data with $f_{\rm sample}=4096\unit{Hz}$.    
 % Code configuration
@@ -759,10 +804,13 @@ Binary neutron star models with more parameters like spin and tides require corr
 As a concrete demonstration of a low-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
 neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins
 $\chi_{i,z}\in[-0.05,0.05]$.  
-Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite} does not include spin, we employ the \texttt{SEOBNRv4\_ROM} waveform approximation.
+Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite} does not include spin, we
+employ both the \texttt{SEOBNRv4\_ROM} and \texttt{SpinTaylorT4} waveform approximations for nonprecessing binaries,
+omitting higher-order modes.
 %
 Figure \ref{fig:BNS:Spin} shows our results.
 \editremark{Key feature: runtime: LHO (GPU (c)), 40-ish GPU nodes.  Possibly also overlay SEOBNRv4 analysis as sanity check}
+
 
 \begin{figure*}
 % COMMAND
@@ -773,6 +821,7 @@ Figure \ref{fig:BNS:Spin} shows our results.
 \end{figure*}
 
 
+\SkipForEarlyCirculation{
 \section{ Results (optional?)}
 
 *   Rerun all O2 BBHs with SEOBNRv3?  
@@ -780,6 +829,14 @@ Figure \ref{fig:BNS:Spin} shows our results.
 * PP plot demo for zero-spin binaries, with profiling of full run?  
 
 * reminder: HM for BNS break degeneracy, useful for source classification.  Show an example.
+
+\editremark{bonus mentions}: eccentricity
+
+Bonus code: lnLcut tapering, possibly neff tapering
+
+Puffball in DAG every few iterations, to insure stability around edges and not overcover the core
+
+}
 
 \section{Conclusions}
 \label{sec:conclude}
@@ -826,12 +883,6 @@ while transitioning smoothly between GPU and CPU mode.     The techniques we use
 Bayesian inference modeling codes used to interpret GW observations.
 % Will swap version of code 
 
-
-\editremark{bonus mentions}: eccentricity
-
-Bonus code: lnLcut tapering, possibly neff tapering
-
-Puffball in DAG every few iterations, to insure stability around edges and not overcover the core
 
 
 
