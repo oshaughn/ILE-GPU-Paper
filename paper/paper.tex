@@ -827,13 +827,13 @@ of order $(5000/20/100)\simeq
 2.5$ to $(5000/20/48)\simeq
  5$ times as long as the first iteration of the zero-spin BNS analysis described above.  Each marginalized likelihood
  evaluation in the first requires roughly 60 seconds for both SpinTaylorT4 and SEOBNRv4ROM, on average.   Subsequent
- iterations are not resource-limited and complete in roughly 20 minutes, depending on hardware \editremark{timing}
+marginalized likelihood iterations are not resource-limited and complete in roughly 35 minutes, depending on hardware.
 
 
 \begin{figure*}
 % COMMAND
-% plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
-\includegraphics[width=0.45\textwidth]{figures/bns_withspin_corner_mc_delta_mc_xi.png}
+% plot_posterior_corner.py  --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc  --parameter chi_eff --mc-range  '[1.19655,1.197]' --chi-max 0.025 --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_corner_mc_delta_xi.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_mc_cum.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_meanVar.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_converge.png}
@@ -842,7 +842,7 @@ Results for marginal posterior distributions
   of our fiducial synthetic neutron star, assuming the binary has nonprecessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
   value of the underlying marginalized likelihood evaluations.  The solid curves show an analysis with SEOBNRv4\_ROM;
-  the dotted curves show an analysis with SpinTaylorT4.   \emph{Left panel } Posterior distribution
+  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown}  \emph{Left panel } Posterior distribution
   over  $\mc$,
   $\delta=(m_1-m_2)/M$, and $\chi_{\rm eff}$.    \emph{Right panel}: Marginal 1d CDFs of $\delta$, showing convergence.
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
@@ -850,7 +850,6 @@ first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
 \emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget early on, Monte Carlo error is not shown.
-
 }
 \end{figure*}
 
@@ -885,7 +884,7 @@ does not usually limit code performance.
 
 The overall code performance and thus latency can be further decreased substantially, notably by converting the Monte
 Carlo random number generation and inner products to GPU-based operations.  In such a configuration, the marginalized
-likelihood would carry out almost all calculations (except waveform generation) on a GPU, with minimal communication off
+likelihood code would perform almost all calculations (except waveform generation) on a GPU, with minimal communication off
 the board.  This configuration should further reduce the average time needed to compute $\ln {\cal L}_{\rm
   marg}(\lambda)$ for both binary black holes (which are Monte Carlo limited) and binary neutron stars (which are
 inner-product limited).   We anticipate a further factor of roughly 10 reduction in overall evaluation time can be
