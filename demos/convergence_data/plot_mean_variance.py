@@ -119,11 +119,11 @@ for pIndex in np.arange(len(convergence_list)):
     dat = np.zeros( (len(samples),3) )
     dat[:,0] = samples[:,0]
     dat[:,1] = samples[:,1]
-    dat[:,2] = 1/np.sqrt(samples[:,2])
+    dat[:,2] = samples[:,2]
     my_cmap_values = color_list[pIndex]
-    plt.plot(dat[:,0], dat[:,1],c=my_cmap_values,ls=linestyle_list[pIndex])
+    plt.errorbar(dat[:,0], dat[:,1],yerr=dat[:,2],c=my_cmap_values,ls=linestyle_list[pIndex])
 
 plt.xlabel("iteration")
 plt.xticks( dat[:,0])
-plt.ylabel(r'$\ln Z$')
+plt.ylabel(r'$\ln {\cal L}_{\rm marg}$')
 plt.savefig(opts.output+fig_extension)        # use more resolution, to make sure each image remains of consistent quality
