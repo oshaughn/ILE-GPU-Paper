@@ -367,7 +367,6 @@ parameters $\lambda$ which are close to or within the posterior.  Because of the
 the marginalized likelihood calculations converge the most slowly, as they have the best-determined extrinsic
 parameters.
 
-Unless otherwise noted, all mass quantities described in this work are redshifted masses $m_{k,z}=(1+z)m_k$.
 
 \subsection{Synthetic source generation and analysis settings}
 
@@ -382,7 +381,10 @@ Similarly, to qualitatively reproduce the analysis of GW170817, our synthetic bi
  We perform a multi-stage iterative RIFT analysis of these signal with the
 time-domain SEOBNRv4 (BBH) or TaylorT4 (BNS) approximation, under the simplifying assumption that both objects are point particles with zero
 spin.   For both sources, we adopt the fiducial distance prior $p(D_L) \propto D_L^2$,   selecting  a maximum distance
-roughly five times larger than the known source distance: 1Gpc for the binary black hole and 500 Mpc for the neutron star.
+roughly five times larger than the known source distance: 1Gpc for the binary black hole and 500 Mpc for the neutron
+star.  We adopt a uniform prior on the component (redshifted) masses $m_{i,z}$ (and, when appropriate, spins
+$\chi_{i,z}$).
+Unless otherwise noted, all mass quantities described in this work are redshifted masses $m_{k,z}=(1+z)m_k$.
 For the binary black hole we generate the signal with $f_{\rm min}=8 \unit{Hz}$ and analyze the signal with  $f_{\rm
   min}=10 \unit{Hz}$; for the binary neutron star, we generate the signal with $f_{\rm min}=20\unit{Hz}$ and anayze it
 with $f_{\rm min}=23\unit{Hz}$.
@@ -804,7 +806,8 @@ Binary neutron star models with more parameters like spin and tides require corr
   initial grid and per iteration.  Fortunately, the number of observationally significant and accessible dimensions is often
   substantially less than the a prior necessary dimensionality.  In practice,we use roughly $20\times$ more points per
   iteration for precessing massive BBH systems ($d=8$) or for spinning binary neutron stars with tides ($d=6$).    As a
-  result, we can still achieve relatively rapid turnaround on a high-dimensional binary neutron star analysis.
+  result, we can still achieve relatively rapid turnaround on a high-dimensional binary neutron star analysis even in
+  resource-constrained environments.
 
 As a concrete demonstration of a realistic modest-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
 neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins.  Our initial grid consists of 5000 points, spread uniformly across a 4-dimensional
@@ -823,8 +826,8 @@ resource-limited and requires
 of order $(5000/20/100)\simeq
 2.5$ to $(5000/20/48)\simeq
  5$ times as long as the first iteration of the zero-spin BNS analysis described above.  Each marginalized likelihood
- evaluation in the first requires roughly 60 seconds (SpinTaylorT4) or  (SEOBNRv4ROM), on average.   Subsequent iterations proceed
- in  \editremark{timing}
+ evaluation in the first requires roughly 60 seconds for both SpinTaylorT4 and SEOBNRv4ROM, on average.   Subsequent
+ iterations are not resource-limited and complete in roughly 20 minutes, depending on hardware \editremark{timing}
 
 
 \begin{figure*}
@@ -891,10 +894,12 @@ minutes.    Since binary compact objects intersect our past light cone only once
 for all past history, such a configuration would be able to address low-latency parameter inference for the duration of
 2nd-generation ground-based observing.
 % based on Neval ~ 10^4
+Alternatively, if larger resource pools are available in low latency, both the original and now GPU-accelerated RIFT  can
+perform extremely rapid parameter inference if large iterations are performed completely in parallel (i.e., $N_{\rm
+  eval} \simeq 1$).
 
 By allowing  models with higher-order modes to be used in low latency, our code can better-constrain the properties of low-mass
-binaries with suitable amplitudes and orientations \editremark{citations to old work}, as demonstrated in Section
-\ref{sec:sub:BNSFull}.  These tighter constraints could
+binaries with suitable amplitudes and orientations, when circumstances allow.  These tighter constraints could
 better  inform low-latency source classification and hence multimessenger followup observations of compact binary mergers.
 
 Beyond low-latency multimessenger astronomy, rapid parameter inference enables new applications.  For example, every
@@ -918,8 +923,9 @@ Bayesian inference modeling codes used to interpret GW observations.
 
 
 \begin{acknowledgements}
-RO'S is supported by NSF PHY-1707965 and PHY-1607520.
 DW thanks the RIT COS and CCRG for support, and  NSF-1707965.
+JL is supported by NSF PHY-1707965.  
+RO'S is supported by NSF PHY-1707965 and PHY-1607520.
 Y-LLF was supported in part by BNL LDRD projects No.\,17-029 and No.\,19-002, 
 and New York State Urban Development Corporation, d/b/a Empire State Development, under contract No.\,AA289.
 We thank the Computational Science Initiative at BNL for hosting GPU Hackathon 2018, during which a part of this work was conducted. We also thank Jeff Layton at NVIDIA for bringing CuPy to our attention.
