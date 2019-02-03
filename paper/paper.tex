@@ -124,7 +124,7 @@
 \affiliation{National Synchrotron Light Source II, Brookhaven National Laboratory, Upton, NY 11973, USA}
 \author{R. O'Shaughnessy}
 \affiliation{\RIT}
-\author{Jake?}
+\author{Jacob Lange}  % for all the convergence material we work on ... it comes from Jake's practice
 \affiliation{\RIT}
 \begin{abstract}
 Gravitational wave Bayesian parameter inference involves repeated comparisons of GW data to generic candidate predictions.
@@ -675,24 +675,28 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \label{sec:sub:BBHFull}
 
 \begin{figure*}
+% BASED ON
+%   CIT: test_workflow_batch_gpu_lowlatency
 % COMMAND
-% plot_posterior_corner.py --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 2 --posterior-label 1 --use-legend
-\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_m1_m2.png}
-\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_mc_cum.png}
-\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_meanVar.png}
-\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_converge.png}
+%  plot_posterior_corner.py --posterior-file posterior_samples-4.dat  --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+%plot_posterior_corner.py --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 2 --posterior-label 1 --use-legend
+\includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_m2.png}
+\includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_cum.png}
+\includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_meanVar.png}
+\includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_converge.png}
 \caption{\label{fig:BBH:MultiIterate}\textbf{Convergence of BBH analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
-  value of the underlying marginalized likelihood evaluations.   The corresponding dotted curves show an analysis using
-  only the $m=\pm 2$ modes \editremark{perform both} \emph{Left panel } Posterior distribution
+  value of the underlying marginalized likelihood evaluations.   
+%The corresponding dotted curves show an analysis using   only the $m=\pm 2$ modes \editremark{perform both} 
+\emph{Left panel } Posterior distribution
   over  $\mc$ and
   $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: $\ln {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
-error budget early on, the Monte Carlo error is only shown for the last iteration.
+\emph{Bottom right panel}: The estimated evidence $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget, Monte Carlo error is not shown.
 }
 \end{figure*}
 
@@ -703,11 +707,11 @@ the RIFT code's interpolation-based method converges  rapidly.  Combined with th
 these sources require an exceptionally low committment of resources and can be performed in extremely low latency, as
 desired.
 To demonstrate this, we use the GPU-accelerated code with $N_{\rm eval}=20$, analyzing data with $f_{\rm
-  sample}=4096\unit{Hz}$.    We use 100 points in the first iteration, in a coarse mass  grid with astrophysically significant
-scale, followed by 20 points in each subsequent iteration.  Figure \ref{fig:BBH:MultiIterate} shows our results.   The
+  sample}=4096\unit{Hz}$.    We use 100 points in the first iteration, in a very coarse mass  grid (i.e., spacing
+comparable to typical astrophysical mass scales), followed by 20 points in each subsequent iteration.  Figure \ref{fig:BBH:MultiIterate} shows our results.   The
 final posterior is already well-explored with the initial gridpoints, and converged by the second iteration.  
-Conversely, on average all iterations required roughly 45 seconds per $\lambda$ to evaluate their grid.  This
-configuration therefore converged within 30 minutes.    We can achieve  smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
+Conversely, on average all iterations required roughly 45 seconds per $\lambda$ to evaluate their grid on GPU (a) hardware.  This
+configuration therefore converged within the 30 minutes needed for the first two iterations.    We can achieve  smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
 %
 While this low-dimensional problem does not capture all  fitting and automation challenges associated with high-dimensional
  fully precessing binaries, it does capture the low cost and rapid response possible with RIFT.
@@ -730,22 +734,23 @@ While this low-dimensional problem does not capture all  fitting and automation 
 \caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
-  value of the underlying marginalized likelihood evaluations.   The corresponding dotted curves show an analysis using
-  only the $m=\pm 2$ modes \editremark{perform both} \emph{Left panel } Posterior distribution
+  value of the underlying marginalized likelihood evaluations.  
+% The corresponding dotted curves show an analysis using   only the $m=\pm 2$ modes \editremark{perform both} 
+\emph{Left panel } Posterior distribution
   over  $\mc$ and
   $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: $\ln {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
-error budget early on, the Monte Carlo error is only shown for the last iteration.
+\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget early on, Monte Carlo error is not shown.
 }
 \end{figure*}
 
-\begin{figure*}
-\caption{\label{fig:BNS:Comparison}\textbf{Comparison of GPU, CPU analysis}: \editremark{worthwhile}
-}
-\end{figure*}
+%% \begin{figure*}
+%% \caption{\label{fig:BNS:Comparison}\textbf{Comparison of GPU, CPU analysis}: \editremark{worthwhile}
+%% }
+%% \end{figure*}
 
 
 Significant-amplitude  binary neutron star mergers are the most important scenario for rapid parameter inference, as low
@@ -760,11 +765,11 @@ iteration.   We
 choose this simple low-dimension, small-size, and slowly-converging configuration to facilitate visualization of the grid, posterior, and convergence.     The initial coarse grid covers a region $\mc_z\in[1.1962,1.1970] M_\odot$ and $\delta \in [0,0.25]$,  insuring the posterior was smaller than our initial
 coarse grid spacing.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
 from the first several RIFT iterations, while the bottom panels show convergence diagnostics.
-Figure \ref{fig:BNS:Comparison} compares results from the GPU and CPU codes on \editremark{identical test points: the
-  initial grid}.\footnote{This comparison of $\ln {\cal L}_{\rm marg}$ is limited by Monte Carlo integration error and
-  is provided  as a pedagogically convenient sanity check.  When comparing 
-  $\ln {\cal L}_{\rm margT}$ results on identical data and parameters, the GPU and CPU implementations agree to
-  significantly higher precision.}  The two results agree.
+%% Figure \ref{fig:BNS:Comparison} compares results from the GPU and CPU codes on \editremark{identical test points: the
+%%   initial grid}.\footnote{This comparison of $\ln {\cal L}_{\rm marg}$ is limited by Monte Carlo integration error and
+%%   is provided  as a pedagogically convenient sanity check.  When comparing 
+%%   $\ln {\cal L}_{\rm margT}$ results on identical data and parameters, the GPU and CPU implementations agree to
+%%   significantly higher precision.}  The two results agree.
 Because our analysis uses a post-Newtonian model to interpret a signal generated with SEOBNRv4, the peak posterior
 density is slightly  offset
  from the synthetic signal's parameters
@@ -801,22 +806,48 @@ Binary neutron star models with more parameters like spin and tides require corr
   iteration for precessing massive BBH systems ($d=8$) or for spinning binary neutron stars with tides ($d=6$).    As a
   result, we can still achieve relatively rapid turnaround on a high-dimensional binary neutron star analysis.
 
-As a concrete demonstration of a low-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
-neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins
-$\chi_{i,z}\in[-0.05,0.05]$.  
+As a concrete demonstration of a realistic modest-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
+neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins.  Our initial grid consists of 5000 points, spread uniformly across a 4-dimensional
+hypercube $\mc_z\in[1.1962,1.1970] M_\odot$, $\delta \in[0,0.25]$ and $\chi_{i,z}\in[-0.05,0.05]$.  Subsequent
+iterations use 500 random draws from the estimated posterior samples produced from the previous iteration.  
 Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite} does not include spin, we
 employ both the \texttt{SEOBNRv4\_ROM} and \texttt{SpinTaylorT4} waveform approximations for nonprecessing binaries,
-omitting higher-order modes.
+omitting higher-order modes.   For SEOBNRv4\_ROM, we use 48 GPU (c) enabled nodes; for SpinTaylorT4, we use 100 GPU (a) nodes.
 %
 Figure \ref{fig:BNS:Spin} shows our results.
-\editremark{Key feature: runtime: LHO (GPU (c)), 40-ish GPU nodes.  Possibly also overlay SEOBNRv4 analysis as sanity check}
+%
+
+
+Due to our self-imposed resource constraints on $N_{\rm eval}=20$ and the number of GPUs, the first iteration is
+resource-limited and requires
+of order $(5000/20/100)\simeq
+2.5$ to $(5000/20/48)\simeq
+ 5$ times as long as the first iteration of the zero-spin BNS analysis described above.  Each marginalized likelihood
+ evaluation in the first requires roughly 60 seconds (SpinTaylorT4) or  (SEOBNRv4ROM), on average.   Subsequent iterations proceed
+ in  \editremark{timing}
 
 
 \begin{figure*}
 % COMMAND
 % plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_corner_mc_delta_mc_xi.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_mc_cum.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_meanVar.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_converge.png}
+\caption{\label{fig:BNS:Spin}\textbf{Demonstration of low-latency spinning analysis}:
+Results for marginal posterior distributions
+  of our fiducial synthetic neutron star, assuming the binary has nonprecessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  value of the underlying marginalized likelihood evaluations.  The solid curves show an analysis with SEOBNRv4\_ROM;
+  the dotted curves show an analysis with SpinTaylorT4.   \emph{Left panel } Posterior distribution
+  over  $\mc$,
+  $\delta=(m_1-m_2)/M$, and $\chi_{\rm eff}$.    \emph{Right panel}: Marginal 1d CDFs of $\delta$, showing convergence.
+\emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
+first iteration the
+candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
+\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget early on, Monte Carlo error is not shown.
 
-\caption{\label{fig:BNS:Spin}\textbf{Demonstration of low-latency spinning analysis}:XXX
 }
 \end{figure*}
 
