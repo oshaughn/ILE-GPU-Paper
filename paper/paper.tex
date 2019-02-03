@@ -366,13 +366,16 @@ available in large numbers; (b) V100, available on selected high-performance mac
 GTX 1050 at LIGO-LHO.    Unless otherwise noted in the text, we will discuss code configurations using CPU-only and GPU (b) using
 $4096\unit{Hz}$ sampling and only the  $\ell=2, m=\pm 2$ modes.  In this section, we  conservatively report computational cost for
 parameters $\lambda$ which are close to or within the posterior.  Because of their consistency with the data, 
-the marginalized likelihood calculations converge the most slowly, as they have the best-determined extrinsic parameters.
+the marginalized likelihood calculations converge the most slowly, as they have the best-determined extrinsic
+parameters.
+
+Unless otherwise noted, all mass quantities described in this work are redshifted masses $m_{k,z}=(1+z)m_k$.
 
 \subsection{Synthetic source generation and analysis settings}
 
 
 We generate  synthetic data for a two-detector LIGO configuration, assuming operation at  initial (BBH) or advanced (BNS) design  sensitivity.
-Both signals are generated with SEOBNRv4.   
+Both signals are generated with SEOBNRv4, with a zero-noise data realization.   
 To qualitatively reproduce the noise power spectrum and amplitude of typical binary black hole observations in O1 and
 O2, the binary black hole signal has source distance $200 \unit{Mpc}$, chosen so SNR $\simeq 14$.  
 Similarly, to qualitatively reproduce the analysis of GW170817, our synthetic binary neutron star is placed $100
@@ -676,7 +679,10 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \begin{figure*}
 % COMMAND
 % plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
-
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_corner_mc_delta_mc.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_mc_cum.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_meanVar.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_converge.png}
 \caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
@@ -684,8 +690,9 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
   only the $m=\pm 2$ modes \editremark{perform both} \emph{Left panel } Posterior distribution
   over  $\mc$ and
   $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
-\emph{Bottom left}: Marginal 1d empirical CDF of $\ln{\cal L}_{\rm marg}$, showing that at late times the proposed
-candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$.
+\emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
+first iteration the
+candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
 \emph{Bottom right panel}: $\ln {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget early on, the Monte Carlo error is only shown for the last iteration.
 }
@@ -705,16 +712,17 @@ In our first test we compare two workflows, one with the original embarassingly-
 % Code configuration
 In this example, we use $100$ initial points spread over the two mass dimensions $\mc_z,\delta$, adding $20$ evaluations per
 iteration.   We
-choose this simple configuration to facilitate visualization.     The initial coarse grid covers a region $\mc_z\in[1.1962,1.1970] M_\odot$ and $\delta \in [0,0.25]$,  insuring the posterior was smaller than our initial
-coarse grid placement.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
+choose this simple low-dimension, small-size, and slowly-converging configuration to facilitate visualization of the grid, posterior, and convergence.     The initial coarse grid covers a region $\mc_z\in[1.1962,1.1970] M_\odot$ and $\delta \in [0,0.25]$,  insuring the posterior was smaller than our initial
+coarse grid spacing.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
 from the first several RIFT iterations, while the bottom panels show convergence diagnostics.
 Figure \ref{fig:BNS:Comparison} compares results from the GPU and CPU codes on \editremark{identical test points: the
   initial grid}.\footnote{This comparison of $\ln {\cal L}_{\rm marg}$ is limited by Monte Carlo integration error and
   is provided  as a pedagogically convenient sanity check.  When comparing 
   $\ln {\cal L}_{\rm margT}$ results on identical data and parameters, the GPU and CPU implementations agree to
   significantly higher precision.}  The two results agree.
-Because our analysis uses a post-Newtonian model to interpret a signal generated with SEOBNRv4, all results are offset
-slightly from the synthetic signal's parameters
+Because our analysis uses a post-Newtonian model to interpret a signal generated with SEOBNRv4, the peak posterior
+density is slightly  offset
+ from the synthetic signal's parameters
 
 
 This specific workflow configuration  reduces overall core usage by maximizing GPU use per iteration: after the first
@@ -733,9 +741,6 @@ We can achieve comparable or smaller turnaround time for an otherwise identical 
 
 
 
-
-\editremark{modify output size: want more than 3000 samples, probably want 10k to make sure we are stable and to
-  minimize MC error}
 
 
 
