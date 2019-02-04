@@ -174,8 +174,10 @@ The RIFT strategy described in \cite{gwastro-PE-AlternativeArchitectures,2017CQG
 embarrassingly-parallel inferences even for costly models.   However, the method as previously implemented still had a
 significant net  computational cost and noticeable startup time, limiting its diverse potential applications.
 %
-In this paper we describe a variant of the RIFT algorithm which  translates its low-level
-algorithms to operate on graphics processing units (GPUs), and adjusts its workflow to exploit the speed improvements
+Previously, B. Miller et al \editremark{cite private communication} developed a custom-coded  implementation of the
+relevant likelihood on graphics processing units (GPUs), suggesting substantial performance improvements.  
+In this paper,  we describe a variant of the RIFT algorithm which flexibly translates its low-level
+algorithms to operate on GPUs, and adjusts its workflow to exploit the speed improvements
 this re-implementation affords.
 
 
