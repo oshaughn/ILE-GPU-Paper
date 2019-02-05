@@ -170,13 +170,13 @@ adopting a sparse representation to reduce the computational cost of data
 handling \cite{antil2013two,gwastro-mergers-PE-ReducedOrder-2013,2016PhRvD..94d4031S,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,gwastro-PE-AlternativeArchitectures}.   % 2014PhRvX...4c1006F,2013PhRvD..87l2002S,2013PhRvD..87d4008C
  Some methods, however, achieve rapid turnaround through simplifying approximations.  
 %
-The RIFT strategy described in \cite{gwastro-PE-AlternativeArchitectures,2017CQGra..34n4002O,gwastro-PENR-RIFT,NRPaper} eschews these simplifications, performing
+The RIFT/rapidPE strategy described in \cite{gwastro-PE-AlternativeArchitectures,2017CQGra..34n4002O,gwastro-PENR-RIFT,NRPaper} eschews these simplifications, performing
 embarrassingly-parallel inferences even for costly models.   However, the method as previously implemented still had a
 significant net  computational cost and noticeable startup time, limiting its diverse potential applications.
 %
-Previously, B. Miller et al \editremark{cite private communication} developed a custom-coded  implementation of the
-relevant likelihood on graphics processing units (GPUs), suggesting substantial performance improvements.  
-In this paper,  we describe a variant of the RIFT algorithm which flexibly translates its low-level
+Previously, B. Miller  developed a custom-coded  implementation of the
+relevant likelihood on graphics processing units (GPUs), suggesting substantial performance improvements were possible \cite{Thesis-Brandon-2016,GPU-NU-work}.  
+In this paper,  we describe a variant of the RIFT approach which flexibly translates one of its
 algorithms to operate on GPUs, and adjusts its workflow to exploit the speed improvements
 this re-implementation affords.
 
@@ -327,7 +327,7 @@ for each candidate Monte Carlo set of extrinsic parameters $\theta$:
 where $T$ is a small coincidence window consistent with the candidate event time; here and previously,
 $T=0.3\unit{sec}$.   To accelerate the code, after precomputing the inner products $U,V,Q$, we simply shift them to the
 graphics card, then carry out all calculations necessary to implement Eqs. (\ref{eq:lnL:MatrixForm}, \ref{eq:lnL:tmarg})
-on the GPU.  To enable this implementation with portable code, we use \texttt{cupy}, a drop-in-replacement for equivalent
+on the GPU.  To enable this implementation with portable code, we use \texttt{cupy} \cite{cupy_learningsys2017}, a drop-in-replacement for equivalent
 \texttt{numpy} code used for the CPU-based version of ILE.    For the most costly part of the calculation -- the inner
 products necessary to evaluate $Q_{lm}(t)$, accounting for distinct time-of-flight-dependent time windows for each
 interferometer's data -- we use a custom CUDA kernel to perform the necessary matrix multiplication.  
@@ -374,14 +374,14 @@ parameters.
 
 
 We generate  synthetic data for a two-detector LIGO configuration, assuming operation at  initial (BBH) or advanced (BNS) design  sensitivity.
-Both signals are generated with SEOBNRv4, with a zero-noise data realization.   
+Both signals are generated with SEOBNRv4 effective-one-body waveform approximation \cite{2017PhRvD..95d4028B}, with a zero-noise data realization.   
 To qualitatively reproduce the noise power spectrum and amplitude of typical binary black hole observations in O1 and
 O2, the binary black hole signal has source distance $200 \unit{Mpc}$, chosen so SNR $\simeq 14$.  
 Similarly, to qualitatively reproduce the analysis of GW170817, our synthetic binary neutron star is placed $100
 \unit{Mpc}$ away, so the signal amplitude is SNR $\simeq 31$.
 
  We perform a multi-stage iterative RIFT analysis of these signal with the
-time-domain SEOBNRv4 (BBH) or TaylorT4 (BNS) approximation, under the simplifying assumption that both objects are point particles with zero
+time-domain SEOBNRv4 (BBH) or TaylorT4 \cite{gw-astro-PN-Comparison-AlessandraSathya2009}( BNS) approximation, under the simplifying assumption that both objects are point particles with zero
 spin.   For both sources, we adopt the fiducial distance prior $p(D_L) \propto D_L^2$,   selecting  a maximum distance
 roughly five times larger than the known source distance: 1Gpc for the binary black hole and 500 Mpc for the neutron
 star.  We adopt a uniform prior on the component (redshifted) masses $m_{i,z}$ (and, when appropriate, spins
@@ -416,9 +416,10 @@ Version & srate & modes & $\tau_{start}$ & $\tau_{setup}$ & $\tau_{ad}$ & $\tau_
 $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline 
   &   Hz & m & sec & sec & & $\mu$sec & $\mu$sec  &sec  & use  \%\\ \hline 
 % ~/parse_report.sh profile_nogpu_pcdev13.log | more
-CPU & 16384 & $\pm 2 $ & 20 & &&532 & &  700  \\ 
+CPU & 16384 & $\pm 2 $ & 20 & 2.4 &&540 & 20 &  700  \\ 
        & 4096 & $\pm 2 $ &   20 \\ \hline
 % ./parse_report.sh 20190130-profile_nogpu_HM_pcdev13.log  | more
+% /parse_report.sh ./profile_nogpu_HM_lowres_pcdev13.log 
 %    setup time: PrecomputeLikelihoodTerms, includes waveform generation. 
 %   evaluation: FactoredLogLikelihodTimeMarginalized Divide by actual number of calls, since not a block!
 %    
@@ -430,7 +431,7 @@ CPU & 16384 & $\pm 2,\pm 1 $ & 20 & 1.5 && 680 & &  1000  \\
 %        20 points at 16kHz take about 90 min
 %        20 points at kHz take anywhere from
 %        condor_userlog iteration_0_ile/logs/*.log
-GPU (a) & 16384 & $(2,\pm 2) $  & 20  & & && & 270 \\
+GPU (a) & 16384 & $\pm 2 $  & 20  & & && & 270 \\
             & 4096 &$\pm 2 $  &  20 &  & & && 45 \\ \hline
 %% % LIGo CIT, pcdev13, 16 kHz : basically indistinguishable from cost at 4kHz
 %%       1    0.027    0.027  560.572  560.572 integrate_likelihood_extrinsic_batchmode:8(<module>)
@@ -483,21 +484,27 @@ GPU (a) & 16384 & $(2,\pm 2) $  & 20  & & && & 270 \\
 %   'residual' time: take mcsampler, subtract likleihood, divide by number of calls and number of evals per chunk
 GPU (b) & 16384 & $\pm 2$ & 20  & 1.8 & 1 & \editremark{0.85}& \editremark{6} &28 & 15\\
        & 4096 & $\pm 2$  & 20 & $1.2 $ &  1  & \editremark{0.75} & \editremark{6}  & 25\\ \hline
+% ./parse_report.sh 20190130-profile_gpu_HM_16kHz_pcdev13.log | more
+% ./parse_report.sh 20190130-profile_gpu_HM_lowres_pcdev13.log  | more
 % ~/parse_report.sh profile_gpu_HM_lowres_pcdev13.log | more
 %   - extra eval cost: (mcsampler - likelihood)/20/n_eval_likelihood/10^4  
 GPU (b) & 16384 & $\pm 2, \pm 1$ & 20 & 1 && 4.2 & \editremark{1}  & 38  \\
-       & 4096 & $\pm 2, \pm 1$ & 20 & 1&& 2.5  && 35 & \\ \hline
+       & 4096 & $\pm 2, \pm 1$ & 20 & 1&& 2.5  & \editremark{1} & 35 & \\ \hline
 %
 % LHO or LLO worker nodes
 %  ./parse_report.sh 20190130-profile_gpu_LHOworker_16kHz.log | more
-GPU (c) & 16384 & $\pm 2 $  & 20  & & & 18& &160 &  \\
-            & 4096 &$\pm 2 $  &  20 &  & & 22  & & 140 & $\simeq 50$ \\
+% ./parse_report.sh 20190130-profile_gpu_LHOworker_lowres.log | more
+%   * worker iteration cose: (3027 - 687)/20/3851/10^4 * 10^6 // N
+GPU (c) & 16384 & $\pm 2 $  & 20  &6  & & 18& 3 &160 &  \\
+            & 4096 &$\pm 2 $  &  20 & 3.7 & & 22  & 3 & 140 & $\simeq 50$ \\
 \end{tabular}
 % Compute node at LIGO-WA
 \caption{\label{tab:CostBreakdown}\textbf{Profiling performance: Binary black holes}: Evaluation costs for the
   marginalized likelihood on default
   hardware, for a two-mode system $(l,m)=\pm 2$ analyzing $T=8\unit{s}$ of data with a massive binary black hole
-  $m_1=35 M_\odot,M_2=30 M_\odot$.  The last column indicates peak GPU utilization.}
+  $m_1=35 M_\odot,M_2=30 M_\odot$.  The last column indicates peak GPU utilization.
+\editremark{Comment: will update last number based on bulk profiling of a whole run; other numbers are from deep dive into individual run}
+}
 \end{table*}
 
 
@@ -541,15 +548,23 @@ T_{ILE,mod}/N_{\rm eval} &= \frac{\tau_{start} + \tau_{ad}N_{it}/n_{\rm chunk}}{
  \nonumber \\ &
  + 
  [ \tau_{setup}  + N_{it}\tau_{it}
- ] 
+ ]  \\
+% (20 \[Tau]s1 + \[Tau]ad 1 2*10^6/10^4)/   20 + (\[Tau]start*1 + 2*10^6 \[Tau]it1 *10^(-6)) // Expand
+& \simeq (\tau_{\rm start}/20\unit{s}) +  10 (\tau_{ad}/\mu s) 
+ \nonumber \\ &
++ 2  [(\tau_{it,liike}/\mu s) + \tau_{it,rest}/\mu s]
 \end{align}
-Typically we target $N_{\rm eval} \simeq 20$ so that startup and other one-time costs  are not a significant contributor to the overall
+where in the latter expression we substitute the usual values of $N_{it} \simeq 2\times 10^6$,  $n_{\rm chunk}\simeq
+10^4$, and $N_{\rm eval}\simeq 20$ conservtively adopted
+for problems involving many degrees of freedom $d$ (between 6 to 8).  We target $N_{\rm eval} \simeq 20$ so that startup and other one-time costs  are not a significant contributor to the overall
 runtime.   In this configuration, the run time per marginalized likelihood is around $T_{ILE}/N_{\rm eval} \simeq 25
 \unit{s}$ for a binary black hole.    Of this $25 \unit{s}$, only roughly
 $1.5\unit{s}$ corresponds to evaluating the likelihood, implying the cost $\tau_{it} \simeq 1.5/N_{\rm it} \simeq
 7.5\times 10^{-7}$.
 Likewise, because overhead dominates over array manipulations, an analysis with  $16\unit{kHz}$ timeseries requires only
 marginally more time than the corresponding $4\unit{kHz}$ analysis.
+%
+Conversely, the overhead of  performing the Monte Carlo (including both $\tau_{ad}$ and $\tau_{it,rest}$) is a quite substantial contribution to the overall runtime for the best-available hardware.
 
 
 For low-latency analyses, we need to assess the overall wallclock time needed to perform an analysis, often with a
@@ -602,29 +617,36 @@ $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline
 %   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
 %   (11261 - 10974)/20/100. = 0.14 sec for 16 kHz
 CPU & 16384 & $\pm 2,\pm 1 $ & 35 & 26 & 0.14  & 680  & & 590    \\ 
-       & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  & \\ \hline
-GPU (a) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&&   \\
-       & 4096 & $ \pm 2, \pm 1 $        &  35  & &&&& 360 \\ \hline
+       & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  &  \\ \hline
+GPU (a) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&  &   \\
+       & 4096 & $ \pm 2, \pm 1 $        &  35  & &&&& 60--450  \\ \hline
+% ./parse_report.sh 20190205-profile_bns_gpu_lowres_pcdev13_iteration3.log | more
 %   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
 %   (226.489 - 17)/20/100  : 0.1 sec for 4kHz
 %   (165 - 29.  )/20/100   : looks odd for 16 kHz
 GPU (b) & 16384 & $\pm 2, \pm 1$   & 35 & 26 & 0.07 &  2.4 & &35 & 16 \\
        & 4096 & $ \pm 2, \pm 1 $        &  35  & 11.5 & 0.1 &  2.4  & &24 &  \\ \hline
-GPU (c) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&& 105  \\
-       & 4096 & $ \pm 2, \pm 1 $        &  35  & 28 &&&& 55 \\ \hline
+% Runtime: Based on *production* data for the LHO result, with ADVANCED ITERATIONS to insure quality
+%   demos/test_workflow_batch_bns_gpu_lowlatency_LHO_v0 : about 2.5 hours for 20 points
+% Profiling: actual individual run,
+%    - it, rest: based on mcsampler time - likelihood, divide by 20, divide by 10^4
+GPU (c) & 16384 & $\pm 2, \pm 1$   & 35 & 71 &&20 & \editremark{38} &  105   \\
+       & 4096 & $ \pm 2, \pm 1 $        &  35  & 28 && && 60  \\ \hline
 \end{tabular}
 \caption{\label{tab:CostBreakdown:BNS}\textbf{Profiling performance: Binary neutron stars}: Evaluation costs for the
   marginalized likelihood on default
   hardware,  analyzing $T=8\unit{s}$ of data with a binary neutron stars
   $m_1=1.4 M_\odot,M_2=1.35 M_\odot$, with convergence threshold $n_{\rm eff} > 50$.
+\editremark{Comment: will update net runtime number based on bulk profiling of a whole run; other numbers are from deep dive into individual run}
 }
 \end{table*}
 
 Table \ref{tab:CostBreakdown:BNS} shows the corresponding performance breakdown for our fiducial binary neutron star,
 which has signal SNR=32.  In this analysis, we have adopted the TaylorT4 model with $\ell=2$ and all $m=\pm 2,\pm 1$ modes as our
-fiducial analysis template.   Despite using more modes and longer signals, and despite an overall likelihood evaluation
-cost $\tau_{it}$ consistent BBH analyses,  likelihood evaluations for BNS are often
-\emph{as fast or faster} than the corresponding likelihood evaluations for BBH with otherwise comparable settings.
+fiducial analysis template.   This source has significantly longer duration and higher amplitude, both of which contribute to slower convergence and longer runtime. 
+%% Despite using more modes and longer signals, and despite an overall likelihood evaluation
+%% cost $\tau_{it}$ consistent BBH analyses,  likelihood evaluations for BNS are often
+%% \emph{as fast or faster} than the corresponding likelihood evaluations for BBH with otherwise comparable settings.
 
 Low-mass compact binaries like binary neutron stars have much longer inspiral times from the same starting frequency of
 $20\unit{Hz}$: roughly $160 \unit{s}$.   Nominally, the manipulation of a corresponding power-of-two duration data ($256\unit{s}$) involves
@@ -637,12 +659,12 @@ $32\times$ more costly Fourier transforms and time integrations than the BBH ana
  overall evaluation time $T_{ILE}/N_{\rm eval}$. 
 
 
-Improved performance arises instead from re-using our adaptive integrator, which (after the first marginalized
+Improved performance arises in part from re-using our adaptive integrator, which (after the first marginalized
 likelihood evaluation) can exploit tight localization afforded by the many BNS cycles available in band and the high
-amplitude of our fiducial BNS signal.  In other
-words, the Monte Carlo integral converges to our target accuracy in of order $10\times $ fewer steps than for BBH.  
-Because this improved performance relies on the sampler, not on our choice of hardware, we achieve a similar substantial
-improvement for all choices of GPU.
+amplitude of our fiducial BNS signal.   In some cases, the Monte Carlo integral converges to our target accuracy in of order $10\times $ fewer steps than for BBH.  
+Additionally, particularly for first-stage RIFT grids, the improved performance arises from our choice of initial grid: many points fit poorly and identified as such well before the fiducial $2\times 10^6$ Monte Carlo iterations.  
+% This latter benefit can occur more frequently as we move to higher dimensions.
+Both sources of improved performance relative to the BBH analysis are independent of choice of hardware.
 
 
 
@@ -655,7 +677,7 @@ can be much more substantial, particularly as $f_{\rm min}$ decreases below the 
 
 While GPU cards have finite memory, the modest size of our underlying data arrays and intemediate data products on-board ensures that we are unlikely to
 saturate this bound, even for 16 kHz data, unless we investigate significantly lower starting frequencies or
-vastly more modes.
+employ vastly more angular modes $h_{lm}$.
 %\editremark{some issue: memory usage is about 1Gb for 16 kHz,  close to $4Gb$ limit on commodity cards now.  Will be hard to
 %  increase mode set substantially for BNS on the cheapest cards  }
 
@@ -760,14 +782,14 @@ error budget early on, Monte Carlo error is not shown.
 Significant-amplitude  binary neutron star mergers are the most important scenario for rapid parameter inference, as low
 latency can enable multimessenger followup  \cite{LIGO-O2-Catalog}.    
 % 
-In our second test we compare two workflows, one with the original embarassingly-parallel RIFT code using $N_{\rm
+In our second test we compare two workflows, one with the original embarrassingly-parallel RIFT code using $N_{\rm
   eval}=1$ and one with the
 ``batched'' GPU-accelerated code with $N_{\rm eval}=20$, analyzing data with $f_{\rm sample}=4096\unit{Hz}$.    
 % Code configuration
 In this example, we use $100$ initial points spread over the two mass dimensions $\mc_z,\delta$, adding $20$ evaluations per
 iteration.   We
 choose this simple low-dimension, small-size, and slowly-converging configuration to facilitate visualization of the grid, posterior, and convergence.     The initial coarse grid covers a region $\mc_z\in[1.1962,1.1970] M_\odot$ and $\delta \in [0,0.25]$,  insuring the posterior was smaller than our initial
-coarse grid spacing.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior disributions derived
+coarse grid spacing.     The top  panels of Figure  \ref{fig:BNS:MultiIterate} show posterior distributions derived
 from the first several RIFT iterations, while the bottom panels show convergence diagnostics.
 %% Figure \ref{fig:BNS:Comparison} compares results from the GPU and CPU codes on \editremark{identical test points: the
 %%   initial grid}.\footnote{This comparison of $\ln {\cal L}_{\rm marg}$ is limited by Monte Carlo integration error and
@@ -786,7 +808,7 @@ core+GPU pairs in the
 first iteration, followed by one core+GPU for remaining iterations.
 By contrast, with the original CPU-only RIFT code analyzing each $\lambda$ in parallel, this process requires roughly 20 core-minutes
 per $\lambda$, using 100 cores in the first iteration and 20 cores in each
-subsequent evalution.   
+subsequent evaluation.   
 Note that  because   $N_{\rm eval}=20$ for the GPU is larger than the (hardware-and $f_{\rm sample}$ dependent)  speedup factor between the CPU and
 GPU implementation, the overall wallclock time needed for a end-to-end
 analysis analysis is larger for the GPU workflow.
@@ -815,7 +837,7 @@ As a concrete demonstration of a realistic modest-latency analysis using the GPU
 neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins.  Our initial grid consists of 5000 points, spread uniformly across a 4-dimensional
 hypercube $\mc_z\in[1.1962,1.1970] M_\odot$, $\delta \in[0,0.25]$ and $\chi_{i,z}\in[-0.05,0.05]$.  Subsequent
 iterations use 500 random draws from the estimated posterior samples produced from the previous iteration.  
-Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite} does not include spin, we
+Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite}\cite{lalsuite} does not include spin, we
 employ both the \texttt{SEOBNRv4\_ROM} and \texttt{SpinTaylorT4} waveform approximations for nonprecessing binaries,
 omitting higher-order modes.   For SEOBNRv4\_ROM, we use 48 GPU (c) enabled nodes; for SpinTaylorT4, we use 100 GPU (a) nodes.
 %
@@ -828,13 +850,14 @@ resource-limited and requires
 of order $(5000/20/100)\simeq
 2.5$ to $(5000/20/48)\simeq
  5$ times as long as the first iteration of the zero-spin BNS analysis described above.  Each marginalized likelihood
- evaluation in the first requires roughly 60 seconds for both SpinTaylorT4 and SEOBNRv4ROM, on average.   Subsequent
+ evaluation in the first iteration (as well as subsequent iterations) requires roughly 60 seconds for both SpinTaylorT4 and SEOBNRv4ROM, on average.   Subsequent
 marginalized likelihood iterations are not resource-limited and complete in roughly 35 minutes, depending on hardware.
+As previously, we can achieve comparable or smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
 
 
 \begin{figure*}
 % COMMAND
-% plot_posterior_corner.py  --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc  --parameter chi_eff --mc-range  '[1.19655,1.197]' --chi-max 0.025 --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
+% plot_posterior_corner.py  --posterior-file posterior_samples-5.dat  --posterior-file posterior_samples-4.dat   --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc  --parameter chi_eff --mc-range  '[1.19655,1.197]' --chi-max 0.025 --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None  --posterior-label 5 --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle ':'  --posterior-color 'k' --posterior-color 'r' --posterior-color 'g' --posterior-color 'b' --posterior-color 'k' --lnL-cut 50
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_corner_mc_delta_xi.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_mc_cum.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_meanVar.png}
@@ -843,8 +866,9 @@ marginalized likelihood iterations are not resource-limited and complete in roug
 Results for marginal posterior distributions
   of our fiducial synthetic neutron star, assuming the binary has nonprecessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
-  value of the underlying marginalized likelihood evaluations.  The solid curves show an analysis with SEOBNRv4\_ROM;
-  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown}  \emph{Left panel } Posterior distribution
+  value of the underlying marginalized likelihood evaluations.  Only evaluations with marginalized log-likelihoods within $30$ of the maximum are shown, to increase contrast. The solid curves show an analysis with SEOBNRv4\_ROM.
+%  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown} 
+ \emph{Left panel } Posterior distribution
   over  $\mc$,
   $\delta=(m_1-m_2)/M$, and $\chi_{\rm eff}$.    \emph{Right panel}: Marginal 1d CDFs of $\delta$, showing convergence.
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
@@ -899,17 +923,19 @@ Alternatively, if larger resource pools are available in low latency, both the o
 perform extremely rapid parameter inference if large iterations are performed completely in parallel (i.e., $N_{\rm
   eval} \simeq 1$).
 
-By allowing  models with higher-order modes to be used in low latency, our code can better-constrain the properties of low-mass
-binaries with suitable amplitudes and orientations, when circumstances allow.  These tighter constraints could
+By allowing  models with higher-order modes to be used in low latency, our code can exploit the tighter constraints which higher modes can enable on  the properties of low-mass
+binaries with suitable amplitudes and orientations.  These tighter constraints could
 better  inform low-latency source classification and hence multimessenger followup observations of compact binary mergers.
 
 Beyond low-latency multimessenger astronomy, rapid parameter inference enables new applications.  For example, every
 parameter inference provide \emph{evidence} for a signal being present in the data; with rapid parameter inference, this
 evidence could be used as (the last stage in a hierarchical pipeline for) a detection statistic
-\editremark{citations:old idea,see Thrane/Rory papers recently} \cite{2018PhRvX...8b1019S}.    This approach can identify individual events and
+%\editremark{citations:old idea,see Thrane/Rory papers recently} 
+\cite{2018PhRvX...8b1019S}.    
+This approach can identify individual events and
 even a population.
 Alternatively and in many ways equivalently, one can identify a population of GW sources without assuming any one is
-real, by  applying parameer inference to more candidate events and self-consistently seperating foreground and
+real, by  applying parameter inference to more candidate events and self-consistently separating foreground and
 background. 
 \cite{2015PhRvD..91b3005F,2019MNRAS.tmp..230G}.
 
@@ -917,7 +943,7 @@ background.
 
 The use of \texttt{cupy} enables our code to be highly portable across architectures and heterogeneous GPU environments,
 while transitioning smoothly between GPU and CPU mode.     The techniques we used here will be transported to other
-Bayesian inference modeling codes used to interpret GW observations.
+Bayesian inference modeling codes used to interpret GW observations \cite{gwastro-PopulationReconstruct-Parametric-Wysocki2018,gwastro-PopulationReconstruct-Code-PopModels}.
 % Will swap version of code 
 
 
