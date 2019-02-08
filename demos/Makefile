@@ -102,7 +102,7 @@ PRECESSING_ILE_OPTS=--n-chunk 10000 --time-marginalization --sim-xml overlap-gri
 ##
 test_workflow_batch_gpu_v3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 	(mkdir $@; exit 0)
-	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BH} --parameter delta_mc --parameter-range '[0.0,0.5]' --grid-cartesian-npts 5000 --skip-overlap
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BH} --parameter delta_mc  --parameter-range '[0.0,0.5]' --parameter chieff_aligned --parameter-range [-0.5,0.5] --grid-cartesian-npts 5000 --skip-overlap
 	(cd $@; echo 5 --mc-range ${MC_RANGE_BH}     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc   --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --parameter-nofit s1x --parameter-nofit s1y --parameter-nofit s2x --parameter-nofit s2y --fit-method gp --verbose  --lnL-offset 50 --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip_list.txt)
 	(cd $@; echo 5 --mc-range ${MC_RANGE_BH}     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc   --parameter-implied xi --parameter chiMinus --parameter-nofit s1z --parameter-nofit s2z  --parameter s1x --parameter s1y --parameter s2x --parameter s2y --fit-method gp --verbose  --lnL-offset 25 --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  >> args_cip_list.txt)
 	(cd $@; echo X   ${STANDARD_ILE_OPTS}  --data-start-time 1000000008 --data-end-time 1000000016 --inv-spec-trunc-time 0  --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
