@@ -923,6 +923,7 @@ Alternatively, if larger resource pools are available in low latency, both the o
 perform extremely rapid parameter inference if large iterations are performed completely in parallel (i.e., $N_{\rm
   eval} \simeq 1$).
 
+
 By allowing  models with higher-order modes to be used in low latency, our code can exploit the tighter constraints which higher modes can enable on  the properties of low-mass
 binaries with suitable amplitudes and orientations.  These tighter constraints could
 better  inform low-latency source classification and hence multimessenger followup observations of compact binary mergers.
@@ -939,6 +940,14 @@ real, by  applying parameter inference to more candidate events and self-consist
 background. 
 \cite{2015PhRvD..91b3005F,2019MNRAS.tmp..230G}.
 
+
+When suitable surrogate models are available, the overall code performance and thus latency could be yet again further
+reduced by eliminating the iteration and fitting stages entirely, performing one Monte Carlo at once
+\cite{gwastro-PE-AlternativeArchitecturesROM}.  This approach exploits a linear representation of  $h_{lm}(t)$  via
+basis functions, to enable rapid likelihood evaluation as a function of both extrinsic parameters and  $\lambda$.
+Though not necessarily or compactly available for all surrogate models, particularly for the small basis sizes necessary
+to fit onboard GPUs, this approach could enable exceedingly low latency at small computational cost.  This alternative
+architecture would be exceptionally well-suited to the alternative applications of low-latency PE described above. 
 
 
 The use of \texttt{cupy} enables our code to be highly portable across architectures and heterogeneous GPU environments,
