@@ -5,6 +5,27 @@
 |  BIBTEX ENTRIES   |
 `-------------------'
 
+@article{cole2014likelihood,
+  title={Likelihood smoothing using gravitational wave surrogate models},
+  author={Cole, Robert H and Gair, Jonathan R},
+  journal={Physical Review D},
+  volume={90},
+  number={12},
+  pages={124043},
+  year={2014},
+  publisher={APS}
+}
+@article{antil2013two,
+  title={Two-step greedy algorithm for reduced order quadratures},
+  author={Antil, Harbir and Field, Scott E and Herrmann, Frank and Nochetto, Ricardo H and Tiglio, Manuel},
+  journal={Journal of Scientific Computing},
+  volume={57},
+  number={3},
+  pages={604--637},
+  year={2013},
+  publisher={Springer US}
+}
+
 @article{PEPaper,
   author =        {{The LIGO Scientific Collaboration and
                    the Virgo Collaboration}},
@@ -1396,6 +1417,18 @@
   doi =           {10.1103/PhysRevD.92.023002},
   eid =           {023002},
   url =           {http://adsabs.harvard.edu/abs/2015PhRvD..92b3002P},
+}
+@ARTICLE{gwastro-PE-AlternativeArchitecturesROM,
+  author ={{O'Shaughnessy}, R. and {Blackman}, J. and {Field}, S.},
+  title ={An architecture for efficient multimodal parameter estimation with linear surrogate models},
+  journal = {\cqg},
+  year = 2017,
+  month = jun,
+  doi ={10.1088/1361-6382/aa7649},
+ abstract = {  The recent direct detection of gravitational waves has further emphasized the need for fast, low- cost, and accurate methods to infer the parameters of gravitational wave sources. The performance of these calculations is limited by the cost of evaluating the likelihood function, due to expense in data handling and waveform generation. Building on recently developed surrogate models and a novel parameter estimation pipeline, we show how to quickly generate the likelihood function as a simple, analytic closed-form expression. Using a simple variant of a production-scale parameter estimation code, we demonstrate our method using surrogate models of effective-one-body and numerical relativity waveforms. Our study is the first time these models have been used for parameter estimation and one of the first ever PE calculations with multi-modal numerical relativity waveforms. Our grid-free method enables rapid parameter estimation for any waveform with a suitable reduced-order model. The methods described in this paper may also find use in other data analysis pipelines, such as vetting coincident events or the computation of the coalescing-compact-binary detection statistic.},
+  url={http://iopscience.iop.org/article/10.1088/1361-6382/aa7649},
+ eprint-url      = {http://xxx.lanl.gov/abs/arXiv:1701.01137},
+  dcc-url = {https://dcc.ligo.org/LIGO-P1600309}
 }
 
 @article{2015CQGra..32w5017H,
@@ -3174,12 +3207,23 @@ archivePrefix = "arXiv",
    adsurl = {http://adsabs.harvard.edu/abs/2010PhRvD..82j3011L},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
-@article{gwastro-Wysocki-PopModels,
-  author={{Wysocki}, D.  and {O'Shaughnessy}, R. and {Lange}, J.},
-  title = "{Reconstructing phenomenological distributions of compact binaries via gravitational wave observations}",
-  journal={in prep},
+@article{gwastro-PopulationReconstruct-Parametric-Wysocki2018,
+   author ={{Wysocki}, D. and {Lange}, J. and {O'Shaughnessy}, R.},
+   title ="{Reconstructing phenomenological distributions of compact binaries via gravitational wave observations}",
+   journal={Submitted to PRD (available as arxiv:1805.06442)},
+   month=may,
+  year=2018,
+  url={https://arxiv.org/abs/1805.06442},
+  eprint-url={https://arxiv.org/abs/1805.06442},
+  dcc-url={https://dcc.ligo.org/LIGO-P1800107}
+}
+@article{gwastro-PopulationReconstruct-Code-PopModels,
+  author={{Wysocki}, D. and {O'Shaughnessy}, R.},
+  title = {PopModels: Bayesian Parametric Population Models},
+  journal={Available at https://ccrg.rit.edu/content/software/pop-models},
   year=2018
 }
+
 @ARTICLE{2010Natur.467.1081D,
    author = {{Demorest}, P.~B. and {Pennucci}, T. and {Ransom}, S.~M. and 
 	{Roberts}, M.~S.~E. and {Hessels}, J.~W.~T.},
@@ -3671,3 +3715,51 @@ archivePrefix = "arXiv",
    adsurl = {http://adsabs.harvard.edu/abs/2019MNRAS.tmp..230G},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
+@thesis{Thesis-Brandon-2016,
+  author ={{Miller}, Brandon},
+  year=2016,
+  title= "{GPU Accelerated Parameter Estimation of Gravitational Waves from Compact Binary Mergers}",
+  school={Northwestern University}
+}
+@MISC{GPU-NU-work,
+  author ={{Miller}, Brandon and {Pankow}, Chris},
+  year=2016,
+  howpublished = "private communication"
+}
+
+@inproceedings{cupy_learningsys2017,
+  author       = {{Okuta}, Ryosuke and {Unno}, Yuya and {Nishino}, Daisuke and {Hido}, Shohei and {Loomis}, Crissman},
+  title        = "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+  booktitle    = "Proceedings of Workshop on Machine Learning Systems (LearningSys) in The Thirty-first Annual Conference on Neural Information Processing Systems (NIPS)",
+  year         = "2017",
+  url          = "http://learningsys.org/nips17/assets/papers/paper_16.pdf"
+}
+
+@ARTICLE{gw-astro-PN-Comparison-AlessandraSathya2009,
+  bibcode={2009PhRvD..80h4043B},
+author = {{Buonanno}, A. and {Iyer}, B.~R. and {Ochsner}, E. and {Pan}, Y. and 
+	{Sathyaprakash}, B.~S.},
+    title = "{Comparison of post-Newtonian templates for compact binary inspiral signals in gravitational-wave detectors}",
+  journal = {\prd},
+archivePrefix = "arXiv",
+   eprint = {0907.0700},
+ primaryClass = "gr-qc",
+ keywords = {Wave generation and sources, Post-Newtonian approximation; perturbation theory; related approximations, Gravitational wave detectors and experiments, Gravitational radiation detectors; mass spectrometers; and other instrumentation and techniques},
+     year = 2009,
+    month = oct,
+   volume = 80,
+   number = 8,
+    pages = {084043-+},
+      doi = {10.1103/PhysRevD.80.084043},
+   adsurl = {http://adsabs.harvard.edu/abs/2009PhRvD..80h4043B},
+  adsnote = {Provided by the SAO/NASA Astrophysics Data System},
+   abstract={The two-body dynamics in general relativity has been solved perturbatively using the post-Newtonian (PN) approximation. The evolution of the orbital phase and the emitted gravitational radiation are now known to a rather high order up to O(v^8), v being the characteristic velocity of the binary. The orbital evolution, however, cannot be specified uniquely due to the inherent freedom in the choice of parameter used in the PN expansion as well as the method pursued in solving the relevant differential equations. The goal of this paper is to determine the (dis)agreement between different PN waveform families in the context of initial and advanced gravitational-wave detectors. The waveforms employed in our analysis are those that are currently used by Initial LIGO/Virgo, that is the time-domain PN models TaylorT1, TaylorT2, TaylorT3, TaylorT4 and TaylorEt, the effective one-body (EOB) model, and the Fourier-domain representation TaylorF2. We examine the overlaps of these models with one another and with the prototype effective one-body model (calibrated to numerical relativity simulations, as currently used by initial LIGO) for a number of different binaries at 2PN, 3PN and 3.5PN orders to quantify their differences and to help us decide whether there exist preferred families that are the most appropriate as search templates. We conclude that as long as the total mass remains less than a certain upper limit M_crit, all template families at 3.5PN order (except TaylorT3 and TaylorEt) are equally good for the purpose of detection. The value of M_crit is found to be ~ 12M_Sun for Initial, Enhanced and Advanced LIGO. From a purely computational point of view we recommend that 3.5PN TaylorF2 be used below Mcrit and EOB calibrated to numerical relativity simulations be used for total binary mass M > Mcrit.}
+}
+
+@misc{lalsuite,
+       author         = "{LIGO Scientific Collaboration}",
+       title          = "{LIGO} {A}lgorithm {L}ibrary - {LALS}uite",
+       howpublished   = "free software (GPL)",
+       doi            = "10.7935/GT1W-FZ16",
+       year           = "2018"
+ }
