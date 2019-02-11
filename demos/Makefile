@@ -118,6 +118,7 @@ test_workflow_batch_gpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 # --transfer-file-list file_names_transfer.txt
 
 # Just to see how painful this would be ... no throttling of GPUs
+# Use batchmode so I am modestly more efficient for the first iteration
 test_workflow_batch_nogpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 	(mkdir $@; exit 0)
 	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BH_SPIN} --parameter delta_mc  --parameter-range '[0.0,0.5]' --parameter chieff_aligned --parameter-range [-0.5,0.5] --grid-cartesian-npts 5000 --skip-overlap --approx SEOBNRv3
@@ -127,7 +128,7 @@ test_workflow_batch_nogpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration   --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5  --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 )
 # --transfer-file-list file_names_transfer.txt
 
 
