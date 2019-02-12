@@ -197,14 +197,14 @@ population inference.
 
 \subsection{Parameter inference with the RIFT likelihood}
 % From RIFT paper
-\ILE{}  -- a specific algorithm to ``integrate over extrinsic parameters'' -- provides a straightforward and efficient mechanism to compare any specific candidate gravitational wave source with
+\ILE{}  -- a specific algorithm to ``Integrate (the Likeilhood) over Extrinsic parameters'' -- provides a straightforward and efficient mechanism to compare any specific candidate gravitational wave source with
 real or synthetic data   \cite{gwastro-PE-AlternativeArchitectures,NRPaper,2017PhRvD..96j4041L,2017CQGra..34n4002O},
 by marginalizing the likelihood of the data over the seven coordinates characterizing the spacetime coordinates and
 orientation of the binary relative to the earth.  
-Specifically the likelihood of the data given gaussian noise has the form  (up to normalization)
+Specifically the likelihood of the data given gaussian noise, relative to gaussian noise, has the form  (up to normalization)
 \begin{equation}
 \label{eq:lnL}
-\ln {\cal L}(\bm{\lambda} ;\theta )=-\frac{1}{2}\sum\limits_{k}\langle h_{k}(\bm{\lambda} ,\theta )-d_{k} |h_{k}(\bm{\lambda} ,\theta )-d_{k}\rangle _{k}-\langle d_{k}|d_{k}\rangle _{k},
+\ln {\cal L}(\bm{\lambda} ,\theta )=-\frac{1}{2}\sum\limits_{k}\langle h_{k}(\bm{\lambda} ,\theta )-d_{k} |h_{k}(\bm{\lambda} ,\theta )-d_{k}\rangle _{k}-\langle d_{k}|d_{k}\rangle _{k},
 \end{equation}
 where $h_{k}$ are the predicted response of the k$^{th}$ detector due to a source with parameters ($\bm{\lambda}$, $\theta$) and
 $d_{k}$ are the detector data in each instrument k; $\bm{\lambda}$ denotes the combination of redshifted mass $M_{z}$ and the
@@ -227,8 +227,8 @@ where $p(\theta)$ and $p(\bm{\lambda})$ are priors on the (independent) variable
 \begin{equation}
  {\cal L}_{\rm marg}\equiv\int  {\cal L}(\bm{\lambda} ,\theta )p(\theta )d\theta
 \end{equation}
-via direct Monte Carlo integration, where $p(\theta)$ is uniform in 4-volume and source orientation.  
-The integral in time is performed at a low level, by direct quadrature. 
+via direct Monte Carlo integration over almost all parameters $\theta$, where $p(\theta)$ is uniform in 4-volume and source orientation.  
+For the event time parameter, we marginalize by direct quadrature, for each choice of the remaining Monte Carlo parameters.
 For the remaining dimensions, to evaluate the likelihood in regions of high importance, we use an adaptive Monte Carlo as described in
 \cite{gwastro-PE-AlternativeArchitectures}.    
 
@@ -266,7 +266,7 @@ for $h_{\ell m}$ into the expression $h_k(t) =F_{+,k} h_+(t_k) +
   F_{\times,k}h_\times(t_k)$ for the detector response $h_k$, 
 where $t_k=t_c - \vec{x}_k \cdot \hat{n}$ is the arrival time at the $k$th detector (at position $\vec{x}_k$)
 for a plane wave propagating along $\hat{n}$ \cite{gwastro-PE-AlternativeArchitectures}.
-We then substitute these expressions for $h_k$ into the likelihood function~\eqref{eq:loglikelihood}
+We then substitute these expressions for $h_k$ into the likelihood function~\eqref{eq:lnL}
 thereby generating~\cite{gwastro-PE-AlternativeArchitectures}
 \begin{widetext}
 \begin{align}
@@ -704,14 +704,15 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 % BASED ON
 %   CIT: test_workflow_batch_gpu_lowlatency
 % COMMAND
-%  plot_posterior_corner.py --posterior-file posterior_samples-4.dat  --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
-%plot_posterior_corner.py --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --posterior-label 2 --posterior-label 1 --use-legend
+% ../plot_last_iterations_with.sh --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --use-legend --posterior-color 'b' --posterior-color 'k' --posterior-linestyle ':' --posterior-linestyle ':'
+% ../plot_last_iterations_with.sh --parameter mc --parameter delta_mc   --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --use-legend --posterior-color 'b' --posterior-color 'k' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':'
+%
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_m2.png}
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_cum.png}
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_meanVar.png}
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_converge.png}
 \caption{\label{fig:BBH:MultiIterate}\textbf{Convergence of BBH analysis: Zero spin}: Results for marginal posterior distributions
-  of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
+  of our fiducial synthetic binary black hole.  Solid contours show credible intervals; solid one-dimensional distributions
   show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
   value of the underlying marginalized likelihood evaluations.   
 %The corresponding dotted curves show an analysis using   only the $m=\pm 2$ modes \editremark{perform both} 
@@ -878,6 +879,62 @@ candidate points are consistent with the posterior (i.e., no proposed point has 
 error budget early on, Monte Carlo error is not shown.
 }
 \end{figure*}
+
+
+\SkipForEarlyCirculation{
+\subsection{Precessing binary black hole analysis}
+\label{sec:sub:BBH_v3}
+
+In this section, we reanalyze our fiducial (zero spin) binary black hole signal without any restrictions on spin
+magnitude or alignment, using a precessing effective--one-body approximation (SEOBNRv3 \editremark{cite}).   
+We start with an initial  \emph{three-dimensional} grid of 5000 points in $\mc \in [20,35] M_\odot$, $\eta
+\in[0.2,0.25]$ and $\chi_{\rm eff} \in [-0.5,0.5]$.  We very conservatively perform 10 iterations, adding 500 points
+candidate evaluation points each iteration, using a volumetric spin prior on both dimensionless spins.  
+
+We break our  pipeline into two stages.  In the first five
+iterations, the likelihood is assumed to depend only on  $\mc,\eta,\chi_{\rm eff}$.   By construction, during these
+stages our algorithm proposes random choices for the perpendicular spins $\chi_{i,\perp}$  and the remaining
+antisymmetric degree of freedom for the two candidate spins.    As demonstrated in Figure \ref{fig:BBH:Spin}, well
+before the first five iterations complete, we've thoroughly explored the $\mc,\eta,\chi_{\rm eff}$ distribution and
+converged to a (biased) posterior.
+
+In the second stage, we perform a gaussian process fit which includes  all binary parameters ($\mc,\eta,\chi_{\rm
+  eff},\chi_-,\chi_{i,x},\chi_{i,y}$).  As demonstrated in Figure \ref{fig:BBH:Spin}, we quickly converge to a posterior
+distribution.
+
+Throughout this calculation, each individual marginalized likelihood required roughly 1 minute to evaluate.  With 100
+available GPU+cores, this analysis could require as little as 1.7 hours to evaluate the marginalized likelihood for all
+10 iterations.  In practice, by using $N_{\rm eval}=20$ and therefore restricting to 25 cores for the iterative stages, we insured each iteration after the first required no less than
+20 minutes to complete.  As a result of this self-imposed restriction, the wallclock time necessary to complete all 10 iterations was several hours.
+That said, in this particular case substantially fewer iterations were required to reach convergence.  
+
+\begin{figure*}
+% COMMAND
+% ../plot_last_iterations_with.sh --parameter m1 --parameter m2  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --use-legend --posterior-color 'b' --posterior-color 'k' --posterior-linestyle ':' --posterior-linestyle ':'
+% ../plot_last_iterations_with.sh --parameter mc --parameter delta_mc --parameter chi_eff  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --use-legend --posterior-color 'b' --posterior-color 'k' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':'
+%  ../plot_last_iterations_with.sh --parameter a1z --parameter a2z --parameter chi1_perp --parameter chi2_perp  --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc.xml.gz  --composite-file all.net --quantiles None  --use-legend --posterior-color 'b' --posterior-color 'k' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle ':' --posterior-linestyle '-' --posterior-linestyle '-' --posterior-color 'g' --posterior-color 'magenta'
+
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_mc_cum.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_meanVar.png}
+\includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_converge.png}
+\caption{\label{fig:BBH:Spin}\textbf{Demonstration precessing binary black hole analysis}:
+Results for marginal posterior distributions
+  of our fiducial binary black hole, assuming the binary could have precessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  value of the underlying marginalized likelihood evaluations.  Only evaluations with marginalized log-likelihoods within $30$ of the maximum are shown, to increase contrast. The solid curves show an analysis with SEOBNRv3.
+%  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown} 
+ \emph{Left panel } Posterior distribution
+  over  $\mc$,
+  $\delta=(m_1-m_2)/M$, and $\chi_{\rm eff}$.    \emph{Right panel}: Marginal 1d CDFs of $\delta$, showing convergence.
+\emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
+first iteration the
+candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
+\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+error budget early on, Monte Carlo error is not shown.
+}
+\end{figure*}
+}
+
 
 
 \SkipForEarlyCirculation{
