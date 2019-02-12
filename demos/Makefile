@@ -94,7 +94,7 @@ test_workflow_batch_gpu_lowlatency: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 ###
 MC_RANGE_BH_SPIN=[20,35]
 PRECESSING_ILE_OPTS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file ${PWD}/zero_noise.cache --fmin-template ${FMIN_TEMPLATE_BH} --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant SEOBNRv3 --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX}  --psd-file H1=${PWD}/HLV-ILIGO_PSD.xml.gz --psd-file L1=${PWD}/HLV-ILIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler
-PRECESSING_CIP_OPTS_BASE=--mc-range ${MC_RANGE_BH_SPIN}     --eta-range '[0.20,0.24999]' --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000 --approx-output SEOBNRv3 --use-precessing --fit-method gp --verbose
+PRECESSING_CIP_OPTS_BASE=--mc-range ${MC_RANGE_BH_SPIN}     --eta-range '[0.20,0.24999]' --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000 --approx-output SEOBNRv3 --use-precessing --fit-method gp --verbose --n-max 1e7
 
 
 
@@ -115,7 +115,7 @@ test_workflow_batch_gpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 --ile-retries 3)
 # --transfer-file-list file_names_transfer.txt
 
 # Just to see how painful this would be ... no throttling of GPUs
@@ -129,7 +129,7 @@ test_workflow_batch_nogpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 #	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5  --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5  --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 --ile-retries 3 )
 # --transfer-file-list file_names_transfer.txt
 
 
