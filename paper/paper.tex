@@ -118,12 +118,12 @@
 \title{Accelerating parameter inference with graphics processing units}
 \author{D. Wysocki}
 \affiliation{\RIT}
+\author{R. O'Shaughnessy}
+\affiliation{\RIT}
 \author{Yao-Lung L. Fang}
 %\author{Yao-Lung L. Fang (方耀龍)}
 \affiliation{Computational Science Initiative, Brookhaven National Laboratory, Upton, NY 11973, USA}
 \affiliation{National Synchrotron Light Source II, Brookhaven National Laboratory, Upton, NY 11973, USA}
-\author{R. O'Shaughnessy}
-\affiliation{\RIT}
 \author{Jacob Lange}  % for all the convergence material we work on ... it comes from Jake's practice
 \affiliation{\RIT}
 \begin{abstract}
@@ -157,7 +157,7 @@ these calculations can take  months for costly time-domain effective-one-body mo
 Several strategies have been
 developed to reduce the 
 %overall computational cost and turnaround time of 
-computational cost of parameter estimation \cite{gwastro-pe-Brandon-STF2,gwastro-PE-AlternativeArchitectures,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,2016PhRvD..94d4031S,2017CQGra..34k5006V}.  
+computational cost of parameter estimation \cite{gwastro-pe-Brandon-STF2,gwastro-PE-AlternativeArchitectures,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,2016PhRvD..94d4031S,2017CQGra..34k5006V,2018arXiv180608792Z}.  
 % The computational cost of parameter estimation can be reduced 
 Approaches that have appeared in the literature include
 %by 
@@ -167,7 +167,7 @@ interpolating some combination
 of the waveform or likelihood \cite{gwastro-approx-ROMNR-Blackman2015,2013PhRvD..87d4008C,2013PhRvD..87l2002S,2014CQGra..31s5010P,2014PhRvD..90d4074S,gwastro-PE-AlternativeArchitectures,cole2014likelihood,2012MNRAS.421..169G};  or 
 %by 
 adopting a sparse representation to reduce the computational cost of data
-handling \cite{antil2013two,gwastro-mergers-PE-ReducedOrder-2013,2016PhRvD..94d4031S,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,gwastro-PE-AlternativeArchitectures}.   % 2014PhRvX...4c1006F,2013PhRvD..87l2002S,2013PhRvD..87d4008C
+handling \cite{antil2013two,gwastro-mergers-PE-ReducedOrder-2013,2016PhRvD..94d4031S,gw-astro-ReducedOrderQuadraturePE-TiglioEtAl2014,gwastro-PE-AlternativeArchitectures,2010arXiv1007.4820C,2018arXiv180608792Z}.   % 2014PhRvX...4c1006F,2013PhRvD..87l2002S,2013PhRvD..87d4008C
  Some methods, however, achieve rapid turnaround through simplifying approximations.  
 %
 The RIFT/rapidPE strategy described in \cite{gwastro-PE-AlternativeArchitectures,2017CQGra..34n4002O,gwastro-PENR-RIFT,NRPaper} eschews these simplifications, performing
@@ -416,15 +416,15 @@ Version & srate & modes & $\tau_{start}$ & $\tau_{setup}$ & $\tau_{ad}$ & $\tau_
 $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline 
   &   Hz & m & sec & sec & & $\mu$sec & $\mu$sec  &sec  & use  \%\\ \hline 
 % ~/parse_report.sh profile_nogpu_pcdev13.log | more
-CPU & 16384 & $\pm 2 $ & 20 & 2.4 &&540 & 20 &  700  \\ 
-       & 4096 & $\pm 2 $ &   20 \\ \hline
+CPU & 16384 & $\pm 2 $ & 20 & 2.4 &&540 & 20 &  690  \\ 
+       & 4096 & $\pm 2 $ &   20  &&&& 20 \\ \hline
 % ./parse_report.sh 20190130-profile_nogpu_HM_pcdev13.log  | more
 % /parse_report.sh ./profile_nogpu_HM_lowres_pcdev13.log 
 %    setup time: PrecomputeLikelihoodTerms, includes waveform generation. 
 %   evaluation: FactoredLogLikelihodTimeMarginalized Divide by actual number of calls, since not a block!
 %    
-CPU & 16384 & $\pm 2,\pm 1 $ & 20 & 1.5 && 680 & &  1000  \\ 
-       & 4096 & $ \pm 2, \pm 1 $ &   20 \\ \hline
+CPU & 16384 & $\pm 2,\pm 1 $ & 20 & 1.5 && 680 & 20 &  1060  \\ 
+       & 4096 & $ \pm 2, \pm 1 $ &   20 &&&& 20  \\ \hline
 % LIGO-WA, or a compute node at CIT with a grpahics catd: 
 %  - old compute node: one marginalized likelihood in 2 minutes (!), 2x8
 %  - CIT jobs, on compute nodes
@@ -432,7 +432,7 @@ CPU & 16384 & $\pm 2,\pm 1 $ & 20 & 1.5 && 680 & &  1000  \\
 %        20 points at kHz take anywhere from
 %        condor_userlog iteration_0_ile/logs/*.log
 GPU (a) & 16384 & $\pm 2 $  & 20  & & && & 270 \\
-            & 4096 &$\pm 2 $  &  20 &  & & && 45 \\ \hline
+            & 4096 &$\pm 2 $  &  20 &  & & & & 45 \\ \hline
 %% % LIGo CIT, pcdev13, 16 kHz : basically indistinguishable from cost at 4kHz
 %%       1    0.027    0.027  560.572  560.572 integrate_likelihood_extrinsic_batchmode:8(<module>)
 %%        20    0.082    0.004  552.004   27.600 integrate_likelihood_extrinsic_batchmode:690(analyze_event)
@@ -482,28 +482,28 @@ GPU (a) & 16384 & $\pm 2 $  & 20  & & && & 270 \\
 % ./parse_report.sh 20190130-profile_gpu_lowres_pcdev13.log_welford | more
 % ./parse_report.sh 20190130-profile_gpu_lowres_pcdev13.log_16kHz | more
 %   'residual' time: take mcsampler, subtract likleihood, divide by number of calls and number of evals per chunk
-GPU (b) & 16384 & $\pm 2$ & 20  & 1.8 & 1 & \editremark{0.85}& \editremark{6} &28 & 15\\
-       & 4096 & $\pm 2$  & 20 & $1.2 $ &  1  & \editremark{0.75} & \editremark{6}  & 25\\ \hline
+GPU (b) & 16384 & $\pm 2$ & 20  & 1.8 & 1 & 0.85& 20 &28 & 15\\
+       & 4096 & $\pm 2$  & 20 & $1.2 $ &  1  & 0.75 & 20  & 25\\ \hline
 % ./parse_report.sh 20190130-profile_gpu_HM_16kHz_pcdev13.log | more
 % ./parse_report.sh 20190130-profile_gpu_HM_lowres_pcdev13.log  | more
 % ~/parse_report.sh profile_gpu_HM_lowres_pcdev13.log | more
 %   - extra eval cost: (mcsampler - likelihood)/20/n_eval_likelihood/10^4  
-GPU (b) & 16384 & $\pm 2, \pm 1$ & 20 & 1 && 4.2 & \editremark{1}  & 38  \\
-       & 4096 & $\pm 2, \pm 1$ & 20 & 1&& 2.5  & \editremark{1} & 35 & \\ \hline
+GPU (b) & 16384 & $\pm 2, \pm 1$ & 20 & 1 && 4.2 & 20  & 38  \\
+       & 4096 & $\pm 2, \pm 1$ & 20 & 1&& 2.5  & 20 & 35 & \\ \hline
 %
 % LHO or LLO worker nodes
 %  ./parse_report.sh 20190130-profile_gpu_LHOworker_16kHz.log | more
 % ./parse_report.sh 20190130-profile_gpu_LHOworker_lowres.log | more
 %   * worker iteration cose: (3027 - 687)/20/3851/10^4 * 10^6 // N
-GPU (c) & 16384 & $\pm 2 $  & 20  &6  & & 18& 3 &160 &  \\
-            & 4096 &$\pm 2 $  &  20 & 3.7 & & 22  & 3 & 140 & $\simeq 50$ \\
+GPU (c) & 16384 & $\pm 2 $  & 20  &6  & & 18&  58&160 &  \\
+            & 4096 &$\pm 2 $  &  20 & 3.7 & & 11  & 58  & 140 & $\simeq 50$ \\
 \end{tabular}
 % Compute node at LIGO-WA
 \caption{\label{tab:CostBreakdown}\textbf{Profiling performance: Binary black holes}: Evaluation costs for the
   marginalized likelihood on default
   hardware, for a two-mode system $(l,m)=\pm 2$ analyzing $T=8\unit{s}$ of data with a massive binary black hole
   $m_1=35 M_\odot,M_2=30 M_\odot$.  The last column indicates peak GPU utilization.
-\editremark{Comment: will update last number based on bulk profiling of a whole run; other numbers are from deep dive into individual run}
+%\editremark{Comment: will update last number based on bulk profiling of a whole run; other numbers are from deep dive into individual run}
 }
 \end{table*}
 
@@ -616,9 +616,9 @@ $\frac{T_{ILE}}{N_{eval}}$ & GPU \\  %\hline
 % ./parse_report.sh 20190130-profile_bns_nogpu_16kHz_pcdev13.log | more
 %   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
 %   (11261 - 10974)/20/100. = 0.14 sec for 16 kHz
-CPU & 16384 & $\pm 2,\pm 1 $ & 35 & 26 & 0.14  & 680  & & 590    \\ 
-       & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  &  \\ \hline
-GPU (a) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&  &   \\
+CPU & 16384 & $\pm 2,\pm 1 $ & 35 & 26 & 0.14  & 680  & 25 & 590     \\ 
+       & 4096 & $\pm 2, \pm 1$ & 35 & &  &   &&  25 &  \\ \hline
+GPU (a) & 16384 & $\pm 2, \pm 1$   & 35 &  &&&  &    \\
        & 4096 & $ \pm 2, \pm 1 $        &  35  & &&&& 60--450  \\ \hline
 % ./parse_report.sh 20190205-profile_bns_gpu_lowres_pcdev13_iteration3.log | more
 %   - resampling time: take (mcsampler - likelihood), divide by 20=Neval, divide by number of adaptive steps (100)
@@ -630,14 +630,13 @@ GPU (b) & 16384 & $\pm 2, \pm 1$   & 35 & 26 & 0.07 &  2.4 & &35 & 16 \\
 %   demos/test_workflow_batch_bns_gpu_lowlatency_LHO_v0 : about 2.5 hours for 20 points
 % Profiling: actual individual run,
 %    - it, rest: based on mcsampler time - likelihood, divide by 20, divide by 10^4
-GPU (c) & 16384 & $\pm 2, \pm 1$   & 35 & 71 &&20 & \editremark{38} &  105   \\
-       & 4096 & $ \pm 2, \pm 1 $        &  35  & 28 && && 60  \\ \hline
+GPU (c) & 16384 & $\pm 2, \pm 1$   & 35 & 71 &&20 & 38 &  105   \\
+       & 4096 & $ \pm 2, \pm 1 $        &  35  & 28 && 12 && 60  \\ \hline
 \end{tabular}
 \caption{\label{tab:CostBreakdown:BNS}\textbf{Profiling performance: Binary neutron stars}: Evaluation costs for the
   marginalized likelihood on default
   hardware,  analyzing $T=8\unit{s}$ of data with a binary neutron stars
   $m_1=1.4 M_\odot,M_2=1.35 M_\odot$, with convergence threshold $n_{\rm eff} > 50$.
-\editremark{Comment: will update net runtime number based on bulk profiling of a whole run; other numbers are from deep dive into individual run}
 }
 \end{table*}
 
@@ -961,8 +960,8 @@ inference calculation can be evaluated at fixed $\lambda$ in tens of seconds on 
 both binary black holes and binary neutron stars.  This performance improvement could enable very low latency source
 parameter inference for compact binaries, which can be of use for targeting multimessenger followup observations via sky
 localization and  precise source characterization.     This prospect is particularly interesting because RIFT can
-often achieve this performance using computationally costly models for binary merger, as the waveform generation cost
-does not usually limit code performance.   
+often achieve this performance using computationally costly models for binary merger with rich physics like higher modes
+or eccentricity, as the waveform generation cost does not usually limit code performance.   
 
 
 The overall code performance and thus latency can be further decreased substantially, notably by converting the Monte
@@ -979,7 +978,7 @@ for all past history, such a configuration would be able to address low-latency 
 Alternatively, if larger resource pools are available in low latency, both the original and now GPU-accelerated RIFT  can
 perform extremely rapid parameter inference if large iterations are performed completely in parallel (i.e., $N_{\rm
   eval} \simeq 1$).
-
+%
 
 By allowing  models with higher-order modes to be used in low latency, our code can exploit the tighter constraints which higher modes can enable on  the properties of low-mass
 binaries with suitable amplitudes and orientations.  These tighter constraints could
@@ -994,7 +993,7 @@ This approach can identify individual events and
 even a population.
 Alternatively and in many ways equivalently, one can identify a population of GW sources without assuming any one is
 real, by  applying parameter inference to more candidate events and self-consistently separating foreground and
-background. 
+background
 \cite{2015PhRvD..91b3005F,2019MNRAS.tmp..230G}.
 
 
