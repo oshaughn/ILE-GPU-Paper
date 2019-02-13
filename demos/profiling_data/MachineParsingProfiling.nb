@@ -1,0 +1,1086 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.4' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     40967,       1078]
+NotebookOptionsPosition[     38594,        995]
+NotebookOutlinePosition[     39125,       1013]
+CellTagsIndexPosition[     39082,       1010]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["MachineParsingProfiling", "Title",
+ CellChangeTimes->{{3.759054482652141*^9, 3.759054487035873*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Setup", "Subsubsection",
+ CellChangeTimes->{{3.759054921130728*^9, 3.7590549215052357`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SetDirectory", "[", 
+  RowBox[{"NotebookDirectory", "[", "]"}], "]"}]], "Input"],
+
+Cell[BoxData["\<\"/Users/rossma/unixhome/Projects/LIGO-ILE-Applications/ILE-\
+GPU/ILE-GPU-Paper/demos/profiling_data\"\>"], "Output",
+ CellChangeTimes->{3.7590571425879517`*^9, 3.759057395275469*^9, 
+  3.759057511655303*^9}]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"evalRuntimePerLikelihood", "[", "item_", "]"}], " ", ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"nevals", " ", "=", 
+       RowBox[{
+        RowBox[{"Select", "[", 
+         RowBox[{"item", ",", 
+          RowBox[{
+           RowBox[{"StringMatchQ", "[", " ", 
+            RowBox[{
+             RowBox[{"#", "[", 
+              RowBox[{"[", 
+               RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+             "\"\<*mcsampler*integrate*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "1"}], "]"}], "]"}]}], ",", 
+      RowBox[{"runtime", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"Select", "[", 
+         RowBox[{"item", ",", 
+          RowBox[{
+           RowBox[{"StringMatchQ", "[", " ", 
+            RowBox[{
+             RowBox[{"#", "[", 
+              RowBox[{"[", 
+               RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+             "\"\<*integrate_likelihood_extrinsic*\>\""}], "]"}], "&"}]}], 
+         "]"}], "[", 
+        RowBox[{"[", 
+         RowBox[{"1", ",", "4"}], "]"}], "]"}]}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"runtime", "/", "nevals"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"evalSetupPerLikelihood", "[", "item_", "]"}], " ", ":=", " ", 
+   RowBox[{"Module", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"nevals", "=", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*mcsampler*integrate*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "1"}], "]"}], "]"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"precompute", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*Precompute*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "4"}], "]"}], "]"}]}]}], "\[IndentingNewLine]", 
+      "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"precompute", "/", "nevals"}]}], "\[IndentingNewLine]", "]"}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.759055309551764*^9, 3.759055404348084*^9}, {
+  3.759055438122381*^9, 3.759055466808593*^9}, {3.7590555622888403`*^9, 
+  3.7590555923229923`*^9}, {3.75905618596027*^9, 3.759056208289*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"No", " ", "GPU", " ", "code"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"evalNumberEvaluationsNoGPU", "[", "item_", "]"}], ":=", " ", 
+    RowBox[{
+     RowBox[{"Select", "[", 
+      RowBox[{"item", ",", 
+       RowBox[{
+        RowBox[{"StringMatchQ", "[", " ", 
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"[", 
+            RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+          "\"\<*FactoredLogLikelihood*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+     RowBox[{"[", 
+      RowBox[{"1", ",", "1"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"evalCostLikelihoodNoGPU", "[", "item_", "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"line", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*FactoredLogLikelihood*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      
+      RowBox[{
+       RowBox[{"nCalls", "=", 
+        RowBox[{"line", "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nTime", " ", "=", " ", 
+        RowBox[{"line", "[", 
+         RowBox[{"[", "4", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"nTime", "/", "nCalls"}], " ", "*", 
+        RowBox[{"10", "^", "6"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"evalMaintenancePerLikelihoodNoGPU", "[", "item_", "]"}], " ", ":=",
+     " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "precompute", ",", " ", "likelihood", ",", "runtime", ",", "nevals"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"nevals", " ", "=", " ", 
+        RowBox[{"evalNumberEvaluationsNoGPU", "[", "item", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"precompute", " ", "=", 
+        RowBox[{
+         RowBox[{"evalSetupPerLikelihood", "[", "item", "]"}], "*", 
+         RowBox[{"nevals", "/", 
+          RowBox[{"10", "^", "6"}]}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"runtime", " ", "=", 
+        RowBox[{"item", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "4"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"likelihood", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*likelihood_function*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "4"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+          "runtime", " ", "-", " ", "precompute", " ", "-", "likelihood"}], 
+          ")"}], "/", "nevals"}], " ", "*", " ", 
+        RowBox[{"10", "^", "6"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.759054939297021*^9, 3.7590549419214783`*^9}, {
+   3.759055129143777*^9, 3.7590551858471746`*^9}, {3.759055887114908*^9, 
+   3.759055887499007*^9}, {3.759056210047544*^9, 3.75905621843784*^9}, {
+   3.759056589255662*^9, 3.7590566906533813`*^9}, {3.7590569279764767`*^9, 
+   3.759056957483163*^9}, {3.759057078685246*^9, 3.759057079692809*^9}, {
+   3.759057119332169*^9, 3.759057122960999*^9}, {3.759057156395549*^9, 
+   3.759057196518857*^9}, 3.759057231212541*^9, {3.759057344436083*^9, 
+   3.7590573553776617`*^9}, {3.75905744358226*^9, 3.759057443710188*^9}, {
+   3.759057485239257*^9, 3.75905748851153*^9}, {3.7590575499418*^9, 
+   3.75905755034814*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"evalNumberEvaluationsNoGPU", "[", "tmp2", 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"evalMaintenancePerLikelihoodNoGPU", "[", "tmp2", "]"}]}], "Input",
+ CellChangeTimes->{{3.759057247858107*^9, 3.759057280561037*^9}, {
+  3.759057543653406*^9, 3.759057544811405*^9}}],
+
+Cell[BoxData["15960000"], "Output",
+ CellChangeTimes->{{3.759057255173415*^9, 3.7590572809085827`*^9}, 
+   3.7590573954514847`*^9, 3.759057511828429*^9, 3.759057545192443*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+  "11801.075`", "\[InvisibleSpace]", "\<\" \"\>", "\[InvisibleSpace]", 
+   "417.16567200000003`", "\[InvisibleSpace]", "\<\" \"\>", 
+   "\[InvisibleSpace]", "10974.923`"}],
+  SequenceForm[11801.075, " ", 417.16567200000003`, " ", 10974.923],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.7590575452014017`*^9}],
+
+Cell[BoxData["25.625709774436146`"], "Output",
+ CellChangeTimes->{{3.759057255173415*^9, 3.7590572809085827`*^9}, 
+   3.7590573954514847`*^9, 3.759057511828429*^9, 3.759057545209238*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"evalMaintenancePerLikelihoodNoGPU", "[", "tmp2", "]"}]], "Input",
+ CellChangeTimes->{{3.759057154530676*^9, 3.7590571683295803`*^9}, 
+   3.759057277025169*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+  "11801.075`", "\[InvisibleSpace]", "\<\" \"\>", "\[InvisibleSpace]", 
+   "417.16567200000003`", "\[InvisibleSpace]", "\<\" \"\>", 
+   "\[InvisibleSpace]", "10974.923`"}],
+  SequenceForm[11801.075, " ", 417.16567200000003`, " ", 10974.923],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.7590571885066547`*^9, 3.759057233046755*^9}, {
+   3.759057277376521*^9, 3.7590572868587637`*^9}, 3.759057365199191*^9, 
+   3.759057395522328*^9, 3.759057511893384*^9}],
+
+Cell[BoxData["25.625709774436146`"], "Output",
+ CellChangeTimes->{{3.7590571686702433`*^9, 3.759057233057629*^9}, {
+   3.7590572773874683`*^9, 3.759057286869514*^9}, 3.759057365210034*^9, 
+   3.75905739553115*^9, 3.759057511904303*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"GPU", " ", "code"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"evalNumberEvaluations", "[", "item_", "]"}], ":=", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Select", "[", 
+       RowBox[{"item", ",", 
+        RowBox[{
+         RowBox[{"StringMatchQ", "[", " ", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", 
+             RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+           "\"\<*likelihood_function*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+      RowBox[{"[", 
+       RowBox[{"1", ",", "1"}], "]"}], "]"}], "*", 
+     RowBox[{"10", "^", "4"}]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"evalCostLikelihood", "[", "item_", "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"line", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*likelihood_function*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", "1", "]"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+      
+      RowBox[{
+       RowBox[{"nCalls", "=", 
+        RowBox[{
+         RowBox[{"line", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], "*", 
+         RowBox[{"10", "^", "4"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"nTime", " ", "=", " ", 
+        RowBox[{"line", "[", 
+         RowBox[{"[", "4", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"nTime", "/", "nCalls"}], " ", "*", 
+        RowBox[{"10", "^", "6"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"evalMaintenancePerLikelihood", "[", "item_", "]"}], " ", ":=", 
+    " ", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "precompute", ",", " ", "likelihood", ",", "runtime", ",", "nevals"}], 
+       "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"nevals", " ", "=", " ", 
+        RowBox[{"evalNumberEvaluations", "[", "item", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"precompute", " ", "=", 
+        RowBox[{
+         RowBox[{"evalSetupPerLikelihood", "[", "item", "]"}], "*", 
+         RowBox[{"nevals", "/", 
+          RowBox[{"10", "^", "6"}]}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"runtime", " ", "=", 
+        RowBox[{"item", "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "4"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"likelihood", " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Select", "[", 
+          RowBox[{"item", ",", 
+           RowBox[{
+            RowBox[{"StringMatchQ", "[", " ", 
+             RowBox[{
+              RowBox[{"#", "[", 
+               RowBox[{"[", 
+                RowBox[{"-", "1"}], "]"}], "]"}], ",", " ", 
+              "\"\<*likelihood_function*\>\""}], "]"}], "&"}]}], "]"}], "[", 
+         RowBox[{"[", 
+          RowBox[{"1", ",", "4"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{
+          "runtime", " ", "-", " ", "precompute", " ", "-", "likelihood"}], 
+          ")"}], "/", "nevals"}], " ", "*", " ", 
+        RowBox[{"10", "^", "6"}]}]}]}], "\[IndentingNewLine]", "]"}]}], 
+   "\[IndentingNewLine]"}]}]], "Input",
+ CellChangeTimes->{{3.7590549476120443`*^9, 3.759054950200706*^9}, {
+   3.7590550849610777`*^9, 3.759055090071746*^9}, {3.759055845762951*^9, 
+   3.759055891537148*^9}, {3.759056699238206*^9, 3.7590567082531013`*^9}, {
+   3.759056810844178*^9, 3.7590568548131037`*^9}, {3.7590569535004787`*^9, 
+   3.759056953947081*^9}, {3.7590570672624063`*^9, 3.7590570681888638`*^9}, {
+   3.7590571291239157`*^9, 3.759057132911866*^9}, {3.759057381546012*^9, 
+   3.759057383394442*^9}, {3.759057438367536*^9, 3.7590574736379433`*^9}, 
+   3.759057658209152*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["tmp"], "Input",
+ CellChangeTimes->{{3.759057632322764*^9, 3.7590576325211573`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "1", ",", "0.048`", ",", "0.048`", ",", "707.375`", ",", "707.375`", 
+     ",", "\<\"integrate_likelihood_extrinsic_batchmode:8(<module>)\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "20", ",", "1.033`", ",", "0.052`", ",", "692.419`", ",", "34.621`", 
+     ",", "\<\"integrate_likelihood_extrinsic_batchmode:690(analyze_event)\"\>\
+"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "20", ",", "0.727`", ",", "0.036`", ",", "520.531`", ",", "26.027`", 
+     ",", "\<\"factored_likelihood.py:92(PrecomputeLikelihoodTerms)\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "100", ",", "0.312`", ",", "0.003`", ",", "222.419`", ",", "2.224`", 
+     ",", "\<\"factored_likelihood.py:882(ComputeModeCrossTermIP)\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "20", ",", "27.734`", ",", "1.387`", ",", "165.939`", ",", "8.297`", 
+     ",", "\<\"mcsampler.py:327(integrate)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1780", ",", "119.806`", ",", "0.067`", ",", "141.973`", ",", "0.08`", 
+     ",", "\<\"lalsimutils.py:1604(ip)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "40", ",", "0.574`", ",", "0.014`", ",", "127.198`", ",", "3.18`", 
+     ",", "\<\"factored_likelihood.py:789(ComputeModeIPTimeSeries)\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "40", ",", "28.779`", ",", "0.719`", ",", "115.278`", ",", "2.882`", 
+     ",", "\<\"lalsimutils.py:2463(hlmoft)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "140", ",", "111.103`", ",", "0.794`", ",", "112.891`", ",", "0.806`", 
+     ",", "\<\"lalsimutils.py:1434(__init__)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "20", ",", "17.975`", ",", "0.899`", ",", "93.723`", ",", "4.686`", 
+     ",", "\<\"lalsimutils.py:2674(conj_hlmoff)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "40", ",", "82.63`", ",", "2.066`", ",", "82.63`", ",", "2.066`", 
+     ",", "\<\"{lalsimulation._lalsimulation.SimInspiralChooseTDModes}\"\>"}],
+     "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "20", ",", "0.016`", ",", "0.001`", ",", "76.46`", ",", "3.823`", 
+     ",", "\<\"lalsimutils.py:2645(hlmoff)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "160", ",", "46.528`", ",", "0.291`", ",", "68.161`", ",", "0.426`", 
+     ",", "\<\"lalsimutils.py:1769(ip)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "723", ",", "8.582`", ",", "0.012`", ",", "54.555`", ",", "0.075`", 
+     ",", "\<\"mcsampler.py:198(draw)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "200", ",", "0.008`", ",", "0.`", ",", "36.914`", ",", "0.185`", 
+     ",", "\<\"lalsimutils.py:3641(DataFourier)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "40", ",", "0.002`", ",", "0.`", ",", "33.815`", ",", "0.845`", 
+     ",", "\<\"lalsimutils.py:1752(__init__)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "202", ",", "31.966`", ",", "0.158`", ",", "31.966`", ",", "0.158`", 
+     ",", "\<\"{lal._lal.COMPLEX16TimeFreqFFT}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "723", ",", "0.43`", ",", "0.001`", ",", "29.228`", ",", "0.04`", 
+     ",", "\<\"integrate_likelihood_extrinsic_batchmode:810(likelihood_\
+function)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "7383", ",", "0.298`", ",", "0.`", ",", "27.769`", ",", "0.004`", 
+     ",", "\<\"function_base.py:2063(__call__)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "7383", ",", "11.086`", ",", "0.002`", ",", "27.472`", ",", "0.004`", 
+     ",", "\<\"function_base.py:2154(_vectorize_call)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "360315", ",", "0.628`", ",", "0.`", ",", "26.42`", ",", "0.`", 
+     ",", "\<\"polyint.py:62(__call__)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "407", ",", "0.006`", ",", "0.`", ",", "25.493`", ",", "0.063`", 
+     ",", "\<\"odepack.py:28(odeint)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "407", ",", "1.156`", ",", "0.003`", ",", "25.474`", ",", "0.063`", 
+     ",", "\<\"{scipy.integrate._odepack.odeint}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "160", ",", "22.228`", ",", "0.139`", ",", "24.638`", ",", "0.154`", 
+     ",", "\<\"lalsimutils.py:3661(DataRollBins)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "160", ",", "20.344`", ",", "0.127`", ",", "20.344`", ",", "0.127`", 
+     ",", "\<\"{lal._lal.COMPLEX16FreqTimeFFT}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "360315", ",", "2.356`", ",", "0.`", ",", "18.85`", ",", "0.`", 
+     ",", "\<\"interpolate.py:657(_evaluate)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "7943", ",", "0.034`", ",", "0.`", ",", "17.454`", ",", "0.002`", 
+     ",", "\<\"shape_base.py:286(hstack)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "8719", ",", "17.381`", ",", "0.002`", ",", "17.381`", ",", "0.002`", 
+     ",", "\<\"{numpy.concatenate}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "728586", ",", "15.25`", ",", "0.`", ",", "15.25`", ",", "0.`", 
+     ",", "\<\"{method\"\>", ",", "\<\"'reduce'\"\>", ",", "\<\"of\"\>", 
+     ",", "\<\"'numpy.ufunc'\"\>", ",", "\<\"objects}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "723", ",", "0.002`", ",", "0.`", ",", "14.669`", ",", "0.02`", 
+     ",", "\<\"__init__.py:630(asnumpy)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "723", ",", "14.64`", ",", "0.02`", ",", "14.666`", ",", "0.02`", 
+     ",", "\<\"{method\"\>", ",", "\<\"'get'\"\>", ",", "\<\"of\"\>", 
+     ",", "\<\"'cupy.core.core.ndarray'\"\>", ",", "\<\"objects}\"\>"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "5534", ",", "0.054`", ",", "0.`", ",", "13.017`", ",", "0.002`", 
+     ",", "\<\"fromnumeric.py:69(_wrapreduction)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "359774", ",", "0.275`", ",", "0.`", ",", "12.971`", ",", "0.`", 
+     ",", "\<\"fromnumeric.py:54(_wrapfunc)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "206", ",", "0.005`", ",", "0.`", ",", "12.819`", ",", "0.062`", 
+     ",", "\<\"mcsampler.py:158(cdf_function)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "723", ",", "1.661`", ",", "0.002`", ",", "12.776`", ",", "0.018`", 
+     ",", "\<\"factored_likelihood.py:1676(\
+DiscreteFactoredLogLikelihoodViaArrayVectorNoLoop)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "201", ",", "0.005`", ",", "0.`", ",", "12.751`", ",", "0.063`", 
+     ",", "\<\"mcsampler.py:178(cdf_inverse)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2008", ",", "0.019`", ",", "0.`", ",", "12.735`", ",", "0.006`", 
+     ",", "\<\"fromnumeric.py:1966(sum)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "200", ",", "0.632`", ",", "0.003`", ",", "12.409`", ",", "0.062`", 
+     ",", "\<\"histograms.py:666(histogram)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "183188", ",", "0.306`", ",", "0.`", ",", "12.187`", ",", "0.`", 
+     ",", "\<\"mcsampler.py:163(dP_cdf)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "182104", ",", "0.308`", ",", "0.`", ",", "12.131`", ",", "0.`", 
+     ",", "\<\"mcsampler.py:183(dP_cdf)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "999", ",", "0.002`", ",", "0.`", ",", "11.566`", ",", "0.012`", 
+     ",", "\<\"fromnumeric.py:942(argsort)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "999", ",", "11.563`", ",", "0.012`", ",", "11.563`", ",", "0.012`", 
+     ",", "\<\"{method\"\>", ",", "\<\"'argsort'\"\>", ",", "\<\"of\"\>", 
+     ",", "\<\"'numpy.ndarray'\"\>", ",", "\<\"objects}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "358146", ",", "7.292`", ",", "0.`", ",", "10.03`", ",", "0.`", 
+     ",", "\<\"interpolate.py:588(_call_linear)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "1981", ",", "0.012`", ",", "0.`", ",", "9.435`", ",", "0.005`", 
+     ",", "\<\"numeric.py:175(ones)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "4873", ",", "9.393`", ",", "0.002`", ",", "9.393`", ",", "0.002`", 
+     ",", "\<\"{numpy.copyto}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2", ",", "0.454`", ",", "0.227`", ",", "8.397`", ",", "4.199`", 
+     ",", "\<\"lalsimutils.py:3267(frame_data_to_non_herm_hoff)\"\>"}], "}"}],
+    ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2", ",", "0.202`", ",", "0.101`", ",", "7.456`", ",", "3.728`", 
+     ",", "\<\"lalsimutils.py:3188(frame_data_to_hoft)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "811396", ",", "7.22`", ",", "0.`", ",", "7.4`", ",", "0.`", 
+     ",", "\<\"{numpy.array}\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2", ",", "0.`", ",", "0.`", ",", "7.18`", ",", "3.59`", 
+     ",", "\<\"frread.py:52(read_timeseries)\"\>"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+    "2", ",", "0.`", ",", "0.`", ",", "7.178`", ",", "3.589`", 
+     ",", "\<\"frread.py:157(ts_from_cache)\"\>"}], "}"}]}], "}"}]], "Output",\
+
+ CellChangeTimes->{3.7590576330074472`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"analyzeLine", "[", "name_", "]"}], " ", ":=", " ", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"dat", " ", "=", " ", 
+      RowBox[{"Import", "[", 
+       RowBox[{"name", ",", " ", "\"\<Table\>\""}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"name", ",", " ", "\"\<*nogpu*\>\""}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"(", "dat", ")"}], "]"}], " ", "&"}], ",", 
+         RowBox[{"{", " ", 
+          RowBox[{
+          "evalRuntimePerLikelihood", ",", "evalSetupPerLikelihood", ",", 
+           "evalCostLikelihoodNoGPU", ",", 
+           "evalMaintenancePerLikelihoodNoGPU"}], "}"}]}], "]"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"(", "dat", ")"}], "]"}], " ", "&"}], ",", 
+         RowBox[{"{", " ", 
+          RowBox[{
+          "evalRuntimePerLikelihood", ",", "evalSetupPerLikelihood", ",", 
+           "evalCostLikelihood", ",", "evalMaintenancePerLikelihood"}], 
+          "}"}]}], "]"}]}], "\[IndentingNewLine]", "]"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.7590557333899393`*^9, 3.759055813619779*^9}, {
+  3.759055903464877*^9, 3.7590559417577744`*^9}, {3.75905602048977*^9, 
+  3.759056021105503*^9}, {3.759056724136367*^9, 3.759056728334834*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Demo", "Subsubsection",
+ CellChangeTimes->{{3.7590551914943323`*^9, 3.759055191828929*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"tmp", " ", "=", " ", 
+     RowBox[{"Import", "[", 
+      RowBox[{
+      "\"\<20190130-profile_bns_gpu_16kHz_pcdev13.log_parsed\>\"", ",", " ", 
+       "\"\<Table\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"tmp2", " ", "=", " ", 
+     RowBox[{"Import", "[", 
+      RowBox[{
+      "\"\<20190130-profile_bns_nogpu_16kHz_pcdev13.log_parsed\>\"", ",", 
+       " ", "\"\<Table\>\""}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"evalNumberEvaluationsNoGPU", "[", "tmp2", "]"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"evalRuntimeLikelihoodNoGPU", "[", "tmp2", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.7590544952577963`*^9, 3.759054508179204*^9}, {
+  3.759054557780898*^9, 3.7590545904954557`*^9}, {3.759054634234869*^9, 
+  3.759054934461307*^9}, {3.759055472159956*^9, 3.7590554740001574`*^9}, {
+  3.759055705048304*^9, 3.759055705190617*^9}}],
+
+Cell[BoxData["15960000"], "Output",
+ CellChangeTimes->{3.759057662163451*^9}],
+
+Cell[BoxData["679.7937969924811`"], "Output",
+ CellChangeTimes->{3.75905766217179*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"evalRuntimeLikelihood", "[", "tmp", "]"}]], "Input",
+ CellChangeTimes->{{3.7590575779989433`*^9, 3.759057590431744*^9}}],
+
+Cell[BoxData["4.042600276625173`"], "Output",
+ CellChangeTimes->{3.759057590771989*^9, 3.759057663729*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Map", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"#", "[", 
+     RowBox[{"(", "tmp2", ")"}], "]"}], " ", "&"}], ",", 
+   RowBox[{"{", " ", 
+    RowBox[{
+    "evalRuntimePerLikelihood", ",", "evalSetupPerLikelihood", ",", 
+     "evalNumberEvaluationsNoGPU"}], "}"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"analyzeLine", "[", 
+  "\"\<20190130-profile_bns_gpu_16kHz_pcdev13.log_parsed\>\"", 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.759055503453476*^9, 3.75905554922983*^9}, {
+  3.7590574010476007`*^9, 3.759057427014732*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"590.05375`", ",", "26.1382`", ",", "15960000"}], "}"}]], "Output",
+ CellChangeTimes->{{3.7590555382581577`*^9, 3.759055595785865*^9}, {
+  3.759057404652131*^9, 3.759057447415222*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"35.36875`", ",", "26.02655`", ",", "4.042600276625173`", ",", 
+   RowBox[{
+    FractionBox["100", "723"], " ", 
+    RowBox[{"(", 
+     RowBox[{"519.2030434999999`", "\[VeryThinSpace]", "-", 
+      RowBox[{
+       RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+       RowBox[{"1", ",", "4"}], "\[RightDoubleBracket]"}]}], ")"}]}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.7590555382581577`*^9, 3.759055595785865*^9}, {
+  3.759057404652131*^9, 3.759057447460824*^9}}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["BBH profiling", "Subsection",
+ CellChangeTimes->{{3.759055197684621*^9, 3.7590551992927313`*^9}, {
+  3.7590562473062067`*^9, 3.759056250584654*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fnamesHere", "=", 
+  RowBox[{"Select", "[", 
+   RowBox[{
+    RowBox[{"FileNames", "[", "]"}], ",", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"StringMatchQ", "[", 
+       RowBox[{"#", ",", "\"\<*parsed\>\""}], "]"}], " ", "&&", " ", 
+      RowBox[{"!", 
+       RowBox[{"StringMatchQ", "[", 
+        RowBox[{"#", ",", "\"\<*bns*\>\""}], "]"}]}]}], "&"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.7590552002903757`*^9, 3.759055241878805*^9}, {
+  3.759055720664298*^9, 3.759055723693943*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"20190130-profile_gpu_HM_16kHz_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_gpu_HM_lowres_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_gpu_LHOworker_16kHz.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_gpu_LHOworker_lowres.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_gpu_lowres_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_nogpu_HM_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_nogpu_pcdev13.log_parsed\"\>"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{{3.75905520281678*^9, 3.759055242258089*^9}, 
+   3.759055724571245*^9, 3.759057494426407*^9, 3.759057666733509*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Join", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<name\>\"", ",", " ", "\"\<T/N\>\"", ",", " ", "\"\<setup\>\"", ",",
+        " ", "\"\<like\>\"", ",", " ", "\"\<maint\>\""}], "}"}], "}"}], ",", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"StringReplace", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"\"\<20190130-profile_\>\"", "\[Rule]", "\"\<\>\""}], 
+              ",", " ", 
+              RowBox[{"\"\<.log_parsed\>\"", "\[Rule]", "\"\<\>\""}]}], 
+             "}"}]}], "]"}], "}"}], ",", " ", 
+         RowBox[{"analyzeLine", "[", "#", "]"}]}], "]"}], "&"}], ",", " ", 
+      "fnamesHere"}], "]"}]}], "]"}], "//", "TableForm"}]], "Input",
+ CellChangeTimes->{{3.759056046821794*^9, 3.7590561073989697`*^9}, {
+  3.759056137688527*^9, 3.759056163919839*^9}, {3.7590574977250967`*^9, 
+  3.7590575015730543`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {"\<\"name\"\>", "\<\"T/N\"\>", "\<\"setup\"\>", "\<\"like\"\>", \
+"\<\"maint\"\>"},
+    {"\<\"gpu_HM_16kHz_pcdev13\"\>", "38.187000000000005`", "1.73785`", 
+     "4.221934369602763`", "20.421562780656302`"},
+    {"\<\"gpu_HM_lowres_pcdev13\"\>", "35.548899999999996`", "0.96495`", 
+     "2.458075484529072`", "20.751676997619857`"},
+    {"\<\"gpu_LHOworker_16kHz\"\>", "158.08965`", "5.9184`", 
+     "17.861957933004415`", "58.322810075305114`"},
+    {"\<\"gpu_LHOworker_lowres\"\>", "141.51355`", "3.6713500000000003`", 
+     "11.765276329509906`", "58.34520370177269`"},
+    {"\<\"gpu_lowres_pcdev13\"\>", 
+     FractionBox["7.638`", 
+      RowBox[{
+       RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+       RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}]], 
+     FractionBox[
+      RowBox[{
+       RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+       RowBox[{"1", ",", "4"}], "\[RightDoubleBracket]"}], 
+      RowBox[{
+       RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+       RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}]], 
+     InterpretationBox["\<\"\"\>",
+      {}], 
+     FractionBox[
+      RowBox[{"100", " ", 
+       RowBox[{"(", 
+        RowBox[{"7.638`", "\[VeryThinSpace]", "-", 
+         RowBox[{
+          FractionBox["101", "100"], " ", 
+          RowBox[{
+           RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+           RowBox[{"1", ",", "4"}], "\[RightDoubleBracket]"}]}]}], ")"}]}], 
+      RowBox[{
+       RowBox[{"{", "}"}], "\[LeftDoubleBracket]", 
+       RowBox[{"1", ",", "1"}], "\[RightDoubleBracket]"}]]},
+    {"\<\"nogpu_HM_pcdev13\"\>", "1063.9473`", "1.6013000000000002`", 
+     "686.7444705882353`", "18.940716806722744`"},
+    {"\<\"nogpu_pcdev13\"\>", "691.3378`", "2.37715`", "532.1042345276873`", 
+     "20.461408631921756`"}
+   },
+   GridBoxAlignment->{
+    "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+     "RowsIndexed" -> {}},
+   GridBoxSpacings->{"Columns" -> {
+       Offset[0.27999999999999997`], {
+        Offset[2.0999999999999996`]}, 
+       Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+       Offset[0.2], {
+        Offset[0.4]}, 
+       Offset[0.2]}, "RowsIndexed" -> {}}],
+  TableForm[{{"name", "T/N", "setup", "like", "maint"}, {
+    "gpu_HM_16kHz_pcdev13", 38.187000000000005`, 1.73785, 4.221934369602763, 
+     20.421562780656302`}, {
+    "gpu_HM_lowres_pcdev13", 35.548899999999996`, 0.96495, 2.458075484529072, 
+     20.751676997619857`}, {
+    "gpu_LHOworker_16kHz", 158.08965, 5.9184, 17.861957933004415`, 
+     58.322810075305114`}, {
+    "gpu_LHOworker_lowres", 141.51355, 3.6713500000000003`, 
+     11.765276329509906`, 58.34520370177269}, {
+    "gpu_lowres_pcdev13", 7.638/Part[{}, 1, 1], Part[{}, 1, 1]^(-1) 
+     Part[{}, 1, 4], {}, 100 
+     Part[{}, 1, 1]^(-1) (7.638 + Rational[-101, 100] Part[{}, 1, 4])}, {
+    "nogpu_HM_pcdev13", 1063.9473, 1.6013000000000002`, 686.7444705882353, 
+     18.940716806722744`}, {
+    "nogpu_pcdev13", 691.3378, 2.37715, 532.1042345276873, 
+     20.461408631921756`}}]]], "Output",
+ CellChangeTimes->{{3.759056058788253*^9, 3.759056107883128*^9}, 
+   3.759056164617285*^9, {3.759057494723181*^9, 3.759057502132803*^9}, 
+   3.759057667015773*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["BNS profiling", "Subsection",
+ CellChangeTimes->{{3.759055197684621*^9, 3.7590551992927313`*^9}, {
+  3.7590562473062067`*^9, 3.759056250584654*^9}, {3.7590570141438313`*^9, 
+  3.759057014422181*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fnamesHere", "=", 
+  RowBox[{"Select", "[", 
+   RowBox[{
+    RowBox[{"FileNames", "[", "]"}], ",", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"StringMatchQ", "[", 
+       RowBox[{"#", ",", "\"\<*parsed\>\""}], "]"}], " ", "&&", " ", 
+      RowBox[{"StringMatchQ", "[", 
+       RowBox[{"#", ",", "\"\<*bns*\>\""}], "]"}]}], "&"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.7590552002903757`*^9, 3.759055241878805*^9}, {
+   3.759055720664298*^9, 3.759055723693943*^9}, 3.759057018422357*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"20190130-profile_bns_gpu_16kHz_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_bns_gpu_lowres_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190130-profile_bns_nogpu_16kHz_pcdev13.log_parsed\"\>", 
+   ",", "\<\"20190201-profile_bns_batch_pcdev13_new_16kHz.log_parsed\"\>", 
+   ",", "\<\"20190201-profile_bns_batch_pcdev13_new_lowres.log_parsed\"\>", 
+   ",", "\<\"20190201-profile_LHOWorker_bns_16kHz_gpu.log_parsed\"\>", 
+   ",", "\<\"20190201-profile_LHOWorker_bns_lowres_gpu.log_parsed\"\>", 
+   ",", "\<\"20190205-profile_bns_gpu_lowres_pcdev13_iteration3.log_parsed\"\>\
+"}], "}"}]], "Output",
+ CellChangeTimes->{{3.75905520281678*^9, 3.759055242258089*^9}, 
+   3.759055724571245*^9, 3.759057019238311*^9, 3.759057605824444*^9, 
+   3.759057804105103*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Join", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<name\>\"", ",", " ", "\"\<T/N\>\"", ",", " ", "\"\<setup\>\"", ",",
+        " ", "\"\<like\>\"", ",", " ", "\"\<maint\>\""}], "}"}], "}"}], ",", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"StringReplace", "[", 
+           RowBox[{"#", ",", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"\"\<20190130-profile_\>\"", "\[Rule]", "\"\<\>\""}], 
+              ",", " ", 
+              RowBox[{"\"\<20190201-profile_\>\"", "\[Rule]", "\"\<\>\""}], 
+              ",", 
+              RowBox[{"\"\<.log_parsed\>\"", "\[Rule]", "\"\<\>\""}]}], 
+             "}"}]}], "]"}], "}"}], ",", " ", 
+         RowBox[{"analyzeLine", "[", "#", "]"}]}], "]"}], "&"}], ",", " ", 
+      "fnamesHere"}], "]"}]}], "]"}], "//", "TableForm"}]], "Input",
+ CellChangeTimes->{{3.759056046821794*^9, 3.7590561073989697`*^9}, {
+  3.759056137688527*^9, 3.759056163919839*^9}, {3.7590567366063757`*^9, 
+  3.759056737646093*^9}, {3.759057091356439*^9, 3.759057100563942*^9}}],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"name\"\>", "\<\"T/N\"\>", "\<\"setup\"\>", "\<\"like\"\>", \
+"\<\"maint\"\>"},
+    {"\<\"bns_gpu_16kHz_pcdev13\"\>", "35.36875`", "26.02655`", 
+     "4.042600276625173`", "67.76971556016596`"},
+    {"\<\"bns_gpu_lowres_pcdev13\"\>", "24.03995`", "11.51605`", 
+     "2.421923076923077`", "32.292699999999996`"},
+    {"\<\"bns_nogpu_16kHz_pcdev13\"\>", "590.05375`", "26.1382`", 
+     "679.7937969924811`", "25.625709774436146`"},
+    {"\<\"bns_batch_pcdev13_new_16kHz\"\>", "32.21955`", "26.12605`", 
+     "3.9456327985739756`", "84.79302308377896`"},
+    {"\<\"bns_batch_pcdev13_new_lowres\"\>", "18.36915`", "10.4548`", 
+     "2.56751269035533`", "49.14063147208122`"},
+    {"\<\"LHOWorker_bns_16kHz_gpu\"\>", "105.3147`", "71.3462`", 
+     "19.55156110615522`", "96.99644049955397`"},
+    {"\<\"LHOWorker_bns_lowres_gpu\"\>", "58.01485`", "27.931250000000002`", 
+     "12.5890990990991`", "64.01091216216216`"},
+    {"\<\"20190205-profile_bns_gpu_lowres_pcdev13_iteration3\"\>", 
+     "165.71285`", "134.886`", "2.0010766307789742`", 
+     RowBox[{"-", "31.939103229892307`"}]}
+   },
+   GridBoxAlignment->{
+    "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+     "RowsIndexed" -> {}},
+   GridBoxSpacings->{"Columns" -> {
+       Offset[0.27999999999999997`], {
+        Offset[2.0999999999999996`]}, 
+       Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+       Offset[0.2], {
+        Offset[0.4]}, 
+       Offset[0.2]}, "RowsIndexed" -> {}}],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.759056058788253*^9, 3.759056107883128*^9}, 
+   3.759056164617285*^9, 3.759056738400299*^9, 3.759056825489954*^9, 
+   3.759056863320668*^9, {3.759056934018214*^9, 3.7590569625250483`*^9}, {
+   3.759057002201054*^9, 3.759057024588953*^9}, {3.7590570861655407`*^9, 
+   3.759057101179741*^9}, {3.7590571377038593`*^9, 3.759057145863565*^9}, 
+   3.759057387020784*^9, 3.7590576061172857`*^9, 3.7590578042270947`*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{977, 656},
+WindowMargins->{{Automatic, 131}, {28, Automatic}},
+FrontEndVersion->"10.4 for Mac OS X x86 (32-bit, 64-bit Kernel) (February 25, \
+2016)",
+StyleDefinitions->FrontEnd`FileName[{$RootDirectory, "Applications", 
+   "Mathematics", "Mathematica9.app", "SystemFiles", "FrontEnd", 
+   "StyleSheets"}, "Default_8.0.nb", CharacterEncoding -> "UTF-8"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 106, 1, 77, "Title"],
+Cell[CellGroupData[{
+Cell[711, 27, 98, 1, 24, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[834, 32, 104, 2, 40, "Input"],
+Cell[941, 36, 224, 3, 40, "Output"]
+}, Open  ]],
+Cell[1180, 42, 2830, 74, 215, "Input"],
+Cell[4013, 118, 4153, 101, 296, "Input"],
+Cell[CellGroupData[{
+Cell[8191, 223, 292, 5, 56, "Input"],
+Cell[8486, 230, 175, 2, 39, "Output"],
+Cell[8664, 234, 360, 8, 21, "Print"],
+Cell[9027, 244, 186, 2, 39, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9250, 251, 183, 3, 40, "Input"],
+Cell[9436, 256, 506, 10, 21, "Print"],
+Cell[9945, 268, 235, 3, 39, "Output"]
+}, Open  ]],
+Cell[10195, 274, 4086, 102, 264, "Input"],
+Cell[CellGroupData[{
+Cell[14306, 380, 97, 1, 40, "Input"],
+Cell[14406, 383, 8947, 217, 712, "Output"]
+}, Open  ]],
+Cell[23368, 603, 1623, 40, 168, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25028, 648, 97, 1, 24, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[25150, 653, 1009, 22, 135, "Input"],
+Cell[26162, 677, 77, 1, 39, "Output"],
+Cell[26242, 680, 86, 1, 39, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26365, 686, 144, 2, 40, "Input"],
+Cell[26512, 690, 106, 1, 39, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26655, 696, 551, 14, 56, "Input"],
+Cell[27209, 712, 223, 4, 40, "Output"],
+Cell[27435, 718, 507, 12, 57, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27991, 736, 154, 2, 35, "Subsection"],
+Cell[CellGroupData[{
+Cell[28170, 742, 523, 14, 40, "Input"],
+Cell[28696, 758, 657, 11, 88, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29390, 774, 1047, 27, 72, "Input"],
+Cell[30440, 803, 3250, 71, 172, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33739, 880, 205, 3, 35, "Subsection"],
+Cell[CellGroupData[{
+Cell[33969, 887, 522, 13, 40, "Input"],
+Cell[34494, 902, 805, 13, 88, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35336, 920, 1188, 29, 72, "Input"],
+Cell[36527, 951, 2027, 39, 168, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
