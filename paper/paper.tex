@@ -4,6 +4,7 @@
 
 \newcommand\ForInternalReference[1]{}
 \newcommand\SkipForEarlyCirculation[1]{}
+\newcommand\AddedResponse[1]{\textbf{#1}}
 %\newcommand\SkipForEarlyCirculation[1]{#1}
 \newcommand\SkipPP[1]{}
 \usepackage{verbatim}
@@ -225,6 +226,7 @@ p_{\rm post}(\bm{\lambda} ,\theta)=\frac{ {\cal L}(\bm{\lambda} ,\theta)p(\theta
 \end{equation}
 where $p(\theta)$ and $p(\bm{\lambda})$ are priors on the (independent) variables $\theta ,\bm{\lambda}$. For each $\bm{\lambda}$, we evaluate the marginalized likelihood
 \begin{equation}
+\label{eq:lnLmarg}
  {\cal L}_{\rm marg}\equiv\int  {\cal L}(\bm{\lambda} ,\theta )p(\theta )d\theta
 \end{equation}
 via direct Monte Carlo integration over almost all parameters $\theta$, where $p(\theta)$ is uniform in 4-volume and source orientation.  
@@ -235,7 +237,7 @@ For the remaining dimensions, to evaluate the likelihood in regions of high impo
 
 This marginalized likelihood can be evaluated efficiently
 by  generating the dynamics and outgoing radiation in all possible directions once and for all for fixed
-$\mathbf{\lambda}$, using a spherical harmonic decomposition.  Using this cached information effectively,  the likelihood can be evaluated as a function of $\theta$ at very low computational cost.  
+$\bm{\lambda}$, using a spherical harmonic decomposition.  Using this cached information effectively,  the likelihood can be evaluated as a function of $\theta$ at very low computational cost.  
 % From ROM paper
 A dimensionless, complex gravitational-wave
 strain
@@ -245,8 +247,8 @@ strain
 %% [Remove this? I think it conflicts with other conventions/definitions 
 %% used throughout the paper.]}}
 \begin{align} \label{eq:strain}
-h(t,\vartheta,\phi;\lambda) =  h_+(t,\vartheta,\phi;\lambda) - 
-                                i h_\times (t,\vartheta,\phi;\lambda) \, ,
+h(t,\vartheta,\phi;\bm{\lambda}) =  h_+(t,\vartheta,\phi;\bm{\lambda}) - 
+                                i h_\times (t,\vartheta,\phi;\bm{\lambda}) \, ,
 \end{align}
 can be expressed in terms of its two fundamental polarizations $h_+$ and $h_\times$.
 Here, $t$ denotes time, $\vartheta$ and $\phi$ are the polar and azimuthal angles
@@ -254,10 +256,10 @@ for the direction of gravitational wave propagation away from the source.
 The complex gravitational-wave strain can be written in terms of
 spin-weighted spherical harmonics $\Y{-2}_{\ell m} \left(\vartheta, \phi \right)$ as 
 \begin{align} \label{eq:strain_mode}
-h(t,\vartheta,\phi;\lambda) = 
-\sum_{\ell=2}^{\infty} \sum_{m=-\ell}^{\ell} \frac{D_{\rm ref}}{D} h^{\ell m}(t;\lambda) \Y{-2}_{\ell m} \left(\vartheta, \phi \right) \, ,
+h(t,\vartheta,\phi;\bm{\lambda}) = 
+\sum_{\ell=2}^{\infty} \sum_{m=-\ell}^{\ell} \frac{D_{\rm ref}}{D} h^{\ell m}(t;\bm{\lambda}) \Y{-2}_{\ell m} \left(\vartheta, \phi \right) \, ,
 \end{align}
-where the sum includes all available harmonic modes $h^{\ell m}(t;\pmb{\lambda})$ made available by the model;  where
+where the sum includes all available harmonic modes $h^{\ell m}(t;\pmb{\bm{\lambda}})$ made available by the model;  where
 $D_{\rm ref}$ is a fiducial reference distance; and where $D$, the luminosity distance to the  source, is one of the
 extrinsic parameters.  
 
@@ -270,12 +272,12 @@ We then substitute these expressions for $h_k$ into the likelihood function~\eqr
 thereby generating~\cite{gwastro-PE-AlternativeArchitectures}
 \begin{widetext}
 \begin{align}
-\ln {\cal L}(\lambda, \theta) 
-&= (D_{\rm ref}/D) \text{Re} \sum_k \sum_{\ell m}(F_k \Y{-2}_{\ell m})^* Q_{k,lm}(\lambda,t_k)\nonumber \\
+\ln {\cal L}(\bm{\lambda}, \theta) 
+&= (D_{\rm ref}/D) \text{Re} \sum_k \sum_{\ell m}(F_k \Y{-2}_{\ell m})^* Q_{k,lm}(\bm{\lambda},t_k)\nonumber \\
 &   -\frac{(D_{\rm ref}/D)^2}{4}\sum_k \sum_{\ell m \ell' m'}
 \left[
 {
-|F_k|^2 [\Y{-2}_{\ell m}]^*\Y{-2}_{\ell'm'} U_{k,\ell m,\ell' m'}(\lambda)
+|F_k|^2 [\Y{-2}_{\ell m}]^*\Y{-2}_{\ell'm'} U_{k,\ell m,\ell' m'}(\bm{\lambda})
 }
 % \right. \nonumber \\ & \left.
  {
@@ -296,20 +298,50 @@ the quantities $Q,U,V$ depend on $h$ and the data as
 %\label{eq:ComputeRhoViaInnerProductMatrix}
 \label{eq:QUV}
 \begin{align}
-Q_{k,\ell m}(\lambda,t_k) &\equiv \qmstateproduct{h_{\ell m}(\lambda,t_k)}{d}_k \nonumber\\
-&= 2 \int_{|f|>f_{\rm low}} \frac{df}{S_{n,k}(|f|)} e^{2\pi i f t_k} \tilde{h}_{\ell m}^*(\lambda;f) \tilde{d}(f)\ , \\
-{ U_{k,\ell m,\ell' m'}(\lambda)}& = \qmstateproduct{h_{\ell m}}{h_{\ell'm'}}_k\ , \\
-V_{k,\ell m,\ell' m'}(\lambda)& = \qmstateproduct{h_{\ell m}^*}{h_{\ell'm'}}_k  \ .
+Q_{k,\ell m}(\bm{\lambda},t_k) &\equiv \qmstateproduct{h_{\ell m}(\bm{\lambda},t_k)}{d}_k \nonumber\\
+&= 2 \int_{|f|>f_{\rm low}} \frac{df}{S_{n,k}(|f|)} e^{2\pi i f t_k} \tilde{h}_{\ell m}^*(\bm{\lambda};f) \tilde{d}(f)\ , \\
+{ U_{k,\ell m,\ell' m'}(\bm{\lambda})}& = \qmstateproduct{h_{\ell m}}{h_{\ell'm'}}_k\ , \\
+V_{k,\ell m,\ell' m'}(\bm{\lambda})& = \qmstateproduct{h_{\ell m}^*}{h_{\ell'm'}}_k  \ .
 \end{align}
 \end{subequations}
-Rewriting sums as matrix operations, the likelihood can be equivalently expressed as
+
+\AddedResponse{In RIFT, the marginalization in Eq. (\ref{eq:lnLmarg}) over extrinsic parameters is performed by evaluating this likelihood $\ln {\cal
+    L}(\bm{\lambda},\theta)$ on long
+  arrays $\theta_\alpha$ of extrinsic parameters, including $D_\alpha$ but excluding time.    Treating the block of quantities that arise
+  in one sequence of evaluations together,  the expressions $Q,F,U,V$ and $D$ can be considered as multi-dimensional
+  arrays.  For example, $F_k(\theta_\alpha)$ is a matrix indexed over $k$ (detectors) and $\alpha$
+  (extrinsic parameters); $\Y{-2}_{lm}(\theta_k)$ is a matrix of shape (modes)$\times$(extrinsic); and $D_\alpha$ is a one-dimensional array over $\alpha$.  By contrast, the  $U,V$ are arrays of shape
+  (detectors)$\times$ (modes)$^2$ are independent of extrinsic parameters.  While $Q$ depends explicitly on time, and
+  varies rapidly on short timescales, $F$ varies on the earth's rotation timescale, so we  approximate $F$ as  time-independent. }
+
+
+At a fixed set of intrinsic parameters $\bm{\lambda}$, \ILE{} will repeatedly evaluate the time-marginalized likelihood 
+for each candidate Monte Carlo set of extrinsic parameters $\theta$:
+\begin{eqnarray}
+{\cal L}_{\rm margT} \equiv  \int {\cal L} \frac{dt}{T}
+\label{eq:lnL:tmarg}
+\end{eqnarray}
+where $T$ is a small coincidence window consistent with the candidate event time; here and previously,
+$T=0.3\unit{sec}$.  
+%
+\AddedResponse{
+Because we treat the  parameter  asymmetrically when marginalizing over all extrinsic parameters, we likewise organize
+a multidimensional array representation of $Q$ to emphasize the special role of time: for each $k,l,m$ we construct a uniformly-sampled timeseries
+$Q_{k,lm}(\bm{\lambda},\tau)$ versus $\tau$, truncating it to a narrow coincidence window.   In effect, we represent $Q$
+by a matrix 
+  $Q_{k,lm}(\bm{\lambda},t+\hat{n}\cdot x_k)$ with  shape (detectors)$\times$(modes)$\times$(extrinsic)$\times$(time).
+}
+%
+\AddedResponse{In terms of these multidimensional arrays, r}ewriting sums as matrix operations, the likelihood can be equivalently expressed as
 \begin{align}
 \ln {\cal L} &= \frac{D_{\rm ref}}{D} \text{Re}[ (F Y)^\dag Q]  \nonumber \\
  & - \frac{D_{\rm ref}^2}{4 D^2} [ (FY)^\dag U FY + (FY)^TV FY]
 \label{eq:lnL:MatrixForm}
 \end{align}
-where $F,D$ are arrays over extrinsic parameters; $Q$ is an array over time and $(l,m)$; and $U,V$ are matrices over
-$(l,m)$. 
+\AddedResponse{where this symbolic expression employs an implicit index-summation convention such that all naturally paired
+  indices are contracted.  The result is an array of shape (time)$\times$(extrinsic).}
+%where $F,D$ are arrays over extrinsic parameters; $Q$ is an array over time and $(l,m)$; and $U,V$ are matrices over
+%$(l,m)$. 
 
 
 
@@ -318,16 +350,20 @@ $(l,m)$.
 %* Refactoring code to use the efficient GPU loops
 
 
-At a fixed set of intrinsic parameters $\lambda$, \ILE{} will repeatedly evaluate the time-marginalized likelihood 
-for each candidate Monte Carlo set of extrinsic parameters $\theta$:
-\begin{eqnarray}
-{\cal L}_{\rm margT} \equiv  \int {\cal L} \frac{dt}{T}
-\label{eq:lnL:tmarg}
-\end{eqnarray}
-where $T$ is a small coincidence window consistent with the candidate event time; here and previously,
-$T=0.3\unit{sec}$.   To accelerate the code, after precomputing the inner products $U,V,Q$, we simply shift them to the
+%% At a fixed set of intrinsic parameters $\bm{\lambda}$, \ILE{} will repeatedly evaluate the time-marginalized likelihood 
+%% for each candidate Monte Carlo set of extrinsic parameters $\theta$:
+%% \begin{eqnarray}
+%% {\cal L}_{\rm margT} \equiv  \int {\cal L} \frac{dt}{T}
+%% \label{eq:lnL:tmarg}
+%% \end{eqnarray}
+%% where $T$ is a small coincidence window consistent with the candidate event time; here and previously,
+%% $T=0.3\unit{sec}$. 
+  To accelerate the code, after precomputing the inner products $U,V,Q$, we simply shift them to the
 graphics card, then carry out all calculations necessary to implement Eqs. (\ref{eq:lnL:MatrixForm}, \ref{eq:lnL:tmarg})
-on the GPU.  To enable this implementation with portable code, we use \texttt{cupy} \cite{cupy_learningsys2017}, a drop-in-replacement for equivalent
+on the GPU.  
+\AddedResponse{These arrays are only a few kilobytes.  We then construct blocks of $10^4$ random extrinsic parameters $\theta_\alpha$
+  with the CPU; transfer them to the board; and use on-board code to construct $10^4$ values for $\lnLmarg$. }
+To enable this implementation with portable code, we use \texttt{cupy} \cite{cupy_learningsys2017}, a drop-in-replacement for equivalent
 \texttt{numpy} code used for the CPU-based version of ILE.    For the most costly part of the calculation -- the inner
 products necessary to evaluate $Q_{lm}(t)$, accounting for distinct time-of-flight-dependent time windows for each
 interferometer's data -- we use a custom CUDA kernel to perform the necessary matrix multiplication.  
@@ -349,7 +385,7 @@ will require a factor $A^2$ more (fewer) iterations.
 We adopt a fixed threshold on $n_{\rm eff}$.  
 
 
-We do benefit slightly by re-using the adaptive Monte Carlo integrator for each extrinsic point $\lambda$.  Since the
+We do benefit slightly by re-using the adaptive Monte Carlo integrator for each extrinsic point $\bm{\lambda}$.  Since the
 integrator has already identified the likely range of sky locations and distances on the first iteration, each
 subsequent evaluation of the marginalized likelihood can converge marginally more quickly.
 
@@ -365,7 +401,7 @@ performance across architectures.  Notably, we investigate the following GPU opt
 available in large numbers; (b) V100, available on selected high-performance machines; (c) and
 GTX 1050 at LIGO-LHO.    Unless otherwise noted in the text, we will discuss code configurations using CPU-only and GPU (b) using
 $4096\unit{Hz}$ sampling and only the  $\ell=2, m=\pm 2$ modes.  In this section, we  conservatively report computational cost for
-parameters $\lambda$ which are close to or within the posterior.  Because of their consistency with the data, 
+parameters $\bm{\lambda}$ which are close to or within the posterior.  Because of their consistency with the data, 
 the marginalized likelihood calculations converge the most slowly, as they have the best-determined extrinsic
 parameters.
 
@@ -392,7 +428,7 @@ For the binary black hole we generate the signal with $f_{\rm min}=8 \unit{Hz}$ 
 with $f_{\rm min}=23\unit{Hz}$.
 
 \subsection{Massive compact binary black holes}
-Previously, each instance of ILE examined one intrinsic point $\lambda$.  The overall cost of this ILE evaluation
+Previously, each instance of ILE examined one intrinsic point $\bm{\lambda}$.  The overall cost of this ILE evaluation
 involved two parts: a startup cost, a setup cost, and a Monte Carlo integration cost.  The  startup cost $\tau_{start}$
 is associated with code setup followed by reading, data conditioning, and Fourier-transforming the
 data.  The setup cost $\tau_{setup}$ arises from waveform generation and  the inner products $U,V,Q$.  Finally, the Monte Carlo
@@ -401,7 +437,7 @@ and the number of times $N_{ad}$ the sampling prior used in adaptive Monte Carlo
 $n_{\rm chunk}$ data points, in proportion to their
 cost.   In the standard configuration, the adaptive sampling prior is regenerated every $n_{\rm chunk}$ iterations (i.e,
  $N_{ad} \simeq N_{it}/n_{chunk}$), regenerating a sampling prior in two sky location parameters and distance.  
-The choice of one $\lambda$ for each instance of ILE was due to the substantial time  $\tau_{MC}$, which vastly
+The choice of one $\bm{\lambda}$ for each instance of ILE was due to the substantial time  $\tau_{MC}$, which vastly
 dominated the overall computational cost.   For example, for a typical analysis of a short signal --  a typical binary
 black hole signal with $f_{\rm min}=20 \unit{Hz}$ and $m_1\simeq m_2\simeq 30 M_\odot$ --  this version has
 cost elements as shown in Table \ref{tab:CostBreakdown}, based on the assumption that the MC terminates after $N_{\rm it}\simeq 2\times 10^6$ iterations using
@@ -513,7 +549,7 @@ comparable or in excess of the total time used to evaluate the marginalized like
 evaluation $\tau_{it}=\tau_{manage}+\tau_{eval}$  spent in general-purpose overhead $\tau_{manage}$ will be much larger than the time $\tau_{eval}$ spent
 carrying out scientific calculations by evaluating the likelihood.  For these reasons, we reorganize the workflow, so each
 instance of ILE loops over
-$N_{eval}$ different choices for $\lambda$. 
+$N_{eval}$ different choices for $\bm{\lambda}$. 
 %
 Additionally, particularly for massive binary black holes, we investigate two additional performance improvements.  First and
 foremost, we lower the sampling rate, thus lowering the startup cost $\tau_{start}$ and particularly setup cost
@@ -591,7 +627,7 @@ This discussion ignores the latency introduced by the  gaussian process interpol
 accelerated GP interpolation in subsequent work.
 
 
-The \ILE{} likelihood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\lambda$.   Waveform generation can contribute significantly to the
+The \ILE{} likelihood  generates waveform dynamics and $h_{lm}(t)$ once per evaluation $\bm{\lambda}$.   Waveform generation can contribute significantly to the
 time needed to evaluate  $\ln {\cal L}_{\rm marg}$ for extremely costly
 waveform models which require $\tau_{wf} $ a significant fraction of $  \tau_{setup}$.   That said, the tests described
 above used relatively costly waveform generation with $h_{lm}(t)$ allocation requiring $\tau_{wf} \simeq 1.2 \unit{s}$
@@ -684,7 +720,7 @@ employ vastly more angular modes $h_{lm}$.
 \label{sec:end-to-end}
 
 To better illustrate code performance in realistic settings, we also describe end-to-end analyses with
-the original and modified code.     In a full analysis, many of the initially-proposed  evaluation points $\lambda$ are
+the original and modified code.     In a full analysis, many of the initially-proposed  evaluation points $\bm{\lambda}$ are
 either not or marginally consistent with the data.  As a result, most marginalized likelihood evaluations in the first
 iteration proceed extremely rapidly.  As the high-cost and low-cost evaluations are generally well-mixed between
 different instances, the overall time to complete the full first iteration is typically much lower than subsequent
@@ -712,7 +748,7 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_converge.png}
 \caption{\label{fig:BBH:MultiIterate}\textbf{Convergence of BBH analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic binary black hole.  Solid contours show credible intervals; solid one-dimensional distributions
-  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\bm{\lambda}$ and
   value of the underlying marginalized likelihood evaluations.   
 %The corresponding dotted curves show an analysis using   only the $m=\pm 2$ modes \editremark{perform both} 
 \emph{Left panel } Posterior distribution
@@ -721,7 +757,7 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: The estimated evidence $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+\emph{Bottom right panel}: The estimated evidence $Z = \int d\bm{\lambda} {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget, Monte Carlo error is not shown.
 }
 \end{figure*}
@@ -736,7 +772,7 @@ To demonstrate this, we use the GPU-accelerated code with $N_{\rm eval}=20$, ana
   sample}=4096\unit{Hz}$.    We use 100 points in the first iteration, in a very coarse mass  grid (i.e., spacing
 comparable to typical astrophysical mass scales), followed by 20 points in each subsequent iteration.  Figure \ref{fig:BBH:MultiIterate} shows our results.   The
 final posterior is already well-explored with the initial gridpoints, and converged by the second iteration.  
-Conversely, on average all iterations required roughly 45 seconds per $\lambda$ to evaluate their grid on GPU (a) hardware.  This
+Conversely, on average all iterations required roughly 45 seconds per $\bm{\lambda}$ to evaluate their grid on GPU (a) hardware.  This
 configuration therefore converged within the 30 minutes needed for the first two iterations.    We can achieve  smaller turnaround time for an otherwise identical analysis by adjusting $N_{\rm eval}$ appropriate to the available hardware.
 %
 While this low-dimensional problem does not capture all  fitting and automation challenges associated with high-dimensional
@@ -759,7 +795,7 @@ While this low-dimensional problem does not capture all  fitting and automation 
 \includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_converge.png}
 \caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
-  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\bm{\lambda}$ and
   value of the underlying marginalized likelihood evaluations.  
 % The corresponding dotted curves show an analysis using   only the $m=\pm 2$ modes \editremark{perform both} 
 \emph{Left panel } Posterior distribution
@@ -768,7 +804,7 @@ While this low-dimensional problem does not capture all  fitting and automation 
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+\emph{Bottom right panel}: $Z = \int d\bm{\lambda} {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget early on, Monte Carlo error is not shown.
 }
 \end{figure*}
@@ -806,8 +842,8 @@ iteration, only one GPU is active.
 Specifically,  with the updated RIFT workflow used here, with one instance analyzing each 20 evaluations,  we use five
 core+GPU pairs in the
 first iteration, followed by one core+GPU for remaining iterations.
-By contrast, with the original CPU-only RIFT code analyzing each $\lambda$ in parallel, this process requires roughly 20 core-minutes
-per $\lambda$, using 100 cores in the first iteration and 20 cores in each
+By contrast, with the original CPU-only RIFT code analyzing each $\bm{\lambda}$ in parallel, this process requires roughly 20 core-minutes
+per $\bm{\lambda}$, using 100 cores in the first iteration and 20 cores in each
 subsequent evaluation.   
 Note that  because   $N_{\rm eval}=20$ for the GPU is larger than the (hardware-and $f_{\rm sample}$ dependent)  speedup factor between the CPU and
 GPU implementation, the overall wallclock time needed for a end-to-end
@@ -865,7 +901,7 @@ As previously, we can achieve comparable or smaller turnaround time for an other
 \caption{\label{fig:BNS:Spin}\textbf{Demonstration of low-latency spinning analysis}:
 Results for marginal posterior distributions
   of our fiducial synthetic neutron star, assuming the binary has nonprecessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
-  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\bm{\lambda}$ and
   value of the underlying marginalized likelihood evaluations.  Only evaluations with marginalized log-likelihoods within $30$ of the maximum are shown, to increase contrast. The solid curves show an analysis with SEOBNRv4\_ROM.
 %  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown} 
  \emph{Left panel } Posterior distribution
@@ -874,7 +910,7 @@ Results for marginal posterior distributions
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+\emph{Bottom right panel}: $Z = \int d\bm{\lambda} {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget early on, Monte Carlo error is not shown.
 }
 \end{figure*}
@@ -919,7 +955,7 @@ That said, in this particular case substantially fewer iterations were required 
 \caption{\label{fig:BBH:Spin}\textbf{Demonstration precessing binary black hole analysis}:
 Results for marginal posterior distributions
   of our fiducial binary black hole, assuming the binary could have precessing spins.  Solid contours show credible intervals; solid one-dimensional distributions
-  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\lambda$ and
+  show marginal CDFs and PDFs for the corresponding variable; and colored points indicate the location $\bm{\lambda}$ and
   value of the underlying marginalized likelihood evaluations.  Only evaluations with marginalized log-likelihoods within $30$ of the maximum are shown, to increase contrast. The solid curves show an analysis with SEOBNRv3.
 %  the dotted curves show an analysis with SpinTaylorT4.  \editremark{currenly only v4ROM shown} 
  \emph{Left panel } Posterior distribution
@@ -928,7 +964,7 @@ Results for marginal posterior distributions
 \emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
-\emph{Bottom right panel}: $Z = \int d\lambda {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
+\emph{Bottom right panel}: $Z = \int d\bm{\lambda} {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
 error budget early on, Monte Carlo error is not shown.
 }
 \end{figure*}
@@ -955,8 +991,8 @@ Puffball in DAG every few iterations, to insure stability around edges and not o
 
 \section{Conclusions}
 \label{sec:conclude}
-We have demonstrated that the marginalized likelihood $\ln {\cal L}_{\rm marg}(\lambda)$ appearing in the RIFT/rapidPE parameter
-inference calculation can be evaluated at fixed $\lambda$ in tens of seconds on average for
+We have demonstrated that the marginalized likelihood $\ln {\cal L}_{\rm marg}(\bm{\lambda})$ appearing in the RIFT/rapidPE parameter
+inference calculation can be evaluated at fixed $\bm{\lambda}$ in tens of seconds on average for
 both binary black holes and binary neutron stars.  This performance improvement could enable very low latency source
 parameter inference for compact binaries, which can be of use for targeting multimessenger followup observations via sky
 localization and  precise source characterization.     This prospect is particularly interesting because RIFT can
@@ -968,7 +1004,7 @@ The overall code performance and thus latency can be further decreased substanti
 Carlo random number generation and inner products to GPU-based operations.  In such a configuration, the marginalized
 likelihood code would perform almost all calculations (except waveform generation) on a GPU, with minimal communication off
 the board.  This configuration should further reduce the average time needed to compute $\ln {\cal L}_{\rm
-  marg}(\lambda)$ for both binary black holes (which are Monte Carlo limited) and binary neutron stars (which are
+  marg}(\bm{\lambda})$ for both binary black holes (which are Monte Carlo limited) and binary neutron stars (which are
 inner-product limited).   We anticipate a further factor of roughly 10 reduction in overall evaluation time can be
 achieved soon.  At that level of performance, a single 8-GPU machine with contemporary hardware could perform parameter inference less than 10
 minutes.    Since binary compact objects intersect our past light cone only once every roughly 15 minutes, accounting
@@ -1000,7 +1036,7 @@ background
 When suitable surrogate models are available, the overall code performance and thus latency could be yet again further
 reduced by eliminating the iteration and fitting stages entirely, performing one Monte Carlo at once
 \cite{gwastro-PE-AlternativeArchitecturesROM}.  This approach exploits a linear representation of  $h_{lm}(t)$  via
-basis functions, to enable rapid likelihood evaluation as a function of both extrinsic parameters and  $\lambda$.
+basis functions, to enable rapid likelihood evaluation as a function of both extrinsic parameters and  $\bm{\lambda}$.
 Though not necessarily or compactly available for all surrogate models, particularly for the small basis sizes necessary
 to fit onboard GPUs, this approach could enable exceedingly low latency at small computational cost.  This alternative
 architecture would be exceptionally well-suited to the alternative applications of low-latency PE described above. 
