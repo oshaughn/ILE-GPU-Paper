@@ -4,7 +4,7 @@
 
 \newcommand\ForInternalReference[1]{}
 \newcommand\SkipForEarlyCirculation[1]{}
-\newcommand\AddedResponse[1]{\textbf{#1}}
+\newcommand\AddedResponse[1]{{\color{blue} {#1}}}
 %\newcommand\SkipForEarlyCirculation[1]{#1}
 \newcommand\SkipPP[1]{}
 \usepackage{verbatim}
@@ -176,7 +176,12 @@ embarrassingly-parallel inferences even for costly models.   However, the method
 significant net  computational cost and noticeable startup time, limiting its diverse potential applications.
 %
 Previously, B. Miller  developed a custom-coded  implementation of the
-relevant likelihood on graphics processing units (GPUs), suggesting substantial performance improvements were possible \cite{Thesis-Brandon-2016,GPU-NU-work}.  
+relevant likelihood on graphics processing units (GPUs), suggesting substantial performance improvements were possible
+\cite{Thesis-Brandon-2016,GPU-NU-work}.  
+\AddedResponse{The pycbc search code\cite{2016CQGra..33u5004U} and its pycbc-inference extension
+  \cite{2019PASP..131b4503B} can also make use of several GPU
+  hardware-accelerated operations.
+}
 In this paper,  we describe a variant of the RIFT approach which flexibly translates one of its
 algorithms to operate on GPUs, and adjusts its workflow to exploit the speed improvements
 this re-implementation affords.
@@ -555,7 +560,7 @@ Additionally, particularly for massive binary black holes, we investigate two ad
 foremost, we lower the sampling rate, thus lowering the startup cost $\tau_{start}$ and particularly setup cost
 $\tau_{setup}$.  Previously and out of an abundance of caution, \ILE{} employed a sampling rate $1/\Delta t = 16384
 \unit{Hz}$ for all calculations, but terminated all inner products in Eq. (\ref{eq:overlap}) at roughly $f_{\rm
-  max}=2048\unit{Hz}$ or less.   Reducing the sampling rate by a factor $s$ will the  cost of all operations with
+  max}=2048\unit{Hz}$ or less.   Reducing the sampling rate by a factor $s$ will \AddedResponse{reduce} the  cost of all operations with
 timeseries -- they are shorter.  Depending on the relative cost of overhead versus array operations,  $\tau_{setup}$
 \emph{and} the cost per evaluation $\tau_{eval}$ decrease modestly because of this effect.  
 Also following Pankow et al, to insure safe inner products over short data sets in the presence of very narrow spectral lines, we operated on a
@@ -621,8 +626,8 @@ Typically we target $N_{\rm eval}  \lesssim 3\times 10^4, N_{\rm GPU} \simeq 100
 individual marginalized likelihood evaluation.  For the binary black hole configuration described above, marginalized
 likelihood evaluations will complete in about $100\; \unit{minutes}$ on a cluster of (b), or more realistically 200
 minutes on a cluster of (a).  This number can be reduced to
-tens of minutes with a modestly larger GPU pool, or by  marginally more conservative convergence thresholds. on $N_{\rm
-  eval}$ or $N_{it}$.  
+tens of minutes with a modestly larger GPU pool, or by  marginally more conservative convergence thresholds
+ $n_{\rm   eff}$ or $N_{it}$.  
 This discussion ignores the latency introduced by the  gaussian process interpolation stage at the end.  We will revisit
 accelerated GP interpolation in subsequent work.
 
@@ -754,7 +759,8 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 \emph{Left panel } Posterior distribution
   over  $\mc$ and
   $\delta=(m_1-m_2)/M$.    \emph{Right panel}: Marginal 1d CDFs of $\mc$, showing convergence.
-\emph{Bottom left}: Mean and variance of  $\ln{\cal L}_{\rm marg}$ on the evaluation points,  showing that after the
+\emph{Bottom left}: Mean and variance of  \AddedResponse{the array $\ln{\cal L}_{\rm marg}(\bm{\lambda}_j)$  for
+$j=1,2,\ldots N_{\rm eval}$ indexing all candidate sets of intrinsic parameters $\bm{\lambda}_j$ performed in that iteration},  showing that after the
 first iteration the
 candidate points are consistent with the posterior (i.e., no proposed point has very low $\ln {\cal L}_{\rm marg}$).
 \emph{Bottom right panel}: The estimated evidence $Z = \int d\bm{\lambda} {\cal L}_{\rm marg}$ versus iteration number.  As systematic fitting error dominates our
@@ -864,13 +870,14 @@ We can achieve comparable or smaller turnaround time for an otherwise identical 
 
 Binary neutron star models with more parameters like spin and tides require correspondingly larger numbers of points in the
   initial grid and per iteration.  Fortunately, the number of observationally significant and accessible dimensions is often
-  substantially less than the a prior necessary dimensionality.  In practice,we use roughly $20\times$ more points per
+  substantially less than the  prior  dimensionality.  In practice,we use roughly $20\times$ more points per
   iteration for precessing massive BBH systems ($d=8$) or for spinning binary neutron stars with tides ($d=6$).    As a
   result, we can still achieve relatively rapid turnaround on a high-dimensional binary neutron star analysis even in
   resource-constrained environments.
 
 As a concrete demonstration of a realistic modest-latency analysis using the GPU-accelerated code, we reanalyze our fiducial binary
-neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins.  Our initial grid consists of 5000 points, spread uniformly across a 4-dimensional
+neutron star signal, accounting for the possibility of nonzero (aligned) neutron star spins.  Our initial grid consists
+of 5000 points, spread \AddedResponse{approximately} uniformly across a 4-dimensional
 hypercube $\mc_z\in[1.1962,1.1970] M_\odot$, $\delta \in[0,0.25]$ and $\chi_{i,z}\in[-0.05,0.05]$.  Subsequent
 iterations use 500 random draws from the estimated posterior samples produced from the previous iteration.  
 Because  our fiducial post-Newtonian model (TaylorT4) as implemented in \texttt{lalsuite}\cite{lalsuite} does not include spin, we
@@ -1041,11 +1048,20 @@ Though not necessarily or compactly available for all surrogate models, particul
 to fit onboard GPUs, this approach could enable exceedingly low latency at small computational cost.  This alternative
 architecture would be exceptionally well-suited to the alternative applications of low-latency PE described above. 
 
-
 The use of \texttt{cupy} enables our code to be highly portable across architectures and heterogeneous GPU environments,
 while transitioning smoothly between GPU and CPU mode.     The techniques we used here will be transported to other
 Bayesian inference modeling codes used to interpret GW observations \cite{gwastro-PopulationReconstruct-Parametric-Wysocki2018,gwastro-PopulationReconstruct-Code-PopModels}.
 % Will swap version of code 
+
+
+\AddedResponse{In this work, we have focused exclusively on a simplified pipeline  to produce posterior distributions
+  for detector-frame intrinsic parameters.   The  code  also produces
+reliable extrinsic parameter distributions \cite{gwastro-PE-AlternativeArchitectures}.  With some postprocessing,
+naturally provides joint posterior distributions for all intrinsic and extrinsic parameter distributions together;
+examples of these distributions have been published \cite{LIGO-O2-Catalog}.  
+Presently, rather than harvest extrinsic information from every iteration, we harvest joint intrinsic and
+extrinsic information with a single final iteration, which we will implement shortly in our production pipeline.
+}
 
 
 

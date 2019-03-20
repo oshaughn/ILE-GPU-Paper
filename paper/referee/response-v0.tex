@@ -111,7 +111,8 @@ quite small.
 Potentially more problematic are our intermediate data products, notably the matrix of time-shifted arrays $Q$ built
 from $Q_{k,lm}(\lambda,\tau)$ .  Our code has been carefully
 organized to loop over detectors so the memory footprint of $Q$ is only (modes)$\times$ (extrinsic)$\times$ (time),
-which is roughly $10^4$ times the footprint of each individual $Q_{k,lm}(\lambda,\tau)$ timeseries.  So many modes can
+which (because we perform evaluations in batches of  $10^4$ extrinsic parameters at a time) is roughly $10^4$ times the
+footprint of all the underlying $Q_{k,lm}(\lambda,\tau)$ timeseries.  So many modes can
 fit well within a typical 4Gb GPU memory space, even allowing for substantial overhead.
 
 
@@ -146,7 +147,7 @@ included? (comparing the first two rows of this table)
 have shared access, not
 dedicated hardware.  We anticipate small timing discrepancies from run to run.
 
-GO BACK AND CHECK THESE NUMBERS
+\editremark{GO BACK AND CHECK THESE NUMBERS}
 
 \item * The authors focus on computing posteriors of intrinsic parameters.
 But for low-latency studies, the extrinsic parameters are arguably
@@ -161,33 +162,39 @@ discussing what additional work will be needed to realize this
 promise.
 
 \noindent \textbf{Response}:  We have added a brief comment in our conclusions to emphasize that extrinsic information
-has been produced with a similar pipeline to the one used here and will be made rapidly available in an automated mode very soon.
+has previously been produced with a similar pipeline to the one benchmarked  here,  and that information will be
+made rapidly available in an automated mode by this pipeline very soon.
 
-We point out however that our inference strategy does not account for the effect of calibration error, which can have a
+We point out however that our inference strategy does not presently account for the effect of calibration error, which can have a
 notable impact on sky localization: it's not immediately clear our strategy would necessarily provide a dramatic change
 over the Bayestar skymaps, except insofar as we perform inference with a fully precessing signal model (and/or a model
-containing higher modes).     
+containing higher modes).     By contrast, LI inference can account for the impact of calibration error on sky localization.
 
 \item * Fig 1's caption: what does "on the evaluation points" mean? What are
 the evaluation points -- maybe this could be explained in a bit more
 detail in the main body of the paper.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: We modified the caption to define the set whose mean and variance is being evaluated. 
 
 \item * Figure 1: is the quantity being plotted in the lower left corner
 actually the mean of $-log(L_{marg})$? (not the minus sign).
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: No, the sign is correct.  Due to the normalization convention adopted (see response \# 2), the peak value
+of our likelihood (ratio) is greater than zero.
 
 \item * Figure 2: same questions I have for figure 1 apply here.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: The sign is correct.
 
 \item * Page 7: "Our initial grid consists of 5000 points, spread uniformly
 across a 4-dimensional hypercube"... do the authors mean to say $9^4 =
 6561$ points?
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: We modified the text to add the word ``approximately'' before uniformly.
+
+In practice, our grid layout code returns precisely the number of points requested.  It attempts to choose the sizes of
+each edge of the hypercube to best conform to but be strictly larger than the target size, and then truncates the set of
+candidate points.  
 
 \item * To give the timing numbers (ie the walltime) a bit more context,
 please consider adding the time it would take to do a similar analysis
@@ -197,14 +204,25 @@ understanding the full impact of the GPU-accelerated rapidPE code. I
 feel like this is one of the most important points, as it is the key
 to the impact of this work.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  In the conclusions, we \editremark{will} have added some anecdotal apples-to-apples timing
+information on runs of practical interest.
+
+That said, a direct apples-to-apples comparison between RIFT and LI using \emph{identical} waveforms and settings to
+what we benchmark here can be grossly unfair to LI, even though it is an apples-to-apples comparison.  LI developers
+have highly prioritized the use of fast approximations, and reduced-order-quadratures that further accelerate the use of
+these approximations.     To the extent these approximations don't impact results, LI can often perform comparable
+calculations much more quickly than a configuration which used apples-to-apples settings.
+
+Of course, these approximations are approximations.  Existing approximations  have been demonstrated by example to have limitations /
+introduce biases that, if left unchecked, would be increasingly significant as observaitons accumulate (e.g., Lange et
+al 2018).  RIFT's rapid performance  and low cost can enable systematics investigations which would otherwise be inaccessible.
 
 
 \item * The fonts in some of the figures, and especially figure 3, are small
 and in almost unreadable. Please improve the readability of these
 figures.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  \editremark{fix me: rcparams}
 
 
 \item * I would appreciate it if the authors could explain to me why the
@@ -213,7 +231,18 @@ figures 1 and 2. Or said in a different way, way are the shapes of
 evidence vs iteration so different. They may optionally wish to
 comment on this in the paper too.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  The convergence rate of the evidence depends on the system studied and, critically, the
+initial grid: if we have a very well-chosen initial starting grid, the fit  converges rapidly, potentially after just
+one iteration.  The configuration used
+in Fig 3 has a different dimensionality (4d, not 2d) and a larger starting  grid than our lower-dimensionality investigation.
+
+Qualitatively speaking and based on our large but anecdotoally-built experience, we anticipate that  due to strong degeneracy in
+spin -- only one spin degree of freedom is well-constrained -- the seemingly-sparse grid in $\mc$ and $\delta$ is very
+informative because several redundant configurations with similar $\chi_{\rm eff}$ but different $\chi_{i,z}$ inform our
+fit.   
+
+A new  student here has begun systematically investigating parameters that impact the convergence rate, using controlled
+circumstances. The results of these investigations are too preliminary to report here.
 
 \end{enumerate}
 
@@ -224,19 +253,21 @@ We also fixed the following proofreading issues identified by the referee
 \item * "Reducing the sampling rate by a factor s will the cost of all
 operations with timeseries – they are shorter."
 
-\noindent \textbf{Response}:
+
+
+\noindent \textbf{Response}:added ``reduce''
 
 
 \item * "or by marginally more conservative convergence thresholds. on N
 eval or N it"
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: Changed ``. on $N_{eval}$'' to ``$n_{\rm eff}$''
 
 \item *"Fortunately, the number of observationally significant and
 accessible dimensions is often substantially less than the a prior
 necessary dimensionality."
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}: removed ``the'' and ``necessary'' in the last few words
 
 \end{itemize}
 \end{document}
