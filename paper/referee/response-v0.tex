@@ -31,7 +31,10 @@ Within parameter estimation communities, much effort has gone into
 optimizing LALInference including the use of multi-core environments
 (using OpenMP, for example).
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  We added a sentence about pycbc, a search/parameter inference code which makes extensive
+use of GPUs.    We defer a discussion of non-GPU changes to how lalinference's parallelization is implemented (e.g., MPI in the original
+lalinference paper vs OpenMP) since we feel it would distract the reader to discuss the details how another code harnesses more cores
+simultaneously, particularly since we are not experts in those details (which seem not to be published yet?) and since doing so doesn't reduce its overall comptuational cost.
 
 \item * Due to the extra $<d | d >$ normalization factor in Eq 1, Eqs 1 and 7
 look inconsistent to me.
@@ -126,7 +129,7 @@ prefactor that  depends significantly on the specific integrand.
 please state the most relevant hardware specs of the GPU/CPUs used in
 Sec 3 (processor speed, number of cores on the GPU, and memory size)
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:    \editremark{ADD ME}
 
 \item * Sec 3b introduces many new variables, a handful of which are
 undefined. Please make sure all variables have been defined. Better
@@ -139,7 +142,11 @@ table.
 \item * In table 1: why does the setup time reduce when more modes are
 included? (comparing the first two rows of this table)
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  We perform our timing estimates on individual runs on busy nodes and clusters on which we
+have shared access, not
+dedicated hardware.  We anticipate small timing discrepancies from run to run.
+
+GO BACK AND CHECK THESE NUMBERS
 
 \item * The authors focus on computing posteriors of intrinsic parameters.
 But for low-latency studies, the extrinsic parameters are arguably
@@ -153,7 +160,13 @@ worth mentioning it more prominently. Otherwise, it would be worth
 discussing what additional work will be needed to realize this
 promise.
 
-\noindent \textbf{Response}:
+\noindent \textbf{Response}:  We have added a brief comment in our conclusions to emphasize that extrinsic information
+has been produced with a similar pipeline to the one used here and will be made rapidly available in an automated mode very soon.
+
+We point out however that our inference strategy does not account for the effect of calibration error, which can have a
+notable impact on sky localization: it's not immediately clear our strategy would necessarily provide a dramatic change
+over the Bayestar skymaps, except insofar as we perform inference with a fully precessing signal model (and/or a model
+containing higher modes).     
 
 \item * Fig 1's caption: what does "on the evaluation points" mean? What are
 the evaluation points -- maybe this could be explained in a bit more
