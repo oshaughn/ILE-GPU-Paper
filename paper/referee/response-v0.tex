@@ -5,7 +5,7 @@
 \usepackage{xspace}
 \usepackage{bm}
 \newcommand\editremark[1]{{\color{red} #1}}
-
+\newcommand\E[1]{{\left< #1 \right> }}
 \newcommand{\IMRPD}{\textsc{IMRPhenomD}\xspace}
 \newcommand{\IMRPDT}{\textsc{IMRPhenomD\_NRTidal}\xspace}
 \newcommand{\IMRP}{\textsc{IMRPhenomPv2}\xspace}
@@ -32,9 +32,11 @@ optimizing LALInference including the use of multi-core environments
 (using OpenMP, for example).
 
 \noindent \textbf{Response}:  We added a sentence about pycbc, a search/parameter inference code which makes extensive
-use of GPUs.    We defer a discussion of non-GPU changes to how lalinference's parallelization is implemented (e.g., MPI in the original
-lalinference paper vs OpenMP) since we feel it would distract the reader to discuss the details how another code harnesses more cores
-simultaneously, particularly since we are not experts in those details (which seem not to be published yet?) and since doing so doesn't reduce its overall comptuational cost.
+use of GP, and another sentence highlighting code optimizations in lalinference.    
+
+We regret that a more extended discussion of non-GPU changes to how lalinference's parallelization is implemented (e.g., MPI in the original
+lalinference paper vs OpenMP)  would distract the reader,  and that a suitable citation to that project specifically
+does not seem available (after consulting with two of the developers responsible). 
 
 \item * Due to the extra $<d | d >$ normalization factor in Eq 1, Eqs 1 and 7
 look inconsistent to me.
@@ -123,7 +125,7 @@ values? Is it problem-specific?
 \noindent \textbf{Response}:   The factor $\epsilon$ connecting the number of effective samples to the number of Monte
 Carlo trials is indeed highly problem dependent, and reflects the convergence rate of the Monte Carlo integral.
 Approximately equivalently, the stanard deviation of the Monte Carlo error estimate scales as $1/\sqrt{N_{it}}$, with a
-prefactor that  depends significantly on the specific integrand.
+prefactor  that  depends significantly on the specific integrand $f$ (e.g., $\sigma^2= \frac{1}{N}\int (f^2 - \E{f}^2) dx$)
 
 
 \item * So the reader can more easily compare the performance diagnostics,
