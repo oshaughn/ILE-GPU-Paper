@@ -1,11 +1,10 @@
-
 \documentclass[onecolumn]{revtex4}
 \usepackage{hyperref}
 \usepackage{color}
 \usepackage{xspace}
 \usepackage{bm}
 \newcommand\editremark[1]{{\color{red} #1}}
-\newcommand\E[1]{{\left< #1 \right> }}
+\newcommand{\E}[1]{{\left\langle #1 \right\rangle }}
 \newcommand{\IMRPD}{\textsc{IMRPhenomD}\xspace}
 \newcommand{\IMRPDT}{\textsc{IMRPhenomD\_NRTidal}\xspace}
 \newcommand{\IMRP}{\textsc{IMRPhenomPv2}\xspace}
@@ -125,14 +124,14 @@ values? Is it problem-specific?
 \noindent \textbf{Response}:   The factor $\epsilon$ connecting the number of effective samples to the number of Monte
 Carlo trials is indeed highly problem dependent, and reflects the convergence rate of the Monte Carlo integral.
 Approximately equivalently, the stanard deviation of the Monte Carlo error estimate scales as $1/\sqrt{N_{it}}$, with a
-prefactor  that  depends significantly on the specific integrand $f$ (e.g., $\sigma^2= \frac{1}{N}\int (f^2 - \E{f}^2) dx$)
+prefactor  that  depends significantly on the specific integrand $f$ (e.g., $\sigma^2= \frac{1}{N}\int (f^2 - \E{f}^2) p_s(x)dx$)
 
 
 \item * So the reader can more easily compare the performance diagnostics,
 please state the most relevant hardware specs of the GPU/CPUs used in
 Sec 3 (processor speed, number of cores on the GPU, and memory size)
 
-\noindent \textbf{Response}:    \editremark{ADD ME}
+\noindent \textbf{Response}:   We add an Appendix to describe the hardware used in our study.
 
 \item * Sec 3b introduces many new variables, a handful of which are
 undefined. Please make sure all variables have been defined. Better
@@ -206,14 +205,14 @@ understanding the full impact of the GPU-accelerated rapidPE code. I
 feel like this is one of the most important points, as it is the key
 to the impact of this work.
 
-\noindent \textbf{Response}:  In the conclusions, we \editremark{will} have added some anecdotal apples-to-apples timing
-information on runs of practical interest.
+\noindent \textbf{Response}:  In the conclusions, we  have added anecdotal  timing
+information on an analysis of practical interest.
 
-That said, a direct apples-to-apples comparison between RIFT and LI using \emph{identical} waveforms and settings to
-what we benchmark here can be grossly unfair to LI, even though it is an apples-to-apples comparison.  LI developers
+That said, this anecdote does not employ identical settings in both codes.  A direct apples-to-apples comparison between RIFT and LI using \emph{identical} waveforms and settings to
+what we benchmark here can be grossly unfair to LI.  LI developers
 have highly prioritized the use of fast approximations, and reduced-order-quadratures that further accelerate the use of
 these approximations.     To the extent these approximations don't impact results, LI can often perform comparable
-calculations much more quickly than a configuration which used apples-to-apples settings.
+calculations much more quickly than a LI configuration which used apples-to-apples settings.
 
 Of course, these approximations are approximations.  Existing approximations  have been demonstrated by example to have limitations /
 introduce biases that, if left unchecked, would be increasingly significant as observaitons accumulate (e.g., Lange et
@@ -239,7 +238,7 @@ one iteration.  The configuration used
 in Fig 3 has a different dimensionality (4d, not 2d) and a larger starting  grid than our lower-dimensionality investigation.
 
 Qualitatively speaking and based on our large but anecdotoally-built experience, we anticipate that  due to strong degeneracy in
-spin -- only one spin degree of freedom is well-constrained -- the seemingly-sparse grid in $\mc$ and $\delta$ is very
+spin -- only one spin degree of freedom is well-constrained -- the seemingly-sparse grid in ${\cal M}_c$ and $\delta$ is very
 informative because several redundant configurations with similar $\chi_{\rm eff}$ but different $\chi_{i,z}$ inform our
 fit.   
 

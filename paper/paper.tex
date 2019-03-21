@@ -403,7 +403,8 @@ subsequent evaluation of the marginalized likelihood can converge marginally mor
 
 We illustrate the code using two synthetic signals: a binary black hole with masses $m_{1,2}=35,30 M_\odot$ and a binary
 neutron star with masses $1.4 M_\odot$ and $1.35 M_\odot$.
- We perform this analysis on heterogeneous LVC collaboration computing resources, to assess our variable
+ We perform this analysis on heterogeneous LVC collaboration computing resources \AddedResponse{described in more detail
+   in the Appendix}, to assess our variable
 performance across architectures.  Notably, we investigate the following GPU options: (a) GTX 1050 Ti at LIGO-CIT,
 available in large numbers; (b) V100, available on selected high-performance machines; (c) and
 GTX 1050 at LIGO-LHO.    Unless otherwise noted in the text, we will discuss code configurations using CPU-only and GPU (b) using
@@ -1008,6 +1009,17 @@ localization and  precise source characterization.     This prospect is particul
 often achieve this performance using computationally costly models for binary merger with rich physics like higher modes
 or eccentricity, as the waveform generation cost does not usually limit code performance.   
 
+\AddedResponse{In addition to producing results rapidly, RIFT results can be produced with a noticably smaller overall resource footprint than
+  loosely similar LI analyses, even without tuning to optimize  RIFT pipeline settings.  As a concrete and non-optimized
+  example,  for all five of the iterations of the spinning binary neutron star parameter inference with \texttt{SEOBNRv4\_ROM} from
+  $20\unit{Hz}$ described in this work, our  RIFT analysis expended  roughly 14 core-days.  By contrast, a TaylorF2 analysis of GW170817
+  with LI in MCMC mode starting from $23\unit{Hz}$ required 228 core-days.  % C02-1_TF2LS
+  For precessing binary black holes using SEOBNRv3, the improvement is equally substantial: 10 core-days for a
+  10-iteration investigation of a synthetic GW150914-like source with RIFT, versus 291 core-days for a LI analysis of
+  GW170729.  
+  We defer detailed relative benchmarking using comparably-converged parameter inference to future work.
+}
+
 
 The overall code performance and thus latency can be further decreased substantially, notably by converting the Monte
 Carlo random number generation and inner products to GPU-based operations.  In such a configuration, the marginalized
@@ -1077,6 +1089,33 @@ and New York State Urban Development Corporation, d/b/a Empire State Development
 We thank the Computational Science Initiative at BNL for hosting GPU Hackathon 2018, during which a part of this work was conducted. We also thank Jeff Layton at NVIDIA for bringing CuPy to our attention.
 \end{acknowledgements}
 
+
+\appendix
+\section{Properties of resources used}
+% https://ldas-gridmon.ligo.caltech.edu/condor/
+%
+% > CIT:
+%% > 560 nodes with single GTX 1050 Ti
+%% > 32 nodes with dual K10 PCI cards (shows up as 4 GPU devices) and dual GTX 750 Ti
+%% > 16 nodes with dual GTX 750 Ti (and dual Xeon Phi co-processor)
+%% > 
+%% > LHO and LLO each:
+%% > 40 nodes with GTX 1050 Ti
+%% > single DGX-1 system with 8 tightly coupled V100
+
+
+\AddedResponse{
+LIGO-CIT worker nodes, denoted by (a)  in the text, are principally S6 nodes with 2-CPU $\times 8$ core Opteron
+2.3 GHz machines with 16 Gb of RAM, with GTX 1050 Ti cards with 4 Gb of RAM.  For LIGO-CIT, profiling reports reflect
+performance averaged over the whole cluster and hence lacks the detailed reporting produced for the other configurations.
+% 
+LIGO-LHO worker nodes with GPUs, denoted by (c) in the text, are a heterogeneous configuration mostly consisting of
+(a).  Unlike profiling at LIGO-CIT, the profiling for LIGO-LHO reflects controlled tests on a single node.
+% nvidia-smi
+The V100 machine (ldas-pcdev13, denoted by (b) in the text) is  a 24-core ES-2650 v4 machine with 4 GPUs, only one of
+which is active in our tests: Tesla V100 with 16 Gb of RAM.
+All non-GPU profiling was  also performed on this machine.  
+}
 
 %\bibstyle{unsrt}
 \bibliography{paperexport,LIGO-publications}
