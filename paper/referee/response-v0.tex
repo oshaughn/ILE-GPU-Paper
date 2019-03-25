@@ -144,11 +144,18 @@ table.
 \item * In table 1: why does the setup time reduce when more modes are
 included? (comparing the first two rows of this table)
 
-\noindent \textbf{Response}:  We perform our timing estimates on individual runs on busy nodes and clusters on which we
+\noindent \textbf{Response}:  
+With only 20 setups (waveform generation plus overlaps) per profiling run,  we anticpate that $\tau_{setup}$ is among the
+least-well-constrained pieces of information in our tables.  Moreover, we perform the vast majority of our timing estimates on individual runs on busy nodes and clusters on which we
 have shared access, not
-dedicated hardware.  We anticipate small timing discrepancies from run to run.
+dedicated hardware, so we can dump (and analyze) detailed profiling output.  We have seen small timing discrepancies from run to run for the setup due to resource
+availability; for example, we also find setup time decreased when going from $\pm 2$ to $\pm 2, \pm 1$ for GPU (b).
+More broadly, the CPU and GPU(b) tests were performed on the same machine and reflect the same hardware and logic
+path, so almost all the variation seen in the $\tau_{setup}$ reflects variability in timing on a single machine. 
 
-\editremark{GO BACK AND CHECK THESE NUMBERS}
+As this aspect now has a more significant impact on our performance,  we will delve much more deeply into waveform generation and overlap timing in the near future in later work, as we
+optimize these aspects of the code.  
+
 
 \item * The authors focus on computing posteriors of intrinsic parameters.
 But for low-latency studies, the extrinsic parameters are arguably
