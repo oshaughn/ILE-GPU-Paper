@@ -752,7 +752,9 @@ iterations.   With a well-positioned and sufficiently large initial grid,  few f
 %
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_m2.png}
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_m1_cum.png}
+% python plot_mean_variance.py --convergence-file 20190203-bbh-zerospin-batch_gpu_lowlatency_meanVar.dat  --output bbh_zerospin_lnL_meanVar
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_meanVar.png}
+% python plot_convergence.py --convergence-file 20190203-bbh-zerospin-batch_gpu_lowlatency.dat
 \includegraphics[width=0.45\textwidth]{figures/bbh_zerospin_lnL_converge.png}
 \caption{\label{fig:BBH:MultiIterate}\textbf{Convergence of BBH analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic binary black hole.  Solid contours show credible intervals; solid one-dimensional distributions
@@ -800,7 +802,9 @@ While this low-dimensional problem does not capture all  fitting and automation 
 % plot_posterior_corner.py --posterior-file posterior_samples-4.dat --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc --mc-range  '[1.19655,1.19682]' --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend
 \includegraphics[width=0.45\textwidth]{figures/bns_zerospin_corner_mc_delta_mc.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_zerospin_mc_cum.png}
+% python plot_mean_variance.py --convergence-file 20190201-bns-zerospin-nobatch_meanVar.dat  --output bns_zerospin_lnL_meanVar
 \includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_meanVar.png}
+% python plot_convergence.py --convergence-file 20190201-bns-zerospin-nobatch.dat --output bns_zerospin_lnL_converge
 \includegraphics[width=0.45\textwidth]{figures/bns_zerospin_lnL_converge.png}
 \caption{\label{fig:BNS:MultiIterate}\textbf{Convergence of BNS analysis: Zero spin}: Results for marginal posterior distributions
   of our fiducial synthetic neutron star.  Solid contours show credible intervals; solid one-dimensional distributions
@@ -906,7 +910,9 @@ As previously, we can achieve comparable or smaller turnaround time for an other
 % plot_posterior_corner.py  --posterior-file posterior_samples-5.dat  --posterior-file posterior_samples-4.dat   --posterior-file posterior_samples-3.dat --posterior-file posterior_samples-2.dat --posterior-file posterior_samples-1.dat --parameter mc --parameter delta_mc  --parameter chi_eff --mc-range  '[1.19655,1.197]' --chi-max 0.025 --plot-1d-extra --ci-list  '[0.9]' --truth-file /home/oshaughn/unixhome/Projects/LIGO-ILE-Applications/ILE-GPU/ILE-GPU-Paper/demos/mdc_bns.xml.gz  --composite-file all.net --quantiles None  --posterior-label 5 --posterior-label 4 --posterior-label 3 --posterior-label 2 --posterior-label 1 --use-legend --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle '-' --posterior-linestyle ':'  --posterior-color 'k' --posterior-color 'r' --posterior-color 'g' --posterior-color 'b' --posterior-color 'k' --lnL-cut 50
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_corner_mc_delta_xi.png}
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_mc_cum.png}
+% python plot_mean_variance.py --convergence-file 20190203-bns-withspin-batch_gpu_lowlatency_noHM_v4ROM_meanVar.dat  --output bns_withspin_lnL_meanVar
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_meanVar.png}
+% python plot_convergence.py --convergence-file 20190203-bns-withspin-batch_gpu_lowlatency_noHM_v4ROM.dat  --output bns_withspin_lnL_converge
 \includegraphics[width=0.45\textwidth]{figures/bns_withspin_lnL_converge.png}
 \caption{\label{fig:BNS:Spin}\textbf{Demonstration of low-latency spinning analysis}:
 Results for marginal posterior distributions
@@ -1068,11 +1074,11 @@ Bayesian inference modeling codes used to interpret GW observations \cite{gwastr
 % Will swap version of code 
 
 
-\AddedResponse{In this work, we have focused exclusively on a simplified pipeline  to produce posterior distributions
+\AddedResponse{In this work, we have focused exclusively on profiling a simplified pipeline  to produce posterior distributions
   for detector-frame intrinsic parameters.   The  code  also produces
 reliable extrinsic parameter distributions \cite{gwastro-PE-AlternativeArchitectures}.  With some postprocessing,
-naturally provides joint posterior distributions for all intrinsic and extrinsic parameter distributions together;
-examples of these distributions have been published \cite{LIGO-O2-Catalog}.  
+this pipeline  provides joint posterior distributions for all intrinsic and extrinsic parameter distributions together;
+examples of these distributions have been published elsewhere \cite{LIGO-O2-Catalog}.  
 Presently, rather than harvest extrinsic information from every iteration, we harvest joint intrinsic and
 extrinsic information with a single final iteration, which we will implement shortly in our production pipeline.
 }
