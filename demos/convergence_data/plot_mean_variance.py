@@ -45,14 +45,14 @@ except:
     print " -No 1d kdes- "
 
 dpi_base=200
-legend_font_base=16
+legend_font_base=30
 rc_params = {'backend': 'ps',
-             'axes.labelsize': 11,
-             'axes.titlesize': 10,
-             'font.size': 11,
+             'axes.labelsize': 16,
+             'axes.titlesize': 16,
+             'font.size': 30,
              'legend.fontsize': legend_font_base,
-             'xtick.labelsize': 11,
-             'ytick.labelsize': 11,
+             'xtick.labelsize': 16,
+             'ytick.labelsize': 16,
              #'text.usetex': True,
              'font.family': 'Times New Roman'}#,
              #'font.sans-serif': ['Bitstream Vera Sans']}#,
