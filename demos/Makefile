@@ -133,6 +133,17 @@ test_workflow_batch_nogpu_SEOBNRv3: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cac
 # --transfer-file-list file_names_transfer.txt
 
 
+test_workflow_batch_nogpu_SEOBNRv3_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
+	(mkdir $@; exit 0)
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BH_SPIN} --parameter delta_mc  --parameter-range '[0.0,0.5]' --parameter chieff_aligned --parameter-range [-0.5,0.5] --grid-cartesian-npts 2000 --skip-overlap --approx SEOBNRv3
+	(cd $@; echo 5  ${PRECESSING_CIP_OPTS_BASE}  --parameter mc --parameter-implied eta --parameter-nofit delta_mc   --parameter-implied xi --parameter-nofit s1z --parameter-nofit s2z  --parameter-nofit s1x --parameter-nofit s1y --parameter-nofit s2x --parameter-nofit s2y   --lnL-offset 50  > args_cip_list.txt)
+	(cd $@; echo 5 ${PRECESSING_CIP_OPTS_BASE} --mc-range ${MC_RANGE_BH_SPIN}   --parameter mc --parameter-implied eta --parameter-nofit delta_mc   --parameter-implied xi --parameter-implied chiMinus --parameter-nofit s1z --parameter-nofit s2z  --parameter s1x --parameter s1y --parameter s2x --parameter s2y   --lnL-offset 25   >> args_cip_list.txt)
+	(cd $@; echo X   ${PRECESSING_ILE_OPTS}  --data-start-time 1000000008 --data-end-time 1000000016 --inv-spec-trunc-time 0  --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
+	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
+	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
+	(cd $@; ls ${PWD}/*PSD.xml.gz    > file_names_transfer.txt)
+	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5  --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 --ile-retries 3 --transfer-file-list file_names_transfer.txt --frames-dir ${PWD}/zero_noise --use-singularity --use-osg )
+
 
 ###
 ### BNS
