@@ -1,0 +1,281 @@
+\documentclass[onecolumn]{revtex4}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{bm}
+\newcommand\editremark[1]{{\color{red} #1}}
+\newcommand{\E}[1]{{\left\langle #1 \right\rangle }}
+\newcommand{\IMRPD}{\textsc{IMRPhenomD}\xspace}
+\newcommand{\IMRPDT}{\textsc{IMRPhenomD\_NRTidal}\xspace}
+\newcommand{\IMRP}{\textsc{IMRPhenomPv2}\xspace}
+\newcommand{\SEOBP}{\textsc{SEOBNRv3}\xspace}
+\newcommand{\SEOBA}{\textsc{SEOBNRv4}\xspace}
+\newcommand{\SEOBAROM}{\textsc{SEOBNRv4\_ROM}\xspace}
+\newcommand{\NRSur}{NRSur7dq2\xspace}
+\newcommand{\TEOB}{SEOBNRv4T\xspace}
+\newcommand{\Resum}{TEOBResumS\xspace}
+\newcommand\RIFT{RIFT}
+
+\begin{document}
+
+
+We appreciate the referee's thoughtful suggestions, which will improve the paper.
+
+
+\begin{enumerate}
+\item * The introduction should be expanded to (briefly) discuss
+hardware-based acceleration techniques in GW data analysis. For
+example, there are significant efforts on the search side to use GPUs.
+Within parameter estimation communities, much effort has gone into
+optimizing LALInference including the use of multi-core environments
+(using OpenMP, for example).
+
+\noindent \textbf{Response}:  We added a sentence about pycbc, a search/parameter inference code which makes extensive
+use of GP, and another sentence highlighting code optimizations in lalinference.    
+
+We regret that a more extended discussion of non-GPU changes to how lalinference's parallelization is implemented (e.g., MPI in the original
+lalinference paper vs OpenMP)  would distract the reader,  and that a suitable citation to that project specifically
+does not seem available (after consulting with two of the developers responsible). 
+
+\item * Due to the extra $<d | d >$ normalization factor in Eq 1, Eqs 1 and 7
+look inconsistent to me.
+
+\noindent \textbf{Response}:  Eq. (1) and (7) from Pankow et al are consistent.  The extra factor of $<d|d>$ eliminates the term in the likelihood which is independent of
+the proposed signal $h(\lambda,\theta)$.
+
+\item * Please write an equation showing how Q, U, V, F, and D are related
+to quantities appearing in Eq 7 and Eq 8. Based on the text alone I
+wasn't able to figure out the corresponding formula. Presumably, the
+authors did not include this in the current draft due to the
+expression being potentially messy. If this is the case, then perhaps
+at least one of these matrices could be written down explicitly from
+which the others could be worked out by the reader.
+
+\noindent \textbf{Response}: We have significantly expanded the discussion between Eq. (8) and the start of section II.B
+to emphasize how $Q,U,V,F,D$ are encoded into multidimensional arrays.
+
+
+
+\item * What is the unbolded Lambda appearing on page 2 and how is it
+related to the bolded version? Please define this variable in the
+paper.
+
+\noindent \textbf{Response}: We have now consistently rendered $\lambda\rightarrow \bm{\lambda}$; we apologize for the
+confusion this duplicated symbol introduced.
+
+\item * I did not quite understand what was meant by "are arrays over
+extrinsic parameters" (page 2) since it appears that these parameters
+are continuous variables (and not yet sampled).
+
+\noindent \textbf{Response}: Our response to \# 3 should clarify this discussion.  We originally muddled the distinction
+between evaluating the likelihood in general and on a large array of discrete  Monte Carlo samples
+
+\item * Just to clarify: the GPU accelerated part is the
+time-marginalization and not the marginalization over all of the
+extrinsic parameters (Eq 4)? If this is true, then maybe state that
+explicitly because it's not obvious and, additionally, the reader will
+probably not be aware of the fact that this 1-d integral (rhw time
+marginalization) is what looks to be the slowest part of rapidPE.
+
+\noindent \textbf{Response}: The GPU-accelerated parts are (a) all trigonometric operations appearing in $Y$ and $F$, (b)  matrix operations
+necessary to compute $Q$, including the time-of-flight array shift; and (c) the one-dimensional time marginalization.
+
+\item * One of the main criticisms of GPU computing is the data transfer
+latencies to and from the device. There should be some discussion of
+what data is being transferred back and forth, at what stage of the
+algorithm does this occur, and does it need to be done repeatedly.
+Also, is any special care taken to reduce to the number of data
+transfers? Or perhaps the problem is so computationally heavy this
+isn't really an issue?
+
+\noindent \textbf{Response}: In our response to \# 3, we now clarify the data transferred to the board (the initial
+$Q,U,V$, once,  but also the samples $\theta_\alpha$, each iteration).  
+
+In a future version of the code, described in the second paragraph of our conclusions, we intend to perform all Monte
+Carlo random number generation on the GPU.  In this configuration we will not have significant data transfer on and off
+the board.
+
+\item * Relatedly, how much memory is required to store these matrices?
+Since GPUs have smaller RAM sizes, is any special care or tuning
+required to get the problem to fit onto the device? Later on the
+authors use the ell=2 modes as example -- since the size of the
+matrices grows with the number of modes, does the code need to account
+for this in any way?
+
+\noindent \textbf{Response}: While the memory footprint of our operations loosely grows linearly with the number of
+modes involved, we have noticed no significant limitations on our memory footprint.  We have colleagues who use models with modes
+$l \le 8$ without reporting memory footprint problems.   
+
+The memory footprint of the initially transferred data is dominated by the $Q_{k,lm}$ time arrays is no larger than $16 kHz
+\times 0.15  \lesssim 2500$ floating point numbers per mode per detector.  Even with several hundred modes, these are
+quite small.
+Potentially more problematic are our intermediate data products, notably the matrix of time-shifted arrays $Q$ built
+from $Q_{k,lm}(\lambda,\tau)$ .  Our code has been carefully
+organized to loop over detectors so the memory footprint of $Q$ is only (modes)$\times$ (extrinsic)$\times$ (time),
+which (because we perform evaluations in batches of  $10^4$ extrinsic parameters at a time) is roughly $10^4$ times the
+footprint of all the underlying $Q_{k,lm}(\lambda,\tau)$ timeseries.  So many modes can
+fit well within a typical 4Gb GPU memory space, even allowing for substantial overhead.
+
+
+\item * What is epsilon appearing in 2c? Is it possible to quote typical
+values? Is it problem-specific?
+
+
+\noindent \textbf{Response}:   The factor $\epsilon$ connecting the number of effective samples to the number of Monte
+Carlo trials is indeed highly problem dependent, and reflects the convergence rate of the Monte Carlo integral.
+Approximately equivalently, the stanard deviation of the Monte Carlo error estimate scales as $1/\sqrt{N_{it}}$, with a
+prefactor  that  depends significantly on the specific integrand $f$ (e.g., $\sigma^2= \frac{1}{N}\int (f^2 - \E{f}^2) p_s(x)dx$)
+
+
+\item * So the reader can more easily compare the performance diagnostics,
+please state the most relevant hardware specs of the GPU/CPUs used in
+Sec 3 (processor speed, number of cores on the GPU, and memory size)
+
+\noindent \textbf{Response}:   We add an Appendix to describe the hardware used in our study.
+
+\item * Sec 3b introduces many new variables, a handful of which are
+undefined. Please make sure all variables have been defined. Better
+still, if possible, I believe the readability of this section could be
+improved if all of the variables their definitions are placed into a
+table.
+
+\noindent \textbf{Response}:
+
+\item * In table 1: why does the setup time reduce when more modes are
+included? (comparing the first two rows of this table)
+
+\noindent \textbf{Response}:  
+With only 20 setups (waveform generation plus overlaps) per profiling run,  we anticpate that $\tau_{setup}$ is among the
+least-well-constrained pieces of information in our tables.  Moreover, we perform the vast majority of our timing estimates on individual runs on busy nodes and clusters on which we
+have shared access, not
+dedicated hardware, so we can dump (and analyze) detailed profiling output.  We have seen small timing discrepancies from run to run for the setup due to resource
+availability; for example, we also find setup time decreased when going from $\pm 2$ to $\pm 2, \pm 1$ for GPU (b).
+More broadly, the CPU and GPU(b) tests were performed on the same machine and reflect the same hardware and logic
+path, so almost all the variation seen in the $\tau_{setup}$ reflects variability in timing on a single machine. 
+
+As this aspect now has a more significant impact on our performance,  we will delve much more deeply into waveform generation and overlap timing in the near future in later work, as we
+optimize these aspects of the code.  
+
+
+\item * The authors focus on computing posteriors of intrinsic parameters.
+But for low-latency studies, the extrinsic parameters are arguably
+more important as they can be used to direct optical telescopes. Can
+the authors please comment on what changes (if any) are needed to do
+low-latency studies for producing, for example, sky maps? Is this a
+"trivial" change to the code or will it require more significant
+re-working? I ask because fully Bayesian low-latency sky maps would be
+very useful, so if this code can currently do that then it would be
+worth mentioning it more prominently. Otherwise, it would be worth
+discussing what additional work will be needed to realize this
+promise.
+
+\noindent \textbf{Response}:  We have added a brief comment in our conclusions to emphasize that extrinsic information
+has previously been produced with a similar pipeline to the one benchmarked  here,  and that information will be
+made rapidly available in an automated mode by this pipeline very soon.
+
+We point out however that our inference strategy does not presently account for the effect of calibration error, which can have a
+notable impact on sky localization: it's not immediately clear our strategy would necessarily provide a dramatic change
+over the Bayestar skymaps, except insofar as we perform inference with a fully precessing signal model (and/or a model
+containing higher modes).     By contrast, LI inference can account for the impact of calibration error on sky localization.
+
+\item * Fig 1's caption: what does "on the evaluation points" mean? What are
+the evaluation points -- maybe this could be explained in a bit more
+detail in the main body of the paper.
+
+\noindent \textbf{Response}: We modified the caption to define the set whose mean and variance is being evaluated. 
+
+\item * Figure 1: is the quantity being plotted in the lower left corner
+actually the mean of $-log(L_{marg})$? (not the minus sign).
+
+\noindent \textbf{Response}: No, the sign is correct.  Due to the normalization convention adopted (see response \# 2), the peak value
+of our likelihood (ratio) is greater than zero.
+
+\item * Figure 2: same questions I have for figure 1 apply here.
+
+\noindent \textbf{Response}: The sign is correct.
+
+\item * Page 7: "Our initial grid consists of 5000 points, spread uniformly
+across a 4-dimensional hypercube"... do the authors mean to say $9^4 =
+6561$ points?
+
+\noindent \textbf{Response}: We modified the text to add the word ``approximately'' before uniformly.
+
+In practice, our grid layout code returns precisely the number of points requested.  It attempts to choose the sizes of
+each edge of the hypercube to best conform to but be strictly larger than the target size, and then truncates the set of
+candidate points.  
+
+\item * To give the timing numbers (ie the walltime) a bit more context,
+please consider adding the time it would take to do a similar analysis
+(same recovery model, set of modes, and similar CPU hardware) with
+LALInference. Even rough estimates would be very helpful towards
+understanding the full impact of the GPU-accelerated rapidPE code. I
+feel like this is one of the most important points, as it is the key
+to the impact of this work.
+
+\noindent \textbf{Response}:  In the conclusions, we  have added anecdotal  timing
+information on an analysis of practical interest.
+
+That said, this anecdote does not employ identical settings in both codes.  A direct apples-to-apples comparison between RIFT and LI using \emph{identical} waveforms and settings to
+what we benchmark here can be grossly unfair to LI.  LI developers
+have highly prioritized the use of fast approximations, and reduced-order-quadratures that further accelerate the use of
+these approximations.     To the extent these approximations don't impact results, LI can often perform comparable
+calculations much more quickly than a LI configuration which used apples-to-apples settings.
+
+Of course, these approximations are approximations.  Existing approximations  have been demonstrated by example to have limitations /
+introduce biases that, if left unchecked, would be increasingly significant as observaitons accumulate (e.g., Lange et
+al 2018).  RIFT's rapid performance  and low cost can enable systematics investigations which would otherwise be inaccessible.
+
+
+\item * The fonts in some of the figures, and especially figure 3, are small
+and in almost unreadable. Please improve the readability of these
+figures.
+
+\noindent \textbf{Response}:  We regenerated the figures (ln L and ln Z) with the most egregious axis and tick labels, to improve readability.
+
+
+\item * I would appreciate it if the authors could explain to me why the
+evidence converges much more quickly in figure 3 as compared to
+figures 1 and 2. Or said in a different way, way are the shapes of
+evidence vs iteration so different. They may optionally wish to
+comment on this in the paper too.
+
+\noindent \textbf{Response}:  The convergence rate of the evidence depends on the system studied and, critically, the
+initial grid: if we have a very well-chosen initial starting grid, the fit  converges rapidly, potentially after just
+one iteration.  The configuration used
+in Fig 3 has a different dimensionality (4d, not 2d) and a larger starting  grid than our lower-dimensionality investigation.
+
+Qualitatively speaking and based on our large but anecdotoally-built experience, we anticipate that  due to strong degeneracy in
+spin -- only one spin degree of freedom is well-constrained -- the seemingly-sparse grid in ${\cal M}_c$ and $\delta$ is very
+informative because several redundant configurations with similar $\chi_{\rm eff}$ but different $\chi_{i,z}$ inform our
+fit.   
+
+A new  student here has begun systematically investigating parameters that impact the convergence rate, using controlled
+circumstances. The results of these investigations are too preliminary to report here.
+
+\end{enumerate}
+
+We also fixed the following proofreading issues identified by the referee
+\begin{itemize}
+
+
+\item * "Reducing the sampling rate by a factor s will the cost of all
+operations with timeseries – they are shorter."
+
+
+
+\noindent \textbf{Response}:added ``reduce''
+
+
+\item * "or by marginally more conservative convergence thresholds. on N
+eval or N it"
+
+\noindent \textbf{Response}: Changed ``. on $N_{eval}$'' to ``$n_{\rm eff}$''
+
+\item *"Fortunately, the number of observationally significant and
+accessible dimensions is often substantially less than the a prior
+necessary dimensionality."
+
+\noindent \textbf{Response}: removed ``the'' and ``necessary'' in the last few words
+
+\end{itemize}
+\end{document}

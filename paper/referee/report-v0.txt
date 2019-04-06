@@ -1,0 +1,136 @@
+
+This paper describes the porting of one particular Bayesian inference
+code, RIFT/rapidPE, to GPUs. Fast parameter estimation is important in
+many contexts, including real-time astronomy, the processing of > 10s
+of GW events, and when using slow (but accurate) models. Due to the
+embarrassingly parallel nature of rapidPE, the authors argue that
+porting this part of the algorithm to GPUs is both efficient and
+straightforward.
+
+Given the LSC's upcoming observing run, this work is timely and may
+have a significant impact on the collaboration's ability to extract
+more science at a faster rate than before. The paper is well written,
+has appropriate citations, and provides a detailed study of the code's
+performance on a number of realistic test case. However, there are a
+number of mostly small questions and comments that should be
+addressed. I would like to recommend publication once the following
+points are considered:
+
+* The introduction should be expanded to (briefly) discuss
+hardware-based acceleration techniques in GW data analysis. For
+example, there are significant efforts on the search side to use GPUs.
+Within parameter estimation communities, much effort has gone into
+optimizing LALInference including the use of multi-core environments
+(using OpenMP, for example).
+
+* Due to the extra <d | d > normalization factor in Eq 1, Eqs 1 and 7
+look inconsistent to me.
+
+* Please write an equation showing how Q, U, V, F, and D are related
+to quantities appearing in Eq 7 and Eq 8. Based on the text alone I
+wasn't able to figure out the corresponding formula. Presumably, the
+authors did not include this in the current draft due to the
+expression being potentially messy. If this is the case, then perhaps
+at least one of these matrices could be written down explicitly from
+which the others could be worked out by the reader.
+
+* What is the unbolded Lambda appearing on page 2 and how is it
+related to the bolded version? Please define this variable in the
+paper.
+
+* I did not quite understand what was meant by "are arrays over
+extrinsic parameters" (page 2) since it appears that these parameters
+are continuous variables (and not yet sampled).
+
+* Just to clarify: the GPU accelerated part is the
+time-marginalization and not the marginalization over all of the
+extrinsic parameters (Eq 4)? If this is true, then maybe state that
+explicitly because it's not obvious and, additionally, the reader will
+probably not be aware of the fact that this 1-d integral (rhw time
+marginalization) is what looks to be the slowest part of rapidPE.
+
+* One of the main criticisms of GPU computing is the data transfer
+latencies to and from the device. There should be some discussion of
+what data is being transferred back and forth, at what stage of the
+algorithm does this occur, and does it need to be done repeatedly.
+Also, is any special care taken to reduce to the number of data
+transfers? Or perhaps the problem is so computationally heavy this
+isn't really an issue?
+
+* Relatedly, how much memory is required to store these matrices?
+Since GPUs have smaller RAM sizes, is any special care or tuning
+required to get the problem to fit onto the device? Later on the
+authors use the ell=2 modes as example -- since the size of the
+matrices grows with the number of modes, does the code need to account
+for this in any way?
+
+* What is epsilon appearing in 2c? Is it possible to quote typical
+values? Is it problem-specific?
+
+* So the reader can more easily compare the performance diagnostics,
+please state the most relevant hardware specs of the GPU/CPUs used in
+Sec 3 (processor speed, number of cores on the GPU, and memory size)
+
+* Sec 3b introduces many new variables, a handful of which are
+undefined. Please make sure all variables have been defined. Better
+still, if possible, I believe the readability of this section could be
+improved if all of the variables their definitions are placed into a
+table.
+
+* In table 1: why does the setup time reduce when more modes are
+included? (comparing the first two rows of this table)
+
+* The authors focus on computing posteriors of intrinsic parameters.
+But for low-latency studies, the extrinsic parameters are arguably
+more important as they can be used to direct optical telescopes. Can
+the authors please comment on what changes (if any) are needed to do
+low-latency studies for producing, for example, sky maps? Is this a
+"trivial" change to the code or will it require more significant
+re-working? I ask because fully Bayesian low-latency sky maps would be
+very useful, so if this code can currently do that then it would be
+worth mentioning it more prominently. Otherwise, it would be worth
+discussing what additional work will be needed to realize this
+promise.
+
+* Fig 1's caption: what does "on the evaluation points" mean? What are
+the evaluation points -- maybe this could be explained in a bit more
+detail in the main body of the paper.
+
+* Figure 1: is the quantity being plotted in the lower left corner
+actually the mean of -log(L_marg)? (not the minus sign).
+
+* Figure 2: same questions I have for figure 1 apply here.
+
+* Page 7: "Our initial grid consists of 5000 points, spread uniformly
+across a 4-dimensional hypercube"... do the authors mean to say 9^4 =
+6561 points?
+
+* To give the timing numbers (ie the walltime) a bit more context,
+please consider adding the time it would take to do a similar analysis
+(same recovery model, set of modes, and similar CPU hardware) with
+LALInference. Even rough estimates would be very helpful towards
+understanding the full impact of the GPU-accelerated rapidPE code. I
+feel like this is one of the most important points, as it is the key
+to the impact of this work.
+
+* The fonts in some of the figures, and especially figure 3, are small
+and in almost unreadable. Please improve the readability of these
+figures.
+
+* I would appreciate it if the authors could explain to me why the
+evidence converges much more quickly in figure 3 as compared to
+figures 1 and 2. Or said in a different way, way are the shapes of
+evidence vs iteration so different. They may optionally wish to
+comment on this in the paper too.
+
+The following sentences may need additional proofreading:
+
+* "Reducing the sampling rate by a factor s will the cost of all
+operations with timeseries – they are shorter."
+
+* "or by marginally more conservative convergence thresholds. on N
+eval or N it"
+
+*"Fortunately, the number of observationally significant and
+accessible dimensions is often substantially less than the a prior
+necessary dimensionality."
