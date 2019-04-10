@@ -46,7 +46,7 @@ STANDARD_ILE_OPTS=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid.
 
 # should do this with a shell script!
 # note cache file name
-STANDARD_ILE_OPTS_SINGULARITY=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file local.cache --fmin-template ${FMIN_TEMPLATE_BH} --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX}  --psd-file H1=HLV-ILIGO_PSD.xml.gz --psd-file L1=HLV-ILIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler | 
+STANDARD_ILE_OPTS_SINGULARITY=--n-chunk 10000 --time-marginalization --sim-xml overlap-grid.xml.gz --reference-freq 100.0 --adapt-weight-exponent 0.1  --event-time ${EVENT_TIME} --save-P 0.1 --cache-file local.cache --fmin-template ${FMIN_TEMPLATE_BH} --n-max 2000000 --fmax 1700.0 --save-deltalnL inf --l-max 2  --n-eff 50  --approximant ${APPROX} --adapt-floor-level 0.1 --maximize-only  --d-max ${DMAX}  --psd-file H1=HLV-ILIGO_PSD.xml.gz --psd-file L1=HLV-ILIGO_PSD.xml.gz --channel-name H1=FAKE-STRAIN --channel-name L1=FAKE-STRAIN --inclination-cosine-sampler --declination-cosine-sampler 
 
 
 MC_RANGE_BH=[23,35]
