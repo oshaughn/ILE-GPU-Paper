@@ -98,8 +98,8 @@ test_workflow_batch_gpu_lowlatency_singularity: Makefile HLV-ILIGO_PSD.xml.gz ze
 	(cd $@; echo X   ${STANDARD_ILE_OPTS_SINGULARITY}  --data-start-time 1000000008 --data-end-time 1000000016 --inv-spec-trunc-time 0  --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
-	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz  >  file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --frames-dir ../zero_noise  --transfer-file-list file_names_transfer.txt)
+	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz   >  file_names_transfer.txt)
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --frames-dir ../../zero_noise_mdc  --transfer-file-list file_names_transfer.txt)
 
 test_workflow_batch_gpu_lowlatency_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
 	(mkdir $@; exit 0)
@@ -108,8 +108,8 @@ test_workflow_batch_gpu_lowlatency_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noise
 	(cd $@; echo X   ${STANDARD_ILE_OPTS_SINGULARITY}  --data-start-time 1000000008 --data-end-time 1000000016 --inv-spec-trunc-time 0  --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
-	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz  >  file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --use-osg --frames-dir ../zero_noise  --transfer-file-list file_names_transfer.txt)
+	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz  >  file_names_transfer.txt; )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --use-osg --frames-dir ../../zero_noise_mdc  --transfer-file-list file_names_transfer.txt)
 
 
 # gpu resources may not be available
@@ -121,7 +121,7 @@ test_workflow_batch_nogpu_lowlatency_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noi
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz  >  file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --use-osg --frames-dir ../zero_noise  --transfer-file-list file_names_transfer.txt)
+	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --use-osg --frames-dir ../../zero_noise_mdc  --transfer-file-list file_names_transfer.txt)
 
 
 ###
@@ -177,7 +177,7 @@ test_workflow_batch_nogpu_SEOBNRv3_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noise
 	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
 	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
 	(cd $@; ls ${PWD}/*PSD.xml.gz    > file_names_transfer.txt)
-	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5  --input-grid ${PWD}/overlap-grid.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 --ile-retries 3 --transfer-file-list file_names_transfer.txt --frames-dir ${PWD}/zero_noise --use-singularity --use-osg )
+	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze 5   --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args-list args_cip_list.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP 30000 --request-memory-ILE 4096  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job 500 --working-directory ${PWD}/$@ --n-iterations 10 --ile-retries 3 --transfer-file-list file_names_transfer.txt --frames-dir ../zero_noise --use-singularity --use-osg )
 
 
 ###
