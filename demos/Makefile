@@ -134,6 +134,18 @@ test_workflow_batch_nogpu_lowlatency_OSG: Makefile HLV-ILIGO_PSD.xml.gz zero_noi
 	(cd $@; ls ${PWD}/HLV-ILIGO_PSD.xml.gz  >  file_names_transfer.txt)
 	(cd $@;  create_event_parameter_pipeline_BasicIteration  --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT}  --use-singularity --use-osg --frames-dir ../../zero_noise_mdc  --transfer-file-list file_names_transfer.txt)
 
+# Extrinsic test
+test_workflow_batch_gpu_lowlatency_extrinsic: Makefile HLV-ILIGO_PSD.xml.gz zero_noise.cache
+	(mkdir $@; exit 0)
+	util_ManualOverlapGrid.py --parameter mc --parameter-range ${MC_RANGE_BH} --parameter delta_mc --parameter-range '[0.0,0.5]' --grid-cartesian-npts ${NPTS_START} --skip-overlap
+	(cd $@; echo X --mc-range ${MC_RANGE_BH}     --eta-range '[0.20,0.24999]' --parameter mc --parameter-implied eta --parameter-nofit delta_mc  --fit-method gp --verbose  --lnL-offset ${LNL_OFFSET} --cap-points 12000  --n-output-samples 10000 --no-plots --n-eff 10000  > args_cip.txt)
+	(cd $@; echo X   ${STANDARD_ILE_OPTS}  --data-start-time 1000000008 --data-end-time 1000000016 --inv-spec-trunc-time 0  --no-adapt-after-first --no-adapt-distance --srate 4096 > args_ile.txt)
+	(cd $@; echo X  --always-succeed --method lame  --parameter m1 > args_test.txt)
+	(cd $@; echo X  --parameter m1 --parameter m2  > args_plot.txt)
+#	(cd $@; ls ${PWD}/*psd.xml.gz  ${PWD}/*.cache  > file_names_transfer.txt)
+	(cd $@;  create_event_parameter_pipeline_BasicIteration --request-gpu-ILE --ile-n-events-to-analyze ${NPTS_IT} --input-grid overlap-grid-0.xml.gz  --ile-exe `which integrate_likelihood_extrinsic_batchmode`  --ile-args args_ile.txt --cip-args args_cip.txt  --test-args args_test.txt --plot-args args_plot.txt --request-memory-CIP ${CIP_MEM} --request-memory-ILE ${ILE_MEM}  --input-grid ${PWD}/overlap-grid.xml.gz --n-samples-per-job ${NPTS_IT} --working-directory ${PWD}/$@ --n-iterations ${N_IT} --last-iteration-extrinsic)
+
+
 
 ###
 ### Precessing BBH (v3)
