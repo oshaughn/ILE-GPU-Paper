@@ -20,7 +20,7 @@ opts, args = optp.parse_args()
 #fnyq, df, f0 = 2048, 1./16, 0.0
 fnyq, df, f0 = opts.nyquist, opts.delta_f, opts.low_frequency
 f = numpy.arange(f0, fnyq, df)
-psd = numpy.array(map(lalsimulation.SimNoisePSDaLIGOZeroDetHighPower, f))
+psd = numpy.array(list(map(lambda x: lalsimulation.SimNoisePSDaLIGOZeroDetHighPower(float(x)), f)))
 psd[0] = 0
 
 # Generate the frequency series
