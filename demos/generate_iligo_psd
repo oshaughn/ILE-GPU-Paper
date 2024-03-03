@@ -32,4 +32,4 @@ for d in ["H1", "L1", "V1"]:
     psddict[d] = psd_s
 
 xmldoc = make_psd_xmldoc(psddict)
-utils.write_filename(xmldoc, "HLV-ILIGO_PSD.xml.gz", gz=True)
+utils.write_filename(xmldoc, "HLV-ILIGO_PSD.xml.gz", compress='gz')
