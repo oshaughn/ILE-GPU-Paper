@@ -3,7 +3,8 @@ import numpy
 import lalsimulation
 
 #from glue.ligolw import utils
-from ligo.lw import utils
+#from ligo.lw import utils
+from igwn_ligolw import utils
 
 from lal.series import make_psd_xmldoc
 import lal
